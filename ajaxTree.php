@@ -91,9 +91,10 @@ if(isset($_GET["disp"])){
 					$clean_array[$key]="";
 				}
 			}
-			$empty_array=$res;
+			$empty_array=$clean_array;
 			$i++;
 		}
+	//	print_r($clean_array);
 		//get last table from the tree
 		$objName=end($arr);
 		//get all fields from this table
@@ -108,6 +109,7 @@ if(isset($_GET["disp"])){
 			//variable initialization
 			$class="";
 			$lang="";
+			$val="";
 			echo "<tr>";
 			//write field label
 			echo "<td><b>$header[$i]</b></td>";
@@ -172,11 +174,12 @@ try{
 		echo "<b>Showing page $pageNum of $maxPage</b>";
 		if($pageNum>1) {
 			$page = $pageNum-1;
-			echo "&nbsp;&nbsp;<a href=javascript:void(0) onclick=dispTree('$id','$table1','$table2','$field','$val','$page',1,true,$treeview_id)>Back</a>";
+			
+			echo "&nbsp;&nbsp;<a href=javascript:void(0) onclick=dispTree('$id','$table1','$table2','$field','$val','$page',$type,true,$treeview_id)>Back</a>";
 		} 
 		if($pageNum<$maxPage){
 			$page = $pageNum+1;
-			echo "&nbsp;&nbsp;<a href=javascript:void(0) onclick=dispTree('$id','$table1','$table2','$field','$val','$page',1,true,$treeview_id)>Next</a>";
+			echo "&nbsp;&nbsp;<a href=javascript:void(0) onclick=dispTree('$id','$table1','$table2','$field','$val','$page',$type,true,$treeview_id)>Next</a>";
 		}
 	}
 	/*****************************************************************************************************************/

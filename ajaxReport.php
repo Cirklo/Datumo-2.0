@@ -43,7 +43,7 @@ $sql->execute();
 if($sql->rowCount()==0){//Everything's ok to proceed with the save
 	$sql = $conn->prepare("INSERT INTO report (report_name, report_description, report_query, report_user, report_conf) VALUES ('$reportName','$reportDescription','$query',$user_id,$conf)");
 	try{
-		//echo $sql->queryString;
+		echo $sql->queryString;
 		$sql->execute();
 		echo "Query successfully saved!";
 	} catch (Exception $e){

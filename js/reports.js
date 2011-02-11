@@ -87,7 +87,7 @@ function buildQuery(){
 		}
 		if(str.substring(0,6)=="value_"){
 			if(CurForm[i].value!=""){
-				where+=str.substring(6,str.length)+"=\'"+CurForm[i].value+"\' AND ";
+				where+=str.substring(6,str.length)+"=\""+CurForm[i].value+"\" AND ";
 			}
 		}
 		

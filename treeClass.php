@@ -48,14 +48,24 @@ class treeClass{
     	$arr = array();
     	//store all tables in array
     	$arr = $this->treeTables($tree);
-    	
+    	if($arr[0]!=""){
+    		$table=$arr[0];
+    	} else {
+    		$table=$arr[1];
+    	}
     	//display first table options
-    	$sql = $this->pdo->prepare("SELECT * FROM ".$this->pdo->getDatabase().".".$arr[0]." ORDER BY 2");
+    	$sql = $this->pdo->prepare("SELECT * FROM ".$this->pdo->getDatabase().".".$table." ORDER BY 2");
     	$sql->execute();
     	echo "<ul id='browser' class='filetree treeview-famfamfam'>";
     	for($i=0;$row=$sql->fetch();$i++) {
-    		$conn = $this->tableConn($arr[0], $arr[1]);
-    		echo "<li class=expandable><a href=javascript:void(0) onclick=dispTree('firstTree$i','$arr[1]','$arr[2]','$conn','$row[0]',1,1,false,$tree)>$row[1]</a>";
+    		if($arr[0]!=""){
+    			$conn = $this->tableConn($arr[0], $arr[1]);
+    			$onclick="dispTree('firstTree$i','$arr[1]','$arr[2]','$conn','$row[0]',1,1,false,$tree)";
+       		} else {
+       			$conn = $this->tableConn($arr[1], $arr[2]);
+ 		   		$onclick="dispTree('firstTree$i','$arr[2]','$arr[2]','$conn','$row[0]',1,2,false,$tree)";
+      		}
+    		echo "<li class=expandable><a href=javascript:void(0) onclick=$onclick>$row[1]</a>";
     		echo "<div id=firstTree$i style='display:none'></div>";
   			echo "</li>";
     	}

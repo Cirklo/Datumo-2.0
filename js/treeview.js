@@ -9,9 +9,7 @@ function dispTree(id,table1, table2, conn, val, page, type, bool, tree){
 				$("div.c").not("#"+id).slideUp();
 			});
 		} else {
-			$("#"+id).slideUp(function(){
-				$("div.c").not("#"+id).slideDown();
-			});
+			$("#"+id).slideUp();
 		}
 		
 	}
