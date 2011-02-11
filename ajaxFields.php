@@ -5,7 +5,7 @@ $user_id = startSession();
 /**
  * @author João Lagarto	/ Nuno Moreno
  * @abstract Ajax handler request -> get referenced table
- * 
+ * teste
  *  */
 
 require_once(".htconnect.php");
