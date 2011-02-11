@@ -35,9 +35,9 @@ class dbConnection extends PDO{
 	public function databaseSettings(){
 		$this->engine = "mysql"; //"mysql" OR "pgsql"
 		$this->host = "localhost";
-		$this->database = "equipment";
+		$this->database = "requisitions";
 		$this->username = "root"; //"root" OR "postgres"
-		$this->password = "equip!admin"; // "" OR "nasaki"
+		$this->password = ""; // "" OR "nasaki"
 		$this->description = "IGC equipment database";
 		$this->admin = "info@cirklo.org";
 	}
