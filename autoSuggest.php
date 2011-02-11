@@ -30,6 +30,13 @@ $sql = $conn->prepare($query->getSQL(3));
 $sql->execute();
 $row = $sql->fetch();
 $table=$row[0];
+//hack for mysql (Dynamic reports)
+if($table==""){
+	$sql = $conn->prepare("SELECT table_name FROM columns WHERE column_name='$field' AND table_schema='$database'");
+	$sql->execute();
+	$row=$sql->fetch();
+	$table=$row[0];	
+}
 
 //get second attribute from table
 $sql = $conn->prepare("SELECT column_name FROM columns WHERE table_name='$table' AND table_schema='$database' LIMIT 1 OFFSET 1" );
