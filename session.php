@@ -48,7 +48,7 @@ function initSession($user_id){
 
 function startSession(){
 	session_start();
-	$_SESSION['user_id']=28;
+	$_SESSION['user_id']=1;
 	if(isset($_SESSION['user_id'])){
 		$user = $_SESSION['user_id'];
 		return $user; 
