@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>simpleAutoComplete JQuery Plugin</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Language" content="pt-BR en">
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/simpleAutoComplete.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/simpleAutoComplete.css" />
+    <script type="text/javascript">
+	$(document).ready(function()
+	{
+	    $('#estado_autocomplete').simpleAutoComplete('ajax_query.php',{
+		autoCompleteClassName: 'autocomplete',
+		selectedClassName: 'sel',
+		attrCallBack: 'rel',
+		identifier: 'estado'
+	    },estadoCallback);
+
+	    $('#cidade_autocomplete').simpleAutoComplete('ajax_query.php',{
+		autoCompleteClassName: 'autocomplete',
+		selectedClassName: 'sel',
+		identifier: 'cidade',
+		extraParamFromInput: '#id_estado'
+	    },cidadeCallback);
+        });
+	
+	function estadoCallback( par )
+	{
+	    $("#id_estado").val( par[0] );
+	    $("#uf1").val( par[1] );
+	    $("#cidade_autocomplete").removeAttr("disabled");
+		$("#cidade_autocomplete, #uf2, #id_cidade").val("");
+	}
+
+	function cidadeCallback( par )
+	{
+	    $("#id_cidade").val( par[0] );
+	    $("#uf2").val( par[1] );
+	}
+	
+    </script>
+  </head>
+  <body>
+      <h1>Simple AutoComplete JQuery Plugin</h1>
+      <pre>
+	/**
+	 * @author: Wellington Ribeiro
+	 * @version: 1.0
+	 * @since: 2010-03-14
+	 */
+      </pre>
+	  <div>
+		<a href="http://blog.idealmind.com.br/projetos/simple-autocomplete-jquery-plugin/">Página do plugin</a>
+	  </div>
+      <div style="margin-left:100px;">
+	  <h2>Digite um estado brasileiro:</h2>
+	  <input type="text" id="estado_autocomplete" name="estado" autocomplete="off" style="width: 250px; height: 23px;" />
+	  <input type="text" name="uf1" id="uf1" disabled />
+	  <input type="text" id="id_estado" name="id_estado" disabled />
+      </div>
+      <div style="margin-left:100px;">
+	<h2>Escolha a cidade:</h2>
+	<input type="text" id="cidade_autocomplete" name="cidade" autocomplete="off" disabled />
+	<input type="text" name="uf2" id="uf2" disabled />
+	<input type="text" name="id_cidade" id="id_cidade" disabled />
+      </div>
+  </body>
+</html>

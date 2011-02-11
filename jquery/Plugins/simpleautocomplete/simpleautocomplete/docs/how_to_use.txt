@@ -1,0 +1,75 @@
+The Simple JQuery AutoComplete Plugin allows you to add autocomplete functionality easily in text fields on your site.
+
+It also has resources to bring other data in the autocomplete list, as the id of the element, performing a callback function to store these data in other inputs.
+
+You can also:
+	* Use multiple autocomplete on the same page
+	* Pass an extra parameter to filter the results of a sql query
+	* Stylize each autocomplete in different ways.
+
+
+How to use it
+
+To use the Simple AutoComplete JQuery Plugin is very easy.
+
+Just use the syntax
+
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#input_fied_id").simpleAutoComplete("query_processor.php");
+	});
+</script>
+
+Enter the css that will be used to style the auto complete
+
+<link rel="stylesheet" type="text/css" href="simpleAutoComplete.css" />
+
+And the field that will run the autocomplete
+
+<input type="text" id="input_fied_id" name="estado" />
+
+Optional Features:
+
+Callback Function
+
+You can use a callback function that will be performed by selecting an autocomplete item, bringing extra data.
+
+To do it, use the syntax:
+
+$("#input_fied_id").simpleAutoComplete("query_processor.php",null,callbackfunction);
+
+and create the callback function
+
+<script type="text/javascript">
+	function callbackfunction( par )
+	{
+		$("#id_estado").val( par[0] );
+
+	}
+</script>
+
+The variable 'par' is a vector with additional data brought by the query for each item (stored in an attribute of the item).
+
+The callback is useful for you to bring other data beyond what appears in the autocomplete, as the id of an autocomplete option, or any other data (see the demo that illustrates this feature) to be returned by the file that runs the query, and store it in the input "id_estado" (you can bring as many parameters as you want, and store them in different fields).
+
+
+Optional parameters
+
+You can use the optional parameters to add more detail and customize each autocomplete.
+
+identifier : to enable the file (eg php) that will process the query to identify which query is processed, and to identify an autocomplete on a page that has more than one autocomplete.
+
+autoCompleteClassName : if you want to use a css class name than the default ('autocomplete'). This is useful to avoid conflicts, or if you want to style each autocomplete differently.
+
+selectedClassName : has the same purpose autoCompleteClassName, but applies for the pre-selected autocomplete item, eg, on mouse over (default 'sel').
+
+attrCallBack : if you want to store the parameters passed to the callback function in other attribute (default 'rel').
+
+extraParamFromInput : useful if you want to pass an additional parameter to the query, in order to filter the results. This value must be one input field (this way the value can be variable).
+
+Compatibility
+
+Simple AutoComplete version 1.1.0  has been tested, exhibiting the same behavior in the following browsers: IE6, IE7, IE8, Safari, Chrome and Firefox.
+
+

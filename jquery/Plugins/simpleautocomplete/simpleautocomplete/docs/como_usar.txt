@@ -1,0 +1,74 @@
+O Simple AutoComplete JQuery Plugin permite que você adicione a funcionalidade de autocomplete facilmente em campos de texto do seu site.
+
+Ele também possui recursos para trazer outros dados na lista do autocomplete, como o id do elemento, executando uma função de callback para armazenar estes dados em outros inputs.
+
+Você ainda pode:
+	* utilizar vários autocompletes numa mesma página
+	* passar um parâmetro extra para filtrar os resultados de uma consulta sql
+	* estilizar cada autocomplete de maneiras diferentes.
+
+
+Como usar
+
+Para usar o Simple AutoComplete JQuery Plugin é muito fácil.
+
+Basta usar a sintaxe
+
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#input_fied_id").simpleAutoComplete("query_processor.php");
+	});
+</script>
+
+Insira o css que será usado para estilizar o auto complete
+
+<link rel="stylesheet" type="text/css" href="simpleAutoComplete.css" />
+
+E o campo que será executado o autocomplete
+
+<input type="text" id="input_fied_id" name="estado" />
+
+Recursos opcionais:
+
+Função de Callback
+
+Você pode utilizar uma função de callback, que será executada ao selecionar um item do autocomplete, trazendo dados extras.
+
+Para isso, utilize a sintaxe:
+$("#input_fied_id").simpleAutoComplete("query_processor.php",null,callbackfunction);
+
+e crie a função de callback
+
+<script type="text/javascript">
+	function callbackfunction( par )
+	{
+		$("#id_estado").val( par[0] );
+
+	}
+</script>
+
+A variável 'par' é um vetor com dados adicionais trazidos pela consulta para cada item (armazenados em um atributo do item).
+
+O callback é util para você trazer outros dados além do que aparecerá no autocomplete, como o id de uma opção do autocomplete, ou qualquer outro dado (veja o tutorial que exemplifica esta funcionalidade), que será retornado pelo arquivo que executará a consulta, e armazenar no input "id_estado" (você pode trazer quantos parâmetros quiser, e armazená-los em campos diferentes).
+
+
+Parâmetros opcionais
+
+Você pode utilizar os parâmetros opcionais para adicionar mais detalhes e personalizar cada autocomplete.
+
+São eles:
+
+identifier : útil para que o arquivo (php por exemplo) que processará a consulta possa identificar qual consulta será processada, e para identificar um autocomplete numa página que tenha mais de um autocomplete.
+
+autoCompleteClassName : caso você queira utilizar um nome de classe css diferente da padrão (padrão 'autocomplete'). Isso é útil para evitar conflitos, ou caso você queira estilizar diferentemente vários autocompletes.
+
+selectedClassName : tem o mesmo propósito de autoCompleteClassName, porém se aplica à opção pré-selecionada dos resultados do autocomplete (padrão 'sel').
+
+attrCallBack : caso você queira que os parâmetros que serão passados para a função de callback sejam armazenados em um atributo diferente do padrão, que é 'rel'.
+
+extraParamFromInput : útil caso você queira passar um parâmetro adicional à consulta, com o intuito de filtrar os resultados. Este valor deve estar em um campo input (desta forma o valor pode ser variável).
+
+Compatibilidade
+
+O Plugin simpleAutoComplete foi testado apresentando o mesmo comportamento, nos seguintes navegadores: IE6, IE7, IE8, Safari, Chrome e Firefox.

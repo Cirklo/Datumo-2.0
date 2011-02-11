@@ -1,0 +1,115 @@
+<?php
+header("Content-type: application/vnd.ms-excel");
+header("Content-Disposition: attachment; filename='export-to-excel.xls'");
+
+//http variables
+if(isset($_GET['table'])){	
+	$table = $_GET['table'];
+	fromTable($table);
+}
+
+if(isset($_GET['report'])){	
+	$report = $_GET['report'];
+	fromReport($report);
+}
+
+/**
+*Method to export data directly from a table to excel
+*
+**/
+
+function fromTable($table){
+	//sets unlimited timerange to execute script (no timeout)
+	set_time_limit(0); 
+	
+	//includes
+	require_once(".htconnect.php");
+	require_once ("dispClass.php");
+	require_once "session.php";
+	$user_id=startSession();
+	
+	//call database class
+	$db = new dbConnection();$db->dbConn();
+	//call other classes
+	$display = new dispClass();
+	
+	//local variables
+	$fullarr=array();
+	$arr=array();
+	$fk=array();
+	
+	//session variables
+	$query=$_SESSION['sql'];
+	$_SESSION['sql']=null;
+	
+	//call method to get table headers
+	$display->tableHeaders($table);
+	
+	$arr=$display->getHeader();
+	$fk=$display->getFKtable();
+	
+	for($i=0;$i<sizeof($arr);$i++){
+		echo $arr[$i]."\t";
+	}
+	echo "\n";
+	//execute query to retrieve data from the database
+	$sql = $db->prepare($query);
+	$sql->execute();
+	for($i=0;$row=$sql->fetch();$i++){
+		for($j=0;$j<$sql->columnCount();$j++){
+			if($fk[$j]!=$table and $fk[$j]!=""){
+				$display->getFKvalue($row[$j],$j);
+				echo $display->getFKatt()."\t";	
+			} else {
+				echo $row[$j]."\t";
+			}
+		}
+		echo "\n";
+	}
+}
+
+/**
+*Method to export data from a report which query is stored in the database
+*
+**/
+
+function fromReport($report) {
+	//sets unlimited timerange to execute script (no timeout)
+	set_time_limit(0); 
+	
+	//includes
+	require_once(".htconnect.php");
+	require_once ("dispClass.php");
+	require_once "session.php";
+	$user_id=startSession();
+	
+	//call database class
+	$db = new dbConnection();$db->dbConn();
+	//call other classes
+	
+	//retrieve this report query
+	$sql=$db->prepare("SELECT report_query FROM ".$db->getDatabase().".report WHERE report_id=$report");
+	$sql->execute();
+	$row=$sql->fetch();
+	$query=$row[0];
+
+	//remove page limitation
+	$query = substr($query,0,strpos("LIMIT"));
+	$sql=$db->prepare($query);
+	$sql->execute();
+	
+	//loop through all results and write each one of them to a spreadsheet
+	for($i=0;$row=$sql->fetch();$i++){
+		for($j=0;$j<$sql->columnCount();$j++){
+			if($fk[$j]!=$table and $fk[$j]!=""){
+				$display->getFKvalue($row[$j],$j);
+				echo $display->getFKatt()."\t";	
+			} else {
+				echo $row[$j]."\t";
+			}
+		}
+		echo "\n";
+	}	
+}
+
+?>

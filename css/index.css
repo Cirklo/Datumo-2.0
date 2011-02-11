@@ -1,0 +1,55 @@
+@CHARSET "ISO-8859-1";
+body{
+	margin:0;
+	background: #164f55;
+	font-family:Verdana, Geneva, sans-serif; 
+	font-size:11px; 
+	line-height:20px; 
+    text-align: justify;
+    color:#f7c439;
+}
+
+hr{
+	border:none;	
+	border-top:1px #FFCC33 solid;
+	height: 1px;
+	background-color: #FFCC33;
+}
+
+table{
+	font-family:Verdana, Geneva, sans-serif; 
+	font-size:11px; 
+}
+
+table.informations{
+	border-width:1px;
+	border-color:#f7c439;
+	border-style:solid;
+	background-color:#EDDA74;
+	font-family:Verdana, Geneva, sans-serif; 
+	font-size:11px; 
+	color:#164f55;
+}
+
+table.informations a{
+	color:#164f55;
+}
+
+table.informations a:hover{
+	color:#000;
+}
+
+input {
+	font-size:12px;
+	border:solid;
+	border-width:1px;
+	border-color:#AAA;
+ }
+ 
+a{
+	color:#FFF;
+}
+
+a:hover{
+	color:#FFFCCC;
+}

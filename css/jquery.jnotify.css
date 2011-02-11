@@ -1,0 +1,19 @@
+.jnotify-item
+{
+    height: auto;
+    padding: 4px 4px 4px 4px;
+    margin: 0 0 5px 0;
+    display: block;
+    position: relative;
+    font-family: "Verdana", sans-serif;
+    font-size:11px;
+    background-color: #CCCC99;
+}
+
+.jnotify-item-close
+{
+    float: right;
+    margin-left: 2px;
+}
+
+
