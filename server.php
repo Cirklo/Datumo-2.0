@@ -8,12 +8,11 @@ if(isset($_POST['id'])) $id=$_POST['id'];
 if(isset($_GET['table']))	$table=$_GET['table'];
 
 //call database class and open connection
-$conn = new dbConnection(); $conn->dbConn();
+$conn = new dbConnection();
 
 //initialize variables to construct the query
 $attr=""; //table attributes
 $vals=""; //values to be inserted
-
 switch($oper){
 	case 'edit':
 		foreach ($_POST as $key=>$value){

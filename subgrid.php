@@ -49,3 +49,6 @@ $database=$conn->getDatabase();//set database name
 echo "</body>";
 echo "</html>";
 ?>
+<form method="post" action="csvExport.php">
+    <input type="hidden" name="csvBuffer" id="csvBuffer" value="" />
+</form>

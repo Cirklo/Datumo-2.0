@@ -51,11 +51,12 @@ require_once ("reportClass.php");
 require_once ("treeClass.php");
 require_once ("queryClass.php");
 
+
 //http variables
 if(isset($_GET['tree'])) {	$tree = $_GET['tree'];}
 
 //call database class (handle connections)
-$db = new dbConnection(); $db->dbConn();
+$db = new dbConnection();
 //other classes
 $treeview = new treeClass($tree);
 $display = new dispClass();

@@ -20,7 +20,7 @@ function login(){
 	//includes
 	require_once ("genObjClass.php");
 	//call classes
-	$db = new dbConnection(); $db->dbConn();
+	$db = new dbConnection();
 	$genObj = new genObjClass();
 	
 	//posted variables
@@ -48,7 +48,7 @@ function initSession($user_id){
 
 function startSession(){
 	session_start();
-	$_SESSION['user_id']=1;
+	$_SESSION['user_id']=28;
 	if(isset($_SESSION['user_id'])){
 		$user = $_SESSION['user_id'];
 		return $user; 
@@ -76,7 +76,7 @@ function recoverPwd(){
 	require_once ("genObjClass.php");
 	//call class
 	$mail = new mailClass();
-	$db = new dbConnection(); $db->dbConn();
+	$db = new dbConnection();
 	$genObj = new genObjClass();
 
 	//http variables

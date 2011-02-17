@@ -4,10 +4,12 @@ require_once ("mailClass.php");
 
 class errorClass{
 	private $mail;
-	
+	private $error_report_email;
 	
 	public function __construct(){
-		$this->mail = new mailClass();		
+		$this->mail = new mailClass();	
+		//guy who will receive the error report
+		$this->error_report_email="jlagarto@igc.gulbenkian.pt";	
 	}
 
 /**
@@ -18,7 +20,7 @@ class errorClass{
  * @param string $msg
  */
 
-	public function errorDisplay($sql,$objName,$error,$msg){
+	public function errorDisplay($sql,$objName,$error,$msg="Could not execute query. <b>If the problem persists please contact the administrator! <a href=admin.php>Return to main menu</a></b>"){
 		echo "<div id=error class=error>$msg</div>";
 		$this->sendReport($sql, $error, $objName);
 		exit();
@@ -33,7 +35,7 @@ class errorClass{
 	
 	public function sendReport($sql,$error,$objName){
 		//guy who will receive the error report
-		$to = "jlagarto@igc.gulbenkian.pt";
+		$to = $this->error_report_email;
 		//report subject
 		$subject = "Datumo 2.0 Error Report";
 		$msg="Error Report\n\n";

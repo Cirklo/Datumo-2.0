@@ -16,6 +16,7 @@ class dbConnection extends PDO{
 	private $password;
 	private $dsn;
 	private $schema;
+	private $schemaQuery;
 	private $admin;
 		
 	public function __construct(){
@@ -26,6 +27,8 @@ class dbConnection extends PDO{
 			parent::__construct($this->dsn, $this->username, $this->password);
 			//PDO error handling
 			parent::setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			//call main database right away
+			//$this->dbConn();
 		} catch (PDOException $e) {
 			echo $e->getMessage();
 			exit();
@@ -35,16 +38,17 @@ class dbConnection extends PDO{
 	public function databaseSettings(){
 		$this->engine = "mysql"; //"mysql" OR "pgsql"
 		$this->host = "localhost";
-		$this->database = "equipment";
+		$this->database = "requisitions";
+		$this->schema = "requisitions"; //same as database for mysql;
 		$this->username = "root"; //"root" OR "postgres"
 		$this->password = ""; // "" OR "nasaki"
-		$this->description = "IGC equipment database";
+		$this->description = "IGC requisitions database";
 		$this->admin = "info@cirklo.org";
 	}
 	
 	public function getEngine(){ return $this->engine;}
-	public function getDatabase(){ return $this->database;}
-	public function getSchema(){ return $this->schema;}
+	public function getDatabase(){ return $this->schema;}
+	public function getSchema(){ return $this->schemaQuery;}
 	public function getDescription(){ return $this->description;}
 	public function getAdmin(){ return $this->admin;}
 	
@@ -57,8 +61,9 @@ class dbConnection extends PDO{
  */
 	
 	public function dbConn(){
-		$this->schemaSelect($this->engine, $this->getDatabase());
-		$sql = parent::prepare($this->schema);
+		$this->schemaSelect($this->schema);
+		$sql = parent::prepare($this->schemaQuery);
+		//echo $sql->queryString;
 		$sql->execute();
 	}
 	
@@ -70,8 +75,8 @@ class dbConnection extends PDO{
  */
 	
 	public function dbInfo(){
-		$this->schemaSelect($this->engine, "information_schema");
-		$sql = parent::prepare($this->schema);
+		$this->schemaSelect("information_schema");
+		$sql = parent::prepare($this->schemaQuery);
 		$sql->execute();
 }
 	
@@ -82,13 +87,13 @@ class dbConnection extends PDO{
  * @abstract method to handle different database engines
  */
 	
-	public function schemaSelect($engine, $db){ 
-		switch($engine){
+	public function schemaSelect($db){ 
+		switch($this->engine){
 			case "mysql": //query to change database in mysql
-				$this->schema = "use ".$db;
+				$this->schemaQuery = "use ".$db;
 				break;
 			case "pgsql"; //query to change database in postgresql
-				$this->schema = "set search_path to ".$db.",public";
+				$this->schemaQuery = "set search_path to ".$db.",public";
 				break;
 		}
 	}

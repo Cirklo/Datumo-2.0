@@ -47,7 +47,7 @@ class genObjClass{
     	try{
     		$sql->execute();
     	} catch(Exception $e){
-    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage(),"Could not execute query. <b>If the problem persists please contact the administrator! <a href=manager.php?table$objName>Return to main menu</a></b>");
+    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
     	}
     }    
     
@@ -82,7 +82,7 @@ class genObjClass{
     	try{
     		$sql->execute();
     	} catch(Exception $e){
-    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage(),"Could not execute query. <b>If the problem persists please contact the administrator! <a href=manager.php?table$objName>Return to main menu</a></b>");
+    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
     	}
     }
     
@@ -119,7 +119,7 @@ class genObjClass{
    		try{
     		$sql->execute();
     	} catch(Exception $e){
-    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage(),"Could not execute query. <b>If the problem persists please contact the administrator! <a href=manager.php?table$objName>Return to main menu</a></b>");
+    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
        	}
     }
    

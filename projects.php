@@ -18,6 +18,8 @@ $user_id = startSession();
 <script type="text/javascript" src="js/jquery.cookie.js.js"></script>
 <script type="text/javascript" src="js/jquery.tipTip.js"></script>
 <script type="text/javascript" src="js/jquery.alert.js"></script>
+<script type="text/javascript" src="js/jquery.project.js"></script>
+<script type="text/javascript" src="js/jqBarGraph.js"></script>
 <script type="text/javascript" src="js/CalendarControl.js"></script>
 <script type="text/javascript" src="js/filters.js"></script>
 <script type="text/javascript" src="js/functions.js"></script>
@@ -45,6 +47,7 @@ require_once ("mailClass.php");
 require_once ("treeClass.php");
 require_once ("configClass.php");
 require_once ("requisitionsClass.php");
+require_once "projectClass.php";
 
 //call database class (handle connections)
 $db = new dbConnection();
@@ -58,6 +61,7 @@ $treeview = new treeClass();
 $mail = new mailClass();
 $config = new configClass();
 $req = new reqClass();
+$project = new projectClass();
 
 //set local variables 
 $arr = array();
@@ -88,23 +92,13 @@ $config->checkPlugins();
 echo "</table>";
 echo "</td>";
 echo "<td valign=top>";
-echo "<table>";
-echo "<tr><td>";
-$req->createBasket($user_id);
-echo "Select the basket type:";
-$arr = $req->getType();
-for($i=0;$i<sizeof($arr);$i++){
-	echo "<ul><a href=javascript:void(0) onclick=gridDisplay.location.href='grid.php?type=$arr[$i]'>$arr[$i]</a></ul>";
-}
-echo "</td></tr>";
-echo "<tr><td>";
-echo "<iframe name=gridDisplay id=gridDisplay class=gridDisp>";
-echo "</iframe>";		
-echo "</td></tr>";
-echo "</table>";
+echo "Project management";
+$project->projects($user_id);
+echo "<div id=projectInfo lang=exp></div>";
+echo "<br>";
+echo "<div id=projectGraph lang=exp></div>";
 echo "</td>";
 echo "</tr>";
 echo "</table>";
-
-
+echo "<div id=graph lang=exp></div>";
 ?>

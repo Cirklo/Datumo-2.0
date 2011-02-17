@@ -49,7 +49,7 @@ require_once ("reportClass.php");
 require_once ("msgClass.php");
 
 //call database class (handle connections)
-$db = new dbConnection(); $db->dbConn();
+$db = new dbConnection();
 $engine = $db->getEngine();
 //call other classes
 $display = new dispClass();

@@ -37,6 +37,7 @@ textarea.message, input.name, input.email {
 	line-height:14px; 
 	font-size:11px; 
 	padding:2px 2px 0px;
+	resize:none;
 	}
 textarea.message {height:100px; font-family:Verdana, Geneva, sans-serif;}
 .submit {

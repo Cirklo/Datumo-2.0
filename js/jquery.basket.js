@@ -13,7 +13,7 @@ $(document).ready(function(){
 			var defaults = {
 				display: "External",
 				state: "Active",
-				height:350,
+				height:300,
 				width:900,
 				id:"",
 				caption:""
@@ -80,8 +80,12 @@ $(document).ready(function(){
 			                caption: title,						//table title
 			                height: height,						//default height
 			                width:width,						//default width	
-			                toolbar: [true,"top"],				//set toolbar 
+			                toolbar: [true,"top"],				//set top toolbar
+			                toolbar: [true,"bottom"],			//set bottom toolbar 
 			                grouping: colGroup, 
+			              /*  loadComplete: function(){
+			                	$("#t_list").css("text-align","right").html("Totals Amount (EUR): ");
+			                },*/
 			                groupingView : { 
 			                	groupField : [colG], 
 			                	groupColumnShow : [true], 
@@ -99,18 +103,34 @@ $(document).ready(function(){
 				                        lastsel2=id;
 				                    }
 			                	}
+			                	var arr, total=0;
+			        			arr=jQuery("#list").jqGrid('getGridParam','selarrrow');
+			        			 for(var i=0;i<arr.length;i++){
+			        		        	var data = jQuery("#list").jqGrid('getCell',arr[i],"request_total");
+			        		        	total=Number(data)+Number(total);
+			        			 }
+			        			 $("#t_list").css("text-align","right").html("Totals Amount (EUR): "+total+"&nbsp;&nbsp;&nbsp;");
 			                },
 			                editurl:"server.php?table="+objName
 			                
 			              });  
 			              //jQuery("#list").jqGrid('gridResize',{minWidth:600,maxWidth:1000,minHeight:250, maxHeight:500});
 			              jQuery("#list").navGrid('#pager',
-			                      {add: false, edit: edit_var, del: del_var, search: false}, //options
+			                      {pdf:true, add: false, edit: edit_var, del: del_var, search: false}, //options
 			                      {width:600,reloadAfterSubmit:true,url:"server.php?table="+objName}, // edit options
 			                      {}, // add options
 			                      {reloadAfterSubmit:true,url:"server.php?table="+objName}, // del options
 			                      {} // search options
 			              );
+			             
+			              // add custom button to export the data to excel
+			              jQuery("#list").jqGrid('navButtonAdd','#pager',{
+			                     caption:"Export to Excel", 
+			                     onClickButton: function () {
+			                    	 exportExcel("#list");
+			                     }
+			              });
+			              
 			              /*
 			               * adds a toolbar button in order to handle basket state progression
 			               * 
@@ -264,6 +284,13 @@ $(document).ready(function(){
 			                      {reloadAfterSubmit:true,url:"server.php?table="+objName}, // del options
 			                      {} // search options
 			              );
+			           // add custom button to export the data to excel
+			              jQuery("#list_0").jqGrid('navButtonAdd','#pager_0',{
+			                     caption:"Export to Excel", 
+			                     onClickButton: function () {
+			                    	 exportExcel("#list_0");
+			                     }
+			              });
 			       },
 			       error: function(x, e)
 			       {
@@ -324,7 +351,7 @@ $(document).ready(function(){
 		$("#submit").click(function(){
 			//Is there a matching column?
 			var url = "requisitions.php";
-			var arr, key, match;
+			var arr, key, match, total=0;
 			//ajax request
 			$.get(url,{
 				  type:1,
@@ -349,6 +376,8 @@ $(document).ready(function(){
 			        //loop through all selected values
 				        for(var i=0;i<arr.length;i++){
 				        	var data = jQuery("#list").jqGrid('getCell',arr[i],key);
+				        	var calc = jQuery("#list").jqGrid('getCell',arr[i],"request_total");
+        		        	total=Number(total)+Number(calc);
 				        	if(i==0) match=data;
 				        	else{
 				        		if(data!=match) {
@@ -357,17 +386,20 @@ $(document).ready(function(){
 				        		}
 				        	}
 				        }
+				        
 			        }
 			        //check if an account has been selected
 			        if($("#accountList").get(0).selectedIndex==0){
 			        	alert("You must select a valid account to proceed");
 			        	return;
 			        } else { //submit basket
+			        	//must check if the selected account has enough money.
 			        	$.get(url,{
 							  type:3,
 							  stype:$("#submit").attr("name"),
 							  account:$("#accountList").val(),
-							  val:arr},		
+							  val:arr,
+							  ammount:total},		
 							//retrieve that from ajax request 
 							//select another div to display the notification
 							function(data){
@@ -392,6 +424,16 @@ $(document).ready(function(){
 				  });
 		});
 		
+		$("#totals").click(function(){
+			var arr, total=0;
+			arr=jQuery("#list").jqGrid('getGridParam','selarrrow');
+			 for(var i=0;i<arr.length;i++){
+		        	var data = jQuery("#list").jqGrid('getCell',arr[i],"request_total");
+		        	total=Number(data)+Number(total);
+			 }
+			 alert(total);
+		});
+		
 		
 		
 }); 
@@ -400,4 +442,36 @@ function getUserLevel(){
 	url="requisitions.php?type=7";
 	var str=ajaxRequest(url);
 	return str;
+}
+
+function exportExcel(grid)
+{
+    var mya=new Array();
+    mya=$(grid).getDataIDs();  // Get All IDs
+    var data=$(grid).getRowData(mya[0]);     // Get First row to get the labels
+    var colNames=new Array(); 
+    var ii=0;
+    for (var i in data){colNames[ii++]=i;}    // capture col names
+    var html="";
+        for(k=0;k<colNames.length;k++)
+        {
+        html=html+colNames[k]+"\t";     // output each Column as tab delimited
+        }
+        html=html+"\n";                    // Output header with end of line
+    for(i=0;i<mya.length;i++)
+        {
+        data=$(grid).getRowData(mya[i]); // get each row
+        for(j=0;j<colNames.length;j++)
+            {
+         html=html+data[colNames[j]]+"\t"; // output each Row as tab delimited
+            }
+        html=html+"\n";  // output each row with end of line
+
+        }
+    html=html+"\n";  // end of line at the end
+    document.forms[0].csvBuffer.value=html;
+    document.forms[0].method='POST';
+    document.forms[0].action='excel.php?oper';  // send it to server which will open this contents in excel file
+    document.forms[0].target='_blank';
+    document.forms[0].submit();
 }

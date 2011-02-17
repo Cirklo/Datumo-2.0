@@ -108,9 +108,14 @@ class reportClass{
 			$this->query->engineHandler($this->pdo->getEngine());
 			//query number 6 -> necessary in order to select specific query from vault
 			$sql = $this->pdo->prepare($this->query->getSQL(6)); 
-			$sql->execute();
-			$row = $sql->fetch();
-			$this->fk[$this->arr[$j]] = $row[0];
+			try{
+				$sql->execute();
+				$row = $sql->fetch();
+				$this->fk[$this->arr[$j]] = $row[0];			
+			} catch(Exception $e){
+				//report error
+				$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
+			}
 		} 		
    	}
    	
@@ -130,7 +135,8 @@ class reportClass{
    		try{
    			$sql->execute();
    		} catch (Exception $e){
-   			echo "Could not execute query!";
+   			$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
+   			//echo "Could not execute query!";
    		}
    		for($j=0;$row=$sql->fetch();$j++){
 	   		echo "<tr>";
@@ -164,6 +170,7 @@ class reportClass{
    			$sql->execute();
    		} catch (Exception $e){
    			//echo "Could not execute query.";
+   			$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
    		}
    		return $sql->rowCount();
    	}
@@ -201,8 +208,12 @@ class reportClass{
 		$this->pdo->dbConn();
 		$sql = $this->pdo->prepare("SELECT report_query FROM ".$this->pdo->getDatabase().".report WHERE report_id=$report_id");
 		$sql->execute();
-		$row=$sql->fetch();
-		return $row[0];
+		try{
+			$row=$sql->fetch();
+			return $row[0];
+		} catch (Exception $e){
+			$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
+		}		
 	}
 	
 	
@@ -252,15 +263,20 @@ class reportClass{
 	public function findParam($report_id){
 		//search for input parameters related with this report
 		$sql = $this->pdo->prepare("SELECT * FROM ".$this->pdo->getDatabase().".param WHERE param_report=$report_id");
-		$sql->execute();
-		unset($this->params);
-		unset($this->datatypes);
-		unset($this->refs);
-		for($i=0;$row=$sql->fetch();$i++){
-			$this->params[] = $row['param_name'];
-			$this->datatypes[$row['param_name']] = $row['param_datatype'];
-			$this->refs[$row['param_name']] = $row['param_reference'];
+		try{
+			$sql->execute();
+			unset($this->params);
+			unset($this->datatypes);
+			unset($this->refs);
+			for($i=0;$row=$sql->fetch();$i++){
+				$this->params[] = $row['param_name'];
+				$this->datatypes[$row['param_name']] = $row['param_datatype'];
+				$this->refs[$row['param_name']] = $row['param_reference'];
+			}
+		} catch (Exception $e){
+			$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
 		}
+		
 	}
 	
 	

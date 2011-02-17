@@ -69,7 +69,7 @@ require_once ("treeClass.php");
 require_once ("configClass.php");
 
 //call database class (handle connections)
-$db = new dbConnection(); $db->dbConn();
+$db = new dbConnection();
 $engine = $db->getEngine();
 //call other classes
 $display = new dispClass();

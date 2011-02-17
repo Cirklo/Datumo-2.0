@@ -1,17 +1,38 @@
 <?php
-header("Content-type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; filename='export-to-excel.xls'");
+header("Content-type: application/vnd.ms-excel;");
+header("Content-Disposition: attachment; filename='export-to-excel.xls'; ");
+
+require_once "errorClass.php";
+//call class to handle errors
+$error=new errorClass();
+
+if(isset($_GET['oper'])){
+	$buffer = $_POST['csvBuffer'];
+	try{
+	    echo $buffer;
+	} catch (Exception $e){
+		//error report
+		$error->errorDisplay("Excel export through jqgrid",$objName,$e->getMessage());
+	}
+	exit();
+}
 
 //http variables
 if(isset($_GET['table'])){	
+	//get url variable
 	$table = $_GET['table'];
+	//redirect to specific method
 	fromTable($table);
 }
 
 if(isset($_GET['report'])){	
+	//get url variable
 	$report = $_GET['report'];
+	//redirect to specific method
 	fromReport($report);
 }
+
+
 
 /**
 *Method to export data directly from a table to excel
@@ -29,7 +50,7 @@ function fromTable($table){
 	$user_id=startSession();
 	
 	//call database class
-	$db = new dbConnection();$db->dbConn();
+	$db = new dbConnection();
 	//call other classes
 	$display = new dispClass();
 	

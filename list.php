@@ -32,7 +32,7 @@ if(isset($_GET['page'])) { //page to be shown
 }
 
 //call database class (handle connections)
-$db = new dbConnection(); $db->dbConn();
+$db = new dbConnection();
 $engine = $db->getEngine();
 //call other classes
 $display = new dispClass();

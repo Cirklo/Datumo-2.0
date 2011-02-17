@@ -31,22 +31,19 @@ require_once "resClass.php";
 
 if(isset($_GET['type'])){	$type=$_GET['type'];}
 
-echo "<body onload=\$(document).createGrid({display:'$type'});>";
-echo "<table id=list></table>";
-echo "<div id=pager></div>"; 
-
 //call database class
 $conn=new dbConnection();
 $res=new restrictClass();
-$conn->dbConn();
 $database=$conn->getDatabase();//set database name
+
+echo "<body onload=\$(document).createGrid({display:'$type'});>";
+echo "<table id=list></table>";
+echo "<div id=pager></div>"; 
+echo "<br>";
 
 //get user info
 $res->userInfo($user_id);
 if($res->getUserLevel()!=2){
-	//button to submit order
-	echo "<input type=button id=submit value='Submit basket' name=$type>";
-	
 	echo "<div id=accountContainer class=account>";
 	echo "<table>";
 	echo "<tr><td>Select an account to proceed</td></tr>";
@@ -57,14 +54,18 @@ if($res->getUserLevel()!=2){
 	echo "<select name=accountList id=accountList>";
 	echo "<option id=0 selected>-----------------</option>";
 	for($i=0;$row=$sql->fetch();$i++){
-		echo "<option id=$row[0]>$row[1]</option>";
+		echo "<option id=$row[0] title='$row[2]'>$row[1]</option>";
 	}
 	echo "</select>";
-	echo "</td></tr>";
+	echo "</td>";
+	//button to submit order
+	echo "<td><input type=button id=submit value='Submit basket' name=$type></td>";
+	echo "</tr>";
 	echo "</table>";
 	echo "<br>";
 	echo "<div id=accountDetails></div>";
 	echo "</div>";
+	
 }
 
 
@@ -72,3 +73,6 @@ if($res->getUserLevel()!=2){
 echo "</body>";
 echo "</html>";
 ?>
+<form method="post" action="csvExport.php">
+    <input type="hidden" name="csvBuffer" id="csvBuffer" value="" />
+</form>

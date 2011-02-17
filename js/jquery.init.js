@@ -111,13 +111,13 @@ $(document).ready(function() {
 	 * @abstract Method called on anchor/button click event. Acts like a show/hide method. Only one div can be visible
 	 */
 	
-	$("table").find("div").hide().end().find("a:not(.exp),input:button").click(function() {
+	$("table").find("div:not(div[lang=exp])").hide().end().find("a:not(.exp),input:button").click(function() {
 		$(this).next().slideToggle(function(){
-			$("div").not("#"+this.id+",div[lang=tiptip], .alertClass").slideUp('slow');
+			$("div").not("#"+this.id+",div[lang=tiptip], div[lang=exp], .alertClass").slideUp('slow');
 			
 		});
 	});
-
+	
 	
 	/**
 	 * @author João Lagarto / Nuno Moreno

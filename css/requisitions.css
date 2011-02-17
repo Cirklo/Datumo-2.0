@@ -1,18 +1,9 @@
 div.account{
-	background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0.12, rgb(199,199,199)),
-    color-stop(0.5, rgb(156,156,156)),
-    color-stop(0.87, rgb(199,199,199))
-);
-	background-image: -moz-linear-gradient(
-    center bottom,
-    rgb(199,199,199) 12%,
-    rgb(156,156,156) 50%,
-    rgb(199,199,199) 87%
-);
+	background-color:#CCC;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	border:1px double;
+	border-color:#AAA;
 	padding:5px;
 	font-family:Verdana, Geneva, sans-serif; 
 	font-size:12px; 

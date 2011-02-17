@@ -36,7 +36,7 @@ require_once("queryClass.php");
 require_once("reportClass.php");
 
 //call database class (handle connections)
-$db = new dbConnection(); $db->dbConn();
+$db = new dbConnection();
 //call other classes
 $report = new reportClass();
 

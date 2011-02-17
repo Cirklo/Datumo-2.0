@@ -8,6 +8,7 @@
  * @abstract Class to handle reports
  */
 
+require_once "errorClass.php";
 
 class treeClass{
 	private $pdo;
@@ -23,6 +24,7 @@ class treeClass{
     	$this->pdo = new dbConnection();
     	$this->query = new queryClass();
     	$this->perm = new restrictClass();
+    	$this->error = new errorClass();
     }
 	
     public function setTreeviewName($arg){	$this->name=$arg;}
@@ -98,11 +100,16 @@ class treeClass{
 		$this->query->engineHandler($this->pdo->getEngine());
 		//query number 1 -> necessary in order to select specific query from vault
 		$sql = $this->pdo->prepare($this->query->getSQL(8)); 
-		$sql->execute();	
-		$row = $sql->fetch();
-		//return search path to main database
-		$this->pdo->dbConn();
-		return $row[0];	
+		try{
+			$sql->execute();	
+			$row = $sql->fetch();
+			//return search path to main database
+			$this->pdo->dbConn();
+			return $row[0];	
+		} catch(Exception $e){
+			$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
+		}
+		
     }
     
 /**
@@ -114,16 +121,20 @@ class treeClass{
     	//set search path to main database
     	$this->pdo->dbConn();
     	$sql = $this->pdo->prepare("SELECT treeview_id, treeview_name, treeview_description FROM ".$this->pdo->getDatabase().".treeview WHERE treeview_id IN (SELECT restree_name FROM ".$this->pdo->getDatabase().".restree WHERE restree_user=$user_id)");
-    	$sql->execute();
-    	echo "<table>";
-    	if($sql->rowCount()==0){
-    		echo "<tr><td>No treeview reports available!</td></tr>";
-    	}else{
-    		for($i=0;$row=$sql->fetch();$i++){
-    			echo "<tr><td>".($i+1).".</td><td><a href='treeview.php?tree=$row[0]' title='$row[2]'>$row[1]</a> - $row[2]</td></tr>";
-    		}	
+    	try{
+	    	$sql->execute();
+	    	echo "<table>";
+	    	if($sql->rowCount()==0){
+	    		echo "<tr><td>No treeview reports available!</td></tr>";
+	    	}else{
+	    		for($i=0;$row=$sql->fetch();$i++){
+	    			echo "<tr><td>".($i+1).".</td><td><a href='treeview.php?tree=$row[0]' title='$row[2]'>$row[1]</a> - $row[2]</td></tr>";
+	    		}	
+	    	}
+	    	echo "</table>";
+    	} catch (Exception $e){
+    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
     	}
-    	echo "</table>";
     	
     	
     }
@@ -137,10 +148,14 @@ class treeClass{
     	//set search path to main database
     	$this->pdo->dbConn();
     	$sql = $this->pdo->prepare("SELECT treeview_id, treeview_name, treeview_description FROM ".$this->pdo->getDatabase().".treeview WHERE treeview_id=$treeview_id");
-    	$sql->execute();
-    	$row = $sql->fetch();
-    	$this->setTreeviewName($row[1]);
-    	$this->setTreeviewDescription($row[2]);
+    	try{
+    		$sql->execute();
+	    	$row = $sql->fetch();
+	    	$this->setTreeviewName($row[1]);
+	    	$this->setTreeviewDescription($row[2]);
+    	} catch (Exception $e){
+    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
+    	}
     }
     
 /**
@@ -152,13 +167,18 @@ class treeClass{
     	//set search path to main database
     	$this->pdo->dbConn();
     	$sql = $this->pdo->prepare("SELECT restree_access FROM ".$this->pdo->getDatabase().".restree WHERE restree_name=$treeview_id AND restree_user=$user_id");
-    	$sql->execute();
-    	$row=$sql->fetch();
-    	//get this user permissions
-    	$this->perm->genRestrictions($row[0]);
-    	$this->setAdd($this->perm->getInsert());
-    	$this->setUpdate($this->perm->getUpdate());
-    	$this->setDelete($this->perm->getDelete());
+    	try{
+    		$sql->execute();
+			$row=$sql->fetch();
+	    	//get this user permissions
+	    	$this->perm->genRestrictions($row[0]);
+	    	$this->setAdd($this->perm->getInsert());
+	    	$this->setUpdate($this->perm->getUpdate());
+	    	$this->setDelete($this->perm->getDelete());
+       	} catch (Exception $e){
+    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
+    	}
+    	
     	    	
     }
     
@@ -182,7 +202,11 @@ class treeClass{
     	$this->pdo->dbConn();
     	$sql=$this->pdo->prepare("UPDATE $table[2] SET $query WHERE $index=$fkv AND ".$table[2]."_id IN ($arr)");
     	//echo $sql->queryString;
-    	$sql->execute();
+    	try {
+    		$sql->execute();
+    	} catch (Exception $e){
+    		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());
+    	}
     }
     
     public function delete($treeview_id){

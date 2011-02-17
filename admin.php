@@ -45,7 +45,8 @@ require_once ("configClass.php");
 //require_once ("msgClass.php");
 
 //call database class (handle connections)
-$db = new dbConnection(); $db->dbConn();
+$db = new dbConnection(); 
+
 //other classes
 $admin = new restrictClass();
 $display = new dispClass();
@@ -156,7 +157,6 @@ $arr = array();
 $arr = $report->dynamicReports($user_id);
 echo "</td>";
 echo "</tr></table>";
-
 //hidden content -> script to display message list if it comes from the refresh button
 //if(isset($_GET['nmsg'])) echo "<script type='text/javascript'>showhide('readMsg');</script>";
 

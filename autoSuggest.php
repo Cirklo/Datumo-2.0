@@ -9,6 +9,7 @@ $conn = new dbConnection(); $conn->dbConn();
 $query = new queryClass();
 $engine = $conn->getEngine();
 $database = $conn->getDatabase();
+//change search path to information schema
 $conn->dbInfo();
 
 	
@@ -30,6 +31,7 @@ $sql = $conn->prepare($query->getSQL(3));
 $sql->execute();
 $row = $sql->fetch();
 $table=$row[0];
+
 //hack for mysql (Dynamic reports)
 if($table==""){
 	$sql = $conn->prepare("SELECT table_name FROM columns WHERE column_name='$field' AND table_schema='$database'");

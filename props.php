@@ -13,7 +13,7 @@ if(isset($_GET['type'])){	$type=$_GET['type'];}
 if(isset($_GET['state'])){	$state=$_GET['state'];}
 
 //call classes
-$conn = new dbConnection(); $conn->dbConn();
+$conn = new dbConnection();
 $display = new dispClass();
 $database = $conn->getDatabase();
 

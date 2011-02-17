@@ -97,7 +97,6 @@ function addToBasket($user_id){
 function checkKey(){
 	//call database class
 	$conn=new dbConnection();
-	$conn->dbConn();
 	$database=$conn->getDatabase();
 	
 	//get url variables
@@ -119,7 +118,6 @@ function checkKey(){
 function basketRows($type,$user_id){
 	//call database class
 	$conn=new dbConnection();
-	$conn->dbConn(); //set search path to main database  
 	$sql=$conn->prepare("SELECT COUNT(*) FROM ".$conn->getDatabase().".request WHERE request_basket IN (SELECT basket_id FROM ".$conn->getDatabase().".basket WHERE basket_state=0 AND basket_user IN (SELECT user_dep FROM ".$conn->getDatabase().".user WHERE user_id=$user_id) and basket_type=$type)");
 	$sql->execute();
 	$row=$sql->fetch();
@@ -134,7 +132,6 @@ function basketRows($type,$user_id){
 function accountDetails($user_id){
 	//call database class
 	$conn=new dbConnection();
-	$conn->dbConn(); //set search path to main database  
 	$database=$conn->getDatabase();
 	//URL variables
 	if(isset($_GET['id']))	$account=$_GET['id'];
@@ -156,7 +153,6 @@ function submitBasket($user_id){
 	require_once "requisitionsClass.php";
 	//call database class
 	$conn=new dbConnection();
-	$conn->dbConn(); //set search path to main database  
 	$database=$conn->getDatabase();
 	//other classes
 	$req=new reqClass();
@@ -165,7 +161,14 @@ function submitBasket($user_id){
 	if(isset($_GET['val']))		$arr=$_GET['val'];
 	if(isset($_GET['stype']))	$type=$_GET['stype'];
 	if(isset($_GET['account']))	$account=$_GET['account'];
+	if(isset($_GET['ammount']))	$total=$_GET['ammount'];
 	
+	//call function to check if there is money left in the account
+	$valid_account=checkBudget($account, $total);
+	if(!$valid_account){
+		echo "Not enough money on this account to proceed with the request!";
+		exit();
+	}
 	//get current basket_id
 	$basket_id=$req->actBasket($type, $user_id);
 	//update this basket	
@@ -184,7 +187,12 @@ function submitBasket($user_id){
 	$clause=substr($clause,0,strlen($clause)-1);
 	//add the remaining request to the recently created basket
 	$sql=$conn->prepare("UPDATE request SET request_basket=$newBasket WHERE request_id NOT IN ($clause) AND request_basket=$basket_id");
-	$sql->execute();
+	try{
+		$sql->execute();
+		echo "Basket successfully submitted!";
+	} catch(Exception $e){
+		echo "Basket not submitted. Please contact the administrator for details";
+	}
 	//echo $sql->queryString;
 }
 
@@ -242,7 +250,6 @@ function statePermission($user_id){
 function userStatePermission($user_id, $state){
 	//call classes
 	$conn=new dbConnection();
-	$conn->dbConn(); //set search path to main database
 	$database=$conn->getDatabase();
 	$sql=$conn->prepare("SELECT state_name FROM $database.state, $database.statepermission WHERE state_id=statepermission_state AND statepermission_user=$user_id AND state_name='$state' LIMIT 1");
 	$sql->execute();
@@ -255,7 +262,6 @@ function userStatePermission($user_id, $state){
 function changeState($user_id){
 	//call classes
 	$conn=new dbConnection();
-	$conn->dbConn(); //set search path to main database
 	$database=$conn->getDatabase();
 	
 	//URL variables
@@ -300,7 +306,6 @@ function userLevel($user_id){
 function accountPrepare($basket_id){
 	//call classes
 	$conn=new dbConnection();
-	$conn->dbConn(); //set search path to main database
 	$database=$conn->getDatabase();
 	
 	//get total basket value
@@ -325,12 +330,25 @@ function accountPrepare($basket_id){
 function updateAccount($budget,$basket_id){
 	//call classes
 	$conn=new dbConnection();
-	$conn->dbConn(); //set search path to main database
 	$database=$conn->getDatabase(); //write current database to a local variable
 	//update account budget
 	$sql=$conn->prepare("UPDATE account SET account_budget=account_budget-$budget WHERE account_id IN (SELECT basket_account FROM $database.basket WHERE basket_id=$basket_id)");
 	$sql->execute();
 }
 
+function checkBudget($account, $total){
+	//call classes
+	$conn=new dbConnection();
+	$database=$conn->getDatabase(); //write current database to a local variable
+	//update account budget
+	$sql=$conn->prepare("SELECT account_budget FROM account WHERE account_id=$account");
+	$sql->execute();
+	$row=$sql->fetch();
+	if($row[0]<$total){
+		return false;
+	} else {
+		return true;
+	}
+}
 
 ?>

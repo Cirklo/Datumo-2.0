@@ -387,7 +387,7 @@ class dispClass{
 				echo "<td class=cart nowrap=nowrap height=20px>";
 				echo "<a href=javascript:void(0) style='text-decoration:none' class=exp onclick=updQtt('sum',$i)>+</a>&nbsp;&nbsp;";
 				echo "<a href=javascript:void(0) style='text-decoration:none' class=exp onclick=updQtt('sub',$i)>-</a>&nbsp;&nbsp;";
-				echo "<input type=text class=reg id=quantity_$i name=quantity_$i value=1 size=1>&nbsp;&nbsp;";
+				echo "<input type=text id=quantity_$i name=quantity_$i value=1 size=1>&nbsp;&nbsp;";
 				echo "<a href=javascript:void(0) onclick=\$(document).addToCart({table:'$objName',row:'$i'})><img src=pics/store.png border=0 width=16px height=16px></a>";
 				echo "</td>";
 			} else {
@@ -408,7 +408,7 @@ class dispClass{
 				if($this->FKtable[$j] and $j!=0){
 					//get foreign key values
 					$this->getFKvalue($row[$j],$j);
-					echo "<td nowrap=nowrap valign=top><input type=text class=fk id=".$this->fullheader[$j]." name=".$this->fullheader[$j]." value='".$this->FKvalue."' lang=__fk onchange=selectRow('$i') $readonly>";
+					echo "<td nowrap=nowrap valign=top class=results><input type=text class=fk id=".$this->fullheader[$j]." name=".$this->fullheader[$j]." value='".$this->FKvalue."' lang=__fk onchange=selectRow('$i') $readonly>";
 					//div that enclosures this FK details
 					echo "<a href=javascript:void(0) title='Click for details' onclick=getdetails('details_".$this->fullheader[$j].$i."','".$this->FKtable[$j]."','$row[$j]')><img src=pics/details.gif border=0></a>";
 					echo "<div id='details_".$this->fullheader[$j].$i."' class=details>";
@@ -416,9 +416,9 @@ class dispClass{
 					echo "</td>";
 				} else { 
 					if($this->datatype[$this->fullheader[$j]]=="text")
-						echo "<td valign=top><textarea rows=10 cols=50 class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j].">".strip_tags($row[$j])."</textarea></td>";
+						echo "<td valign=top class=results><textarea rows=10 cols=50 class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j].">".strip_tags($row[$j])."</textarea></td>";
 					else
-						echo "<td valign=top><input type=text class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j]."  value='$row[$j]' onchange=selectRow('$i') $size $readonly lang='".$this->datatype[$this->fullheader[$j]]."' alt='".$this->null[$this->fullheader[$i]]."'";
+						echo "<td valign=top class=results><input type=text class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j]."  value='$row[$j]' onchange=selectRow('$i') $size $readonly lang='".$this->datatype[$this->fullheader[$j]]."' alt='".$this->null[$this->fullheader[$i]]."'";
 					//set field to open link in a new window if it starts with http://
 					if(substr($row[$j],0,7)=="http://")
 						echo " ondblclick=window.open('".$row[$j]."')";
@@ -511,15 +511,15 @@ class dispClass{
 					$this->getFKvalue($this->default[$this->fullheader[$i]], $i);
 					$val = $this->FKvalue;
 				} else $val="";
-				echo "<td nowrap=nowrap valign=top><input type=text class=fk id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' lang=__fk >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+				echo "<td nowrap=nowrap valign=top class=results><input type=text class=fk id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' lang=__fk >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
 			} else { // no foreign key
 				if($i!=0){
 					$val = $this->default[$this->fullheader[$i]];
 				}
 				if($this->datatype[$this->fullheader[$i]]=="text")
-					echo "<td valign=top><textarea rows=10 cols=50 class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i].">".strip_tags($val)."</textarea></td>";
+					echo "<td valign=top class=results><textarea rows=10 cols=50 class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i].">".strip_tags($val)."</textarea></td>";
 				else
-					echo "<td valign=top><input type=text class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' $size $readonly lang='".$this->datatype[$this->fullheader[$i]]."' alt='".$this->null[$this->fullheader[$i]]."'";
+					echo "<td valign=top class=results><input type=text class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' $size $readonly lang='".$this->datatype[$this->fullheader[$i]]."' alt='".$this->null[$this->fullheader[$i]]."'";
 				if($this->datatype[$this->fullheader[$i]]=="date" or $this->datatype[$this->fullheader[$i]]=="datetime")
 					echo " onfocus=showCalendarControl(this) readonly=readonly";
 				if($this->datatype[$this->fullheader[$i]]!="text") echo "></td>";	

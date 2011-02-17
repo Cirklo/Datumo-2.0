@@ -1,7 +1,4 @@
 <?php
-
-
-?><?php
 require_once("session.php");
 $user_id = startSession();
 ?>
@@ -50,7 +47,7 @@ require_once ("configClass.php");
 require_once ("requisitionsClass.php");
 
 //call database class (handle connections)
-$db = new dbConnection(); $db->dbConn();
+$db = new dbConnection();
 $engine = $db->getEngine();
 //call other classes
 $display = new dispClass();

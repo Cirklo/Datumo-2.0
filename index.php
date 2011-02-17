@@ -14,7 +14,7 @@
 require_once (".htconnect.php");
 
 //call database class
-$db = new dbConnection(); $db->dbConn();
+$db = new dbConnection();
 
 //title the page
 echo "<title>Datumo 2.0 :: Open Source Database Management</title>";

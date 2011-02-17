@@ -4,6 +4,7 @@
 require_once ".htconnect.php"; 
 require_once "session.php";
 require_once "functions.php";
+require_once "resClass.php";
 $user_id = startSession();
 // to the url parameter are added 4 parameters as described in colModel
 // we should get these parameters to construct the needed query
@@ -34,11 +35,12 @@ if(!$sidx) $sidx=1;
 
 //call database class and connect to database
 $conn = new dbConnection();
-$conn->dbConn();
 $database = $conn->getDatabase();
+$perm=new restrictClass();
 
 //enter in this clause if type and state are sent through the URL
 if(isset($type) and isset($state)){
+	
 	//get specific query from this type
 	$sql = $conn->prepare("SELECT type_query FROM $database.type WHERE type_name='$type'");
 	$sql->execute();
@@ -51,7 +53,10 @@ if(isset($type) and isset($state)){
 		$id=$_GET['id'];
 		$resquery.=" AND request_basket=$id ";
 	} else {
-		$resquery.=" AND request_basket IN (SELECT basket_id FROM $database.basket WHERE basket_user IN (SELECT user_dep FROM $database.user WHERE user_id=$user_id))";
+		$having=$perm->restrictAttribute($user_id, "basket");
+		if($having!=""){
+			$resquery.=" AND request_basket IN (SELECT basket_id FROM $database.basket WHERE $having)";
+		}
 	}
 	$glue="UNION";
 	$query=splitString($query, $glue, $resquery);
@@ -60,7 +65,9 @@ if(isset($type) and isset($state)){
 //enter in this clause if only state is sent through http
 if(isset($state) and !isset($type)){
 	//build specific query to display the basket list
-	$query = "SELECT basket_id, department_name, basket_sap, account_number, basket_submit_date, basket_order_date, basket_delivery_date, type_name, basket_obs FROM $database.basket, $database.type, $database.department, $database.account WHERE basket_type=type_id AND basket_user=department_id AND basket_account=account_id AND basket_user IN (SELECT user_dep FROM $database.user WHERE user_id=$user_id) AND basket_state IN (SELECT state_id FROM $database.state WHERE state_name='$state')";	
+	$having=$perm->restrictAttribute($user_id, "basket");
+	if($having!="")$having =" AND ".$having;
+	$query = "SELECT basket_id, department_name, basket_sap, account_number, basket_submit_date, basket_order_date, basket_delivery_date, type_name, basket_obs FROM $database.basket, $database.type, $database.department, $database.account WHERE basket_type=type_id AND basket_user=department_id AND basket_account=account_id AND basket_state IN (SELECT state_id FROM $database.state WHERE state_name='$state') $having";	
 }
 // the actual query for the grid data 
 $sql=$conn->prepare($query); 

@@ -20,9 +20,6 @@ if(isset($_GET['to'])){ 		$userto = $_GET['to'];}
 if(isset($_GET['subject'])){ 	$subject = $_GET['subject'];}
 if(isset($_GET['msg'])){ 		$msg = $_GET['msg'];}
 
-
-//set search path to main database
-$conn->dbConn();
 if($user_id!=$userto){
 	//figure out what is the destination user_id
 	$sql = $conn->prepare("SELECT user_id FROM $database.user WHERE user_login='$userto'");
