@@ -10,6 +10,7 @@
  */
 
 require_once(".htconnect.php");
+require_once "resClass.php";
 
 class reqClass{
 	private $pdo;
@@ -19,6 +20,7 @@ class reqClass{
 	
 	public function __construct(){
 		$this->pdo = new dbConnection();
+		$this->perm = new restrictClass();
 	}
 	
 	//sets and gets
@@ -38,7 +40,7 @@ class reqClass{
 		//set search path to main database
 		$this->pdo->dbConn();
 		//How many basket types are there?
-		$this->basketType();
+		$this->basketType($user_id);
 		for($i=0;$i<sizeof($this->type);$i++){
 			$sql = $this->pdo->prepare("SELECT 1 FROM ".$this->pdo->getDatabase().".basket WHERE basket_type IN (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='".$this->type[$i]."') AND basket_state IN (SELECT state_id FROM ".$this->pdo->getDatabase().".state WHERE state_name='Active') AND basket_user IN (SELECT user_dep FROM ".$this->pdo->getDatabase().".user WHERE user_id=$user_id)");
 			$sql->execute();
@@ -58,10 +60,14 @@ class reqClass{
 	 * Query the database for basket types
 	 */
 	
-	public function basketType(){
+	public function basketType($user_id){
+		//initialize variable to store restrictions
+		$having="";
 		//set search path to main database
 		$this->pdo->dbConn();
-		$sql = $this->pdo->prepare("SELECT * FROM ".$this->pdo->getDatabase().".type WHERE type_id<>0 ORDER BY type_id"); //Excluding undefined
+		$having=$this->perm->restrictAttribute($user_id, "type");
+		if($having!="")$having=" AND $having";
+		$sql = $this->pdo->prepare("SELECT * FROM ".$this->pdo->getDatabase().".type WHERE type_id<>0 $having ORDER BY type_id"); //Excluding undefined
 		$sql->execute();
 		for($i=0;$row=$sql->fetch();$i++){
 			$this->type[]=$row[1];

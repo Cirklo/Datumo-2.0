@@ -345,9 +345,9 @@ function checkBudget($account, $total){
 	$sql->execute();
 	$row=$sql->fetch();
 	if($row[0]<$total){
-		return false;
-	} else {
 		return true;
+	} else {
+		return false;
 	}
 }
 

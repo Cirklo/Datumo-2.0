@@ -80,8 +80,8 @@ $(document).ready(function(){
 			                caption: title,						//table title
 			                height: height,						//default height
 			                width:width,						//default width	
-			                toolbar: [true,"top"],				//set top toolbar
-			                toolbar: [true,"bottom"],			//set bottom toolbar 
+			                toolbar: [true,"both"],				//set top (t_list) and bottom (tb_list) toolbars
+			               // toolbar: [true,"bottom"],			//set bottom toolbar 
 			                grouping: colGroup, 
 			              /*  loadComplete: function(){
 			                	$("#t_list").css("text-align","right").html("Totals Amount (EUR): ");
@@ -109,7 +109,7 @@ $(document).ready(function(){
 			        		        	var data = jQuery("#list").jqGrid('getCell',arr[i],"request_total");
 			        		        	total=Number(data)+Number(total);
 			        			 }
-			        			 $("#t_list").css("text-align","right").html("Totals Amount (EUR): "+total+"&nbsp;&nbsp;&nbsp;");
+			        			 $("#tb_list").css("text-align","right").html("Totals Amount (EUR): "+total+"&nbsp;&nbsp;&nbsp;");
 			                },
 			                editurl:"server.php?table="+objName
 			                
@@ -130,7 +130,15 @@ $(document).ready(function(){
 			                    	 exportExcel("#list");
 			                     }
 			              });
-			              
+			              // add custom button to print data
+			              jQuery("#list").jqGrid('navButtonAdd','#pager',{
+			                     caption:"Print", 
+			                     onClickButton: function () {
+			                    	 $("#list").printElement({
+			                    		 pageTitle: title
+			                    	 });
+			                     }
+			              });
 			              /*
 			               * adds a toolbar button in order to handle basket state progression
 			               * 
@@ -142,7 +150,7 @@ $(document).ready(function(){
 			               * one can restrict through power/key users table
 			               * Which are the active states?
 			               * In which state should we insert the sap number?
-			               */
+			               ********************************************/
 			              if(dstate!="Active"){
 			            	  	url="requisitions.php";
 					            //ajax request
@@ -272,7 +280,7 @@ $(document).ready(function(){
 			                		display:data,
 			                		state: state,
 			                		height:150,
-			                		caption: "Basket details ID: "+ids
+			                		caption: "Basket details ID: "+ids+" - "+jQuery("#list_0").jqGrid('getCell',ids,"department_name")
 			                	});
 			                	
 			                }           

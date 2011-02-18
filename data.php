@@ -53,9 +53,17 @@ if(isset($type) and isset($state)){
 		$id=$_GET['id'];
 		$resquery.=" AND request_basket=$id ";
 	} else {
+		//the basket still does not have an account
 		$having=$perm->restrictAttribute($user_id, "basket");
 		if($having!=""){
 			$resquery.=" AND request_basket IN (SELECT basket_id FROM $database.basket WHERE $having)";
+			$active_having = "request_basket IN (SELECT basket_id FROM $database.basket WHERE $having)";
+		}
+		if($state!="Active") { //account had already been chosen
+			$having=$perm->restrictAttribute($user_id, "account");
+			if($having!=""){
+				$resquery.=" AND (request_basket IN (SELECT basket_id FROM $database.basket WHERE basket_account IN (SELECT account_id FROM account WHERE $having)) OR $active_having)";
+			}
 		}
 	}
 	$glue="UNION";
@@ -65,9 +73,13 @@ if(isset($type) and isset($state)){
 //enter in this clause if only state is sent through http
 if(isset($state) and !isset($type)){
 	//build specific query to display the basket list
-	$having=$perm->restrictAttribute($user_id, "basket");
-	if($having!="")$having =" AND ".$having;
-	$query = "SELECT basket_id, department_name, basket_sap, account_number, basket_submit_date, basket_order_date, basket_delivery_date, type_name, basket_obs FROM $database.basket, $database.type, $database.department, $database.account WHERE basket_type=type_id AND basket_user=department_id AND basket_account=account_id AND basket_state IN (SELECT state_id FROM $database.state WHERE state_name='$state') $having";	
+	$active_having=$perm->restrictAttribute($user_id, "basket");
+	if($active_having!="")$resquery=" AND $active_having";	
+	if($state!="Active"){ //basket has already an account
+		$having=$perm->restrictAttribute($user_id, "account");
+		if($having!="")$resquery =" AND (basket_account IN (SELECT account_id FROM account WHERE $having) OR $active_having)";
+	}
+	$query = "SELECT basket_id, department_name, basket_sap, account_number, basket_submit_date, basket_order_date, basket_delivery_date, type_name, basket_obs FROM $database.basket, $database.type, $database.department, $database.account WHERE basket_type=type_id AND basket_user=department_id AND basket_account=account_id AND basket_state IN (SELECT state_id FROM $database.state WHERE state_name='$state') $resquery";	
 }
 // the actual query for the grid data 
 $sql=$conn->prepare($query); 

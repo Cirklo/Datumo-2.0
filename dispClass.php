@@ -391,7 +391,8 @@ class dispClass{
 				echo "<a href=javascript:void(0) onclick=\$(document).addToCart({table:'$objName',row:'$i'})><img src=pics/store.png border=0 width=16px height=16px></a>";
 				echo "</td>";
 			} else {
-				if($r)echo "<td></td>";
+				echo "<td></td>";
+				
 			}
 			//check if there is any permission for this table and user
 			//does this user have permissions to update or delete this table? if so apply checkboxes. If not, set fields as readonly
@@ -401,9 +402,11 @@ class dispClass{
 				$size = $this->writeProperties($j);
 				//first cell cannot be changed as it is a primary key
 				if($r){
-					if($j==0) {$readonly=" disabled ";}
+					if($j==0) {$readonly=" readonly ";}
 					else {$readonly="";}
-				} else {$readonly=" disabled ";}
+				} else {
+					$readonly=" readonly ";
+				}
 				//is it a foreign key?
 				if($this->FKtable[$j] and $j!=0){
 					//get foreign key values
@@ -563,10 +566,9 @@ class dispClass{
  */	
 
 	
-	public function maxRows($objName, $filter){
-		$where="";
+	public function maxRows($objName, $filter, $user_id){
+		$where=" WHERE ";
 		if(sizeof($this->vars) !=0){
-			$where = " WHERE ";
 			if(!$filter){
 				foreach($this->vars as $key=>$value){
 					switch ($this->datatype[$key]){//search for attribute type
@@ -589,7 +591,12 @@ class dispClass{
 			}
 			
 		}
-		if(sizeof($this->vars)!=0) $where = substr($where,0,strlen($where)-4);
+		//check for restraining clauses
+		$having = $this->perm->restrictAttribute($user_id, $objName);
+		if($having!="")	$where.=$having." AND";
+		//remove last 'AND ' from query
+		if(sizeof($this->vars)!=0 or $having!="") $where = substr($where,0,strlen($where)-4);
+		else $where = "";
 		//set search path to main database
 		$sql = $this->pdo->prepare("SELECT COUNT(".$objName."_id) FROM ".$this->pdo->getDatabase().".$objName $where");
 		//echo $sql->queryString;

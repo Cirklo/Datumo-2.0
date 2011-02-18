@@ -16,7 +16,7 @@ $user_id=startSession();
 <script type="text/javascript" src="js/jquery.basket.js"></script>
 <script type="text/javascript" src="js/jquery.tipTip.js"></script>
 <script type="text/javascript" src="js/ajax.js"></script>
-
+<script type="text/javascript" src="js/jquery.print.js"></script>
 <script type="text/javascript">
 //initialize tiptip plugin
 $(document).ready(function(){

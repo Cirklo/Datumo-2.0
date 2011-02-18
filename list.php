@@ -49,7 +49,7 @@ $numRows = $display->FKlist($table,$offset,$user_id);
 echo "</table>";
 //if there is no restriction we have to get the number of records in the table
 if($numRows == 0){
-	$numRows = $display->maxRows($table, $filter);	
+	$numRows = $display->maxRows($table, $filter, $user_id);	
 }
 
 //get the last page according to the number of rows displayed in the page

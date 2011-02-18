@@ -198,7 +198,7 @@ if(!isset($report)){
 	} else {
 		$display->queryBuilder($user_id, $table, $nrows, $filter, $offset,$order, $colOrder);
 		//get the number of rows in the table
-		$numRows = $display->maxRows($table, $filter);
+		$numRows = $display->maxRows($table, $filter, $user_id);
 	}
 }	
 //get the last page according to the number of rows displayed in the page
