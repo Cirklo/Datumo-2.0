@@ -73,6 +73,7 @@ if(isset($type) and isset($state)){
 //enter in this clause if only state is sent through http
 if(isset($state) and !isset($type)){
 	//build specific query to display the basket list
+	$resquery="";
 	$active_having=$perm->restrictAttribute($user_id, "basket");
 	if($active_having!="")$resquery=" AND $active_having";	
 	if($state!="Active"){ //basket has already an account

@@ -280,7 +280,7 @@ $(document).ready(function(){
 			                		display:data,
 			                		state: state,
 			                		height:150,
-			                		caption: "Basket details ID: "+ids+" - "+jQuery("#list_0").jqGrid('getCell',ids,"department_name")
+			                		caption: "ID: "+ids+" - "+jQuery("#list_0").jqGrid('getCell',ids,"department_name")
 			                	});
 			                	
 			                }           
