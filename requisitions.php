@@ -278,6 +278,7 @@ function changeState($user_id){
 				break;
 			case "Approved":	//update order_date
 				$attr="basket_order_date";
+				updateStock($basket_id);
 				break;
 			case "Ordered": 	//update order_date
 				$attr="basket_order_date";
@@ -288,7 +289,7 @@ function changeState($user_id){
 		$sql=$conn->prepare("UPDATE basket SET $attr=NOW() WHERE basket_id=$basket_id");
 		$sql->execute();
 	} catch (Exception $e){
-		//echo $e->getMessage();
+		echo $e->getMessage();
 		echo "Could not execute this operation";
 	}
 
@@ -349,6 +350,38 @@ function checkBudget($account, $total){
 	} else {
 		return false;
 	}
+}
+
+/**
+ * Specific method to update product stock from internal products 
+ * target table must have target_stock attribute
+ * 
+ */
+
+function updateStock($basket){
+	//call database class
+	$conn=new dbConnection();
+	//query for basket type
+	$sql=$conn->prepare("SELECT basket_type FROM basket WHERE basket_id=$basket");
+	$sql->execute();
+	$res=$sql->fetch();
+	//Which basket type is this?
+	if($res[0]==2) { //Internal basket
+		//query for all requests from this basket
+		$sql = $conn->prepare("SELECT request_id, request_number, request_origin, request_quantity FROM request WHERE request_basket=$basket");
+		$sql->execute();
+		//loop through all results
+		for($i=0;$row=$sql->fetch();$i++){
+			//update stock from origin table
+			$sql_upd=$conn->prepare("UPDATE $row[2] SET ".$row[2]."_stock=".$row[2]."_stock-$row[3] WHERE ".$row[2]."_id=$row[1]");
+			//echo $sql->queryString;
+			$sql_upd->execute();
+		}
+	} else {
+		return;
+	}
+	
+	
 }
 
 ?>

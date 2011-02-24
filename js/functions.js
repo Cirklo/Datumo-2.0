@@ -235,7 +235,7 @@ function multiAdd(objName){
 				case "double":
 				case "double precision":
 					for (var k = 0; k < CurForm[j].value.length; k++) {
-	                    if (iCharsREAL.indexOf(CurForm[i].value.charAt(k)) == -1) {
+	                    if (iCharsREAL.indexOf(CurForm[j].value.charAt(k)) == -1) {
 	                        CurForm[i].focus();
 	                        alert("Field " + CurForm[j].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
 	                        return;

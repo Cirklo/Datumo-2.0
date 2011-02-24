@@ -388,7 +388,7 @@ class dispClass{
 				echo "<a href=javascript:void(0) style='text-decoration:none' class=exp onclick=updQtt('sum',$i)>+</a>&nbsp;&nbsp;";
 				echo "<a href=javascript:void(0) style='text-decoration:none' class=exp onclick=updQtt('sub',$i)>-</a>&nbsp;&nbsp;";
 				echo "<input type=text id=quantity_$i name=quantity_$i value=1 size=1>&nbsp;&nbsp;";
-				echo "<a href=javascript:void(0) onclick=\$(document).addToCart({table:'$objName',row:'$i'})><img src=pics/store.png border=0 width=16px height=16px></a>";
+				echo "<a href=javascript:void(0) onclick=\$(document).addToCart({objName:'$objName',row:'$i'})><img src=pics/store.png border=0 width=16px height=16px></a>";
 				echo "</td>";
 			} else {
 				echo "<td></td>";
