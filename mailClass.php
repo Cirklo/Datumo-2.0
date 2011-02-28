@@ -1,6 +1,7 @@
 <?php
 
-require_once("mail/class.phpmailer.php");
+require_once "mail/class.phpmailer.php";
+require_once ".htconnect.php";
 
 class mailClass extends PHPMailer{
 	private $pdo;
@@ -41,8 +42,6 @@ class mailClass extends PHPMailer{
         	return "Mail successfully sent!";   
         }
 	}
-	
-	
 }
 
 

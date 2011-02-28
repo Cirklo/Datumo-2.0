@@ -13,7 +13,7 @@ $(document).ready(function(){
 			var defaults = {
 				display: "External",
 				state: "Active",
-				height:300,
+				height:"100%",
 				width:900,
 				id:"",
 				caption:""
@@ -96,13 +96,13 @@ $(document).ready(function(){
 			                	groupDataSorted : true 
 			                }, 
 			                onSelectRow: function(id){
-			                	if(edit_var){
+			                	/*if(edit_var){
 				                    if(id && id!==lastsel2){
 				                      jQuery('#list').restoreRow(lastsel2);
-				                      jQuery('#list').editRow(id,true,null,refreshGrid);
+				                      jQuery('#list').editRow(id,0,strue);
 				                        lastsel2=id;
 				                    }
-			                	}
+			                	}*/
 			                	var arr, total=0;
 			        			arr=jQuery("#list").jqGrid('getGridParam','selarrrow');
 			        			 for(var i=0;i<arr.length;i++){
@@ -117,9 +117,20 @@ $(document).ready(function(){
 			              //jQuery("#list").jqGrid('gridResize',{minWidth:600,maxWidth:1000,minHeight:250, maxHeight:500});
 			              jQuery("#list").navGrid('#pager',
 			                      {pdf:true, add: false, edit: edit_var, del: del_var, search: false}, //options
-			                      {width:600,reloadAfterSubmit:true,url:"server.php?table="+objName}, // edit options
+			                      {	  // edit options
+			                    	  width:600,
+			                    	  reloadAfterSubmit:true,	//refresh grid after submit changes
+			                    	  closeAfterEdit:true,		//close grid after submit changes
+			                    	  checkOnSubmit:true,		//check if any change was made
+			                    	  viewPagerButtons:false,	//hide page navigator
+			                    	  url:"server.php?table="+objName
+			                      }, 
 			                      {}, // add options
-			                      {reloadAfterSubmit:true,url:"server.php?table="+objName}, // del options
+			                      {		//delete options
+			                    	  reloadAfterSubmit:true,
+			                    	  msg: "You can delete only one item at a time. Proceed?",
+			                    	  url:"server.php?table="+objName
+			                      }, 
 			                      {} // search options
 			              );
 			             
@@ -251,7 +262,7 @@ $(document).ready(function(){
 			       {
 			            colN = result.colNames;
 			            colM = result.colModel;
-			            colG = result.grouping;
+			            colG = "type_name";
 			            if(colG==""){ colGroup=false; } 
 			            else{colGroup=true;} 
 			            $("#list_0").jqGrid({
@@ -268,10 +279,20 @@ $(document).ready(function(){
 			                sortorder: 'desc',					//attribute order (ASC or DESC)
 			                viewrecords: true,					
 			                caption: state+" baskets",			//table title
-			                height: 350,						//default height
+			                height: "100%",						//default height
 			                width:900,							//default width	
-			                toolbar: [true,"top"],				//set toolbar 
-			                //display basket details on row select
+			                toolbar: [true,"top"],				//set toolbar
+			                grouping: colG, 					//group by type
+				            groupingView : { 					//group settings
+				                groupField : [colG], 
+				                groupColumnShow : [true], 
+				                groupText : ['<b>{0}</b>'], 
+				                groupCollapse : false, 
+				                groupOrder: ['asc'], 
+				                groupSummary : [false], 
+				                groupDataSorted : true 
+				            }, //set toolbar 
+				            //display basket details on row select
 			                onSelectRow: function(ids) {		//call secondary grid on row select (selected row details)
 			                	$("#list").GridUnload();
 			                	var data = jQuery("#list_0").jqGrid('getCell',ids,"type_name");
@@ -279,11 +300,10 @@ $(document).ready(function(){
 			                		id:ids,
 			                		display:data,
 			                		state: state,
-			                		height:150,
-			                		caption: "ID: "+ids+" - "+jQuery("#list_0").jqGrid('getCell',ids,"department_name")
+			                		caption: "ID: "+ids+" - "+jQuery("#list_0").jqGrid('getCell',ids,"department_name")+" ("+ jQuery("#list_0").jqGrid('getCell',ids,"account_number")+")"
 			                	});
 			                	
-			                }           
+			                }
 			              });  
 			              jQuery("#list_0").navGrid('#pager_0',
 			                      {add: false, edit: edit_var, del: del_var, search: false}, //options

@@ -257,23 +257,35 @@ function multiAdd(objName){
 			
 			
 		}
+		//how am I going to use to protect the autosuggest tool?
+		//Two cycles don't seem to be a very good way to do this
+		var arrval=new Array;
 		for (var j=0;j<CurForm.length;j++){
 			if(CurForm[j].lang=='__fk'){
 				if(CurForm[j].alt==""){
+					//ajax request
 					url="ajax.php?val=" + CurForm[j].value + "&var=" + CurForm[j].id;
 				    var str = ajaxRequest(url);
-				    CurForm[j].value = str;	
 				    //if foreign key is null
-				    if(CurForm[j].value == ""){
+				    if(str == ""){
 				    	CurForm[j].focus();
 				    	alert("Field cannot be null! Please use the autocomplete tool");
 				    	return;
+				    } else {
+				    	arrval[CurForm[j].id]=str;	
 				    }
 				} else {
-					CurForm[j].value=CurForm[j].alt;
+					arrval[CurForm[j].id]=CurForm[j].alt;
 				}
 			}
 		}
+		//write to textbox Foreign key values
+		for (var j=0;j<CurForm.length;j++){
+			if(CurForm[j].lang=='__fk'){
+				CurForm[j].value=arrval[CurForm[j].id];
+			}
+		}
+		
 		url="manager.php?table="+objName+"&nrows=20&action=insert";
 		for (j=0;j<CurForm.length;j++) {CurForm[j].disabled=false;	}
 		CurForm.action = url;

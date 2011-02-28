@@ -58,6 +58,9 @@ if(isset($type) and isset($state)){
 		if($having!=""){
 			$resquery.=" AND request_basket IN (SELECT basket_id FROM $database.basket WHERE $having)";
 			$active_having = "request_basket IN (SELECT basket_id FROM $database.basket WHERE $having)";
+		} else { //no restrictions upon this user
+			$resquery.= " AND request_basket IN (SELECT basket_id FROM basket WHERE basket_user IN (SELECT user_dep FROM $database.user WHERE user_id=$user_id))";
+			$active_having=  "request_basket IN (SELECT basket_id FROM basket WHERE basket_user IN (SELECT user_dep FROM $database.user WHERE user_id=$user_id))";
 		}
 		if($state!="Active") { //account had already been chosen
 			$having=$perm->restrictAttribute($user_id, "account");

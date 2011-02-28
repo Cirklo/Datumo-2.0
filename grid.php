@@ -49,7 +49,11 @@ if($res->getUserLevel()!=2){
 	echo "<div id=accountContainer class=account>";
 	echo "<table>";
 	echo "<tr><td>Select an account to proceed</td></tr>";
-	$sql=$conn->prepare("SELECT account_id, account_number, account_project, account_budget FROM $database.account WHERE account_start<NOW() AND account_end>NOW() AND account_id<>0 AND account_dep IN (SELECT user_dep FROM $database.user WHERE user_id=$user_id) UNION SELECT account_id, account_number, account_project, account_budget FROM $database.account, $database.accountperm WHERE accountperm_account=account_id AND account_start<NOW() AND account_end>NOW() AND account_id<>0 AND accountperm_user=$user_id ORDER BY account_number");
+	if($res->getUserLevel()==0){ //Is this an administrator?
+		$sql=$conn->prepare("SELECT account_id, account_number, account_project, account_budget FROM $database.account WHERE account_start<NOW() AND account_end>NOW() AND account_id<>0 ORDER BY account_number");
+			} else { //is this a manager?
+		$sql=$conn->prepare("SELECT account_id, account_number, account_project, account_budget FROM $database.account WHERE account_start<NOW() AND account_end>NOW() AND account_id<>0 AND account_dep IN (SELECT user_dep FROM $database.user WHERE user_id=$user_id) UNION SELECT account_id, account_number, account_project, account_budget FROM $database.account, $database.accountperm WHERE accountperm_account=account_id AND account_start<NOW() AND account_end>NOW() AND account_id<>0 AND accountperm_user=$user_id ORDER BY account_number");
+	}	
 	$sql->execute();
 //	echo $sql->queryString;
 	echo "<tr><td>";

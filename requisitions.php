@@ -286,8 +286,10 @@ function changeState($user_id){
 				accountPrepare($basket_id);
 				break;
 		}
-		$sql=$conn->prepare("UPDATE basket SET $attr=NOW() WHERE basket_id=$basket_id");
-		$sql->execute();
+		if($newstate!="Rejected"){ //no date attributed to rejection
+			$sql=$conn->prepare("UPDATE basket SET $attr=NOW() WHERE basket_id=$basket_id");
+			$sql->execute();
+		}
 	} catch (Exception $e){
 		echo $e->getMessage();
 		echo "Could not execute this operation";
