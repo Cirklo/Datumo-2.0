@@ -41,7 +41,7 @@ class dbConnection extends PDO{
 		$this->database = "requisitions";
 		$this->schema = "requisitions"; //same as database for mysql;
 		$this->username = "root"; //"root" OR "postgres"
-		$this->password = ""; // "" OR "nasaki"
+		$this->password = "equip!admin"; // "" OR "nasaki"
 		$this->description = "IGC requisitions system";
 		$this->admin = "info@cirklo.org";
 	}

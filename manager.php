@@ -2,7 +2,10 @@
 require_once("session.php");
 $user_id = startSession();
 ?>
-<meta http-equiv='Content-Type' content='text/html; charset=ISO-8859-1'/>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <link href="css/main.css" rel="stylesheet" type="text/css">
 <link href="css/autoSuggest.css" rel="stylesheet" type="text/css">
@@ -80,6 +83,9 @@ $treeview = new treeClass();
 $mail = new mailClass();
 $config = new configClass();
 
+//print_r($_POST);
+//break;
+
 //HTTP variables
 if(isset($_GET['report']))	$report = 1;
 if(isset($_GET['table']))	$table = $_GET['table']; 	//chosen table
@@ -141,6 +147,15 @@ $comment=array(); $comment=$display->getComment();
 $length=array(); $length=$display->getLength();
 $FKtable=array(); $FKtable=$display->getFKtable();
 
+/*$postCounter=0;
+//control purposes (FOR FILTER)
+foreach ($_POST as $key){
+	if($key!="")	$postCounter++;
+}
+if($postCounter==sizeof($header)){
+	unset($_POST);
+}*/
+
 //recover variables from filter to construct query (it relies on 3 elements)
 if(isset($_GET['filter'])){
 	//initialize control variables
@@ -184,8 +199,9 @@ if(isset($_GET['filter'])){
 	$filter=true;
 } else {
 	foreach($_POST as $key=>$value){
-		if($action) break; //Firefox?
-		if($value){ $display->__set($key, $value); }
+		if($action) break; //Chrome/Firefox?
+		//echo $value;
+		if($value!=""){ $display->__set($key, $value); }
 		
 	}
 	$filter=false;
@@ -225,6 +241,10 @@ if ($pageNum < $maxPage){
 } else {
    $next = '&nbsp;'; // we're on the last page, don't print next link
    $last = '&nbsp;'; // nor the last page link
+   //set page variable as maxpage
+   if($page==$maxPage){
+   		$page=$maxPage;
+   }
 }
 
 //display menus
@@ -234,12 +254,12 @@ $display->options($options);
 echo "<tr>";
 echo "<td valign=top>";
 echo "<table border=0 align=left width=200px>";
+echo "<tr><td><a href=admin.php>Return to main menu</a></td></tr>";
 $display->userOptions(true,$user_id);
 echo "<tr><td><a href=javascript:void(0) class=contact>Report bug</a>";
 $display->contactForm();
 echo "</td></tr>";
 echo "<tr><td><hr></td></tr>";
-echo "<tr><td><a href=admin.php>Return to main menu</a></td></tr>";
 echo "<tr><td><a href=excel.php?table=$table title='Export data to xls file'>Export data</a></td></tr>";
 // reports
 $display->reportOptions(true,$user_id);
@@ -258,15 +278,15 @@ echo "<td valign=top>";
 $perm->tablePermissions($table, $user_id);
 echo "<table border=0>";
 echo "<tr>";
-if($perm->getUpdate()) {echo "<td><input type=button name=upd id=upd value=Update onclick=checkfields('update','$table',$nrows,'$order','$colOrder','$stype')></td>";}
-if($perm->getDelete()) {echo "<td><input type=button name=del id=del value=Delete onclick=checkfields('delete','$table',$nrows,'$order','$colOrder','$stype')></td>";}
+if($perm->getUpdate()) {echo "<td><input type=button name=upd id=upd value=Update onclick=checkfields('update','$table',$nrows,'$order','$colOrder','$stype','$pageNum')></td>";}
+if($perm->getDelete()) {echo "<td><input type=button name=del id=del value=Delete onclick=checkfields('delete','$table',$nrows,'$order','$colOrder','$stype','$pageNum')></td>";}
 if($perm->getUpdate() or $perm->getDelete()) $r=true;
 //set order
 //Regular filter
 echo "<td><input type=button name=filter_$table id=filter_$table value=Search>";
 //echo "<td><a href=javascript:void(0)>Search</a>";
 echo "<div id='".$table."_div' class=regular>";
-$display->fields($table,"",'manager',$order,$colOrder);
+$display->fields($table,"",'manager',$order,$colOrder,$page);
 echo "</div>";
 echo "</td>";
 //Advanced search

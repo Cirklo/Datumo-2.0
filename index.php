@@ -46,11 +46,15 @@ echo "</div>";
 //initialize contacts div
 echo "<div class=contacts>";
 echo "<hr>";
-$email="info@cirklo.org";
+$info_email="info@cirklo.org";
+$bugs_email="bugs@cirklo.org";
+$support_email="support@cirklo.org";
 $website="www.cirklo.org";
 echo "<font color='#FFFFFF'>CONTACT INFORMATION</font><br>";
 echo "website: <a href=http://$website>$website</a><br>";
-echo "email: <a href=mailto:$email>$email</a><br>";
+echo "info: <a href=mailto:$info_email>$info_email</a><br>";
+echo "support: <a href=mailto:$support_email>$support_email</a><br>";
+echo "bugs: <a href=mailto:$bugs_email>$bugs_email</a><br>";
 echo "<hr>";
 //end contacts
 echo "</div>";

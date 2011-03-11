@@ -2,6 +2,11 @@
 require_once("session.php");
 $user_id = startSession();
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
 <link href="css/main.css" rel="stylesheet" type="text/css">
 <link href="css/autoSuggest.css" rel="stylesheet" type="text/css">
 <link href="css/tipTip.css" rel="stylesheet" type="text/css">
@@ -89,8 +94,9 @@ $display->options($options);
 echo "<tr>";
 echo "<td valign=top>";
 echo "<table border=0 align=left width=200px>";
-$display->userOptions(true,$user_id);
 echo "<tr><td><a href=admin.php title='Return to the administration area'>Return to main menu</a></td></tr>";
+$display->userOptions(true,$user_id);
+//echo "<tr><td><a href=admin.php title='Return to the administration area'>Return to main menu</a></td></tr>";
 echo "<tr><td><hr></td></tr>";
 echo "<tr><td><b>List of available reports</b></td></tr>";
 echo "<tr><td>";
@@ -104,7 +110,7 @@ echo "<td width=300px valign=top>";
 $treeview->genTreeView($tree);
 echo "</td>";
 echo "<td valign=top>";
-echo "<div id=details class=detailsTree></div>";
+echo "<div id=details class=detailsTree>No items selected</div>";
 
 echo "</td>";
 echo "</tr>";

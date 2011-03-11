@@ -4,30 +4,36 @@
  * @description function to submit filter forms
  */
 
-function filter(name, objName, j, order, colOrder){
+function filter(name, objName, j, order, colOrder,page){
 	//number of rows to be displayed
-	if(j=="") var nrows = 20;
-	else var nrows = document.getElementById("nrows"+j).value;
+	if(j=="")
+		var nrows=20;
+	else 
+		var nrows = document.getElementById("nrows"+j).value;
 	if(!isNumber(nrows)){
 		alert("Please insert a valid number!");
 		return;
 	}
 	//get form
 	var CurForm = eval("document."+name);
-	for(var i=0;i<CurForm.length;i++){
-		if(CurForm[i].lang=='__fk'){
-			if(CurForm[i].alt==""){
-				//alert(CurForm[i].alt);
-				url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
-			    var str = ajaxRequest(url);
-			    CurForm[i].value = str;	
-			} else {
-				CurForm[i].value=CurForm[i].alt;
+	for(var i=0;i<(CurForm.length-1);i++){
+		if(CurForm[i].value!=""){
+			if(CurForm[i].lang=='__fk'){
+				if(CurForm[i].alt==""){
+					//alert(CurForm[i].alt);
+					url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
+				    var str = ajaxRequest(url);
+				    CurForm[i].value = str;	
+				} else {
+					CurForm[i].value=CurForm[i].alt;
+				}
 			}
 		}
+		//alert(CurForm[i].value);
 	}
 	//form actions
-	CurForm.action = "manager.php?table="+objName+"&nrows="+nrows+"&search=1&order="+order+"&colOrder="+colOrder;
+	//(page-1) hack to store page position after update/delete
+	CurForm.action = "manager.php?table="+objName+"&nrows="+nrows+"&search=1&order="+order+"&colOrder="+colOrder+"&page="+page;
 	CurForm.submit();
 }
 
@@ -149,6 +155,16 @@ function submit(search, objName, nrows, order, colOrder, page){
 function qSubmit(objName,i){
 	var CurForm = eval("document.qsearch"+i);
 	var nrows = document.getElementById("qsearchNrows_"+i).value;
+	var qSearchValue=$("#qsearch"+objName).val();
+	if(qSearchValue==""){
+		alert("Empty search string");
+		return;
+	} else {
+		if(qSearchValue.length<3){
+			alert("Search string must have more than 2 characters");
+			return;
+		}
+	}
 	CurForm.action = "manager.php?table="+objName+"&nrows="+nrows+"&search=3";
 	CurForm.submit();
 }

@@ -51,8 +51,10 @@ $(document).ready(function() {
 	
 	jQuery.fn.recoverPwd = function(){
 		var mail = prompt("Your email:");
+		var login= prompt("Your username:");
 		if(mail){
-			$.get("session.php?pwd",{email:mail},
+			$.get("session.php?pwd",{email:mail,
+									 user:login},
 								function(data){
 									if(data.length!=0){
 										msg=data;

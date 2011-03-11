@@ -83,7 +83,9 @@ if(isset($state) and !isset($type)){
 		$having=$perm->restrictAttribute($user_id, "account");
 		if($having!="")$resquery =" AND (basket_account IN (SELECT account_id FROM account WHERE $having) OR $active_having)";
 	}
-	$query = "SELECT basket_id, department_name, basket_sap, account_number, basket_submit_date, basket_order_date, basket_delivery_date, type_name, basket_obs FROM $database.basket, $database.type, $database.department, $database.account WHERE basket_type=type_id AND basket_user=department_id AND basket_account=account_id AND basket_state IN (SELECT state_id FROM $database.state WHERE state_name='$state') $resquery";	
+	$query = "SELECT DISTINCT basket_id, department_name, basket_sap, account_number, basket_submit_date, basket_order_date, basket_delivery_date, vendor_name, basket_obs, type_name FROM basket, type, department, account, vendor, request, product WHERE vendor_id=product_vendor AND product_id=request_number AND request_origin='product' AND request_basket=basket_id AND basket_type=type_id AND basket_user=department_id AND basket_account=account_id AND basket_state IN (SELECT state_id FROM $database.state WHERE state_name='$state') $resquery";	
+	$query.= "UNION SELECT DISTINCT basket_id, department_name, basket_sap, account_number, basket_submit_date, basket_order_date, basket_delivery_date, vendor_name, basket_obs, type_name FROM basket, type, department, account, vendor, request, myproduct WHERE vendor_id=myproduct_vendor AND myproduct_id=request_number AND request_origin='myproduct' AND request_basket=basket_id AND basket_type=type_id AND basket_user=department_id AND basket_account=account_id AND basket_state IN (SELECT state_id FROM $database.state WHERE state_name='$state') $resquery";	
+	//echo $query;
 }
 // the actual query for the grid data 
 $sql=$conn->prepare($query); 

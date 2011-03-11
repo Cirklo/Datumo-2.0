@@ -11,12 +11,20 @@ function dispTree(id,table1, table2, conn, val, page, type, bool, tree){
 		} else {
 			$("#"+id).slideUp();
 		}
-		
+		$("#details").html("No items selected");
 	}
 	if(type==2){
 		$("div.detailsTree").fadeIn(1000);
 	}
 }
+
+function checkit(id,objName,val,bool,treeview){
+	$("input[type=checkbox]").each(function(){
+		$(this).attr("checked",true);	
+	});
+	dispInputTree(id,objName,val,bool,treeview);
+}
+
 
 function dispInputTree(id,objName,val,bool,tree){
 	//initialize array to store checked boxes ID
@@ -29,6 +37,8 @@ function dispInputTree(id,objName,val,bool,tree){
 		var url = "ajaxTree.php?disp&conn="+objName+"&val="+val+"&tree="+tree+"&list="+arr;
 		var str = ajaxRequest(url);
 		$("#"+id).html(str);
+	} else {
+		$("#"+id).html("No items selected");
 	}
 	
 }

@@ -83,6 +83,7 @@ function addToBasket($user_id){
 			$nrows=basketRows($type,$user_id);
 			echo "You have $nrows item(s) in your $type_name basket";
 		} catch (Exception $e){
+			//echo $sql->queryString;
 			echo "Error: Item(s) not added to the basket!";
 		}
 		
@@ -121,6 +122,7 @@ function basketRows($type,$user_id){
 	$sql=$conn->prepare("SELECT COUNT(*) FROM ".$conn->getDatabase().".request WHERE request_basket IN (SELECT basket_id FROM ".$conn->getDatabase().".basket WHERE basket_state=0 AND basket_user IN (SELECT user_dep FROM ".$conn->getDatabase().".user WHERE user_id=$user_id) and basket_type=$type)");
 	$sql->execute();
 	$row=$sql->fetch();
+	//echo $sql->queryString;
 	return $row[0];
 }
 
@@ -151,11 +153,13 @@ function accountDetails($user_id){
 
 function submitBasket($user_id){
 	require_once "requisitionsClass.php";
+	require_once "mailClass.php";
 	//call database class
 	$conn=new dbConnection();
 	$database=$conn->getDatabase();
 	//other classes
 	$req=new reqClass();
+	$mail=new mailClass();
 	
 	//URL variables
 	if(isset($_GET['val']))		$arr=$_GET['val'];
@@ -174,7 +178,11 @@ function submitBasket($user_id){
 	//update this basket	
 	$sql=$conn->prepare("UPDATE basket SET basket_state=1, basket_account=(SELECT account_id FROM $database.account WHERE account_number='$account'), basket_submit_date=NOW() WHERE basket_id=$basket_id");
 	//echo $sql->queryString;
-	$sql->execute();
+	try{
+		$sql->execute();
+	} catch (Exception $e) {
+		echo $e->getMessage();
+	}
 	//Create new basket
 	$req->createBasket($user_id);
 	//get nwe basket id (cannot use lastInsertId method as it returns 0)
@@ -189,7 +197,17 @@ function submitBasket($user_id){
 	$sql=$conn->prepare("UPDATE request SET request_basket=$newBasket WHERE request_id NOT IN ($clause) AND request_basket=$basket_id");
 	try{
 		$sql->execute();
+		//echo $sql->queryString;
 		echo "Basket successfully submitted!";
+		$subject="Requisition System: New Basket";
+		$msg="Basket submitted at ".date("Y-M-d H:i:s")."\n\n";
+		$msg.="Basket ID: $basket_id\n\n";
+		$msg.="Check the basket list for more information.\n\n";
+		$msg.="This is an automatic message. DO NOT REPLY";
+		$to="abretanha@igc.gulbenkian.pt";
+		$from="info@cirklo.org";
+		$mail->sendMail($subject, $to, $from, $msg);
+		
 	} catch(Exception $e){
 		echo "Basket not submitted. Please contact the administrator for details";
 	}
@@ -267,7 +285,8 @@ function changeState($user_id){
 	//URL variables
 	if(isset($_GET['newstate']))	$newstate=$_GET['newstate'];
 	if(isset($_GET['basket']))		$basket_id=$_GET['basket'];
-
+	if(isset($_GET['req']))			$reqNumber=$_GET['req'];
+	
 	$sql=$conn->prepare("UPDATE basket SET basket_state=(SELECT state_id FROM $database.state WHERE state_name='$newstate') WHERE basket_id=$basket_id");
 	try{
 		$sql->execute();
@@ -281,6 +300,8 @@ function changeState($user_id){
 				updateStock($basket_id);
 				break;
 			case "Ordered": 	//update order_date
+				$sql = $conn->prepare("UPDATE basket SET basket_sap=$reqNumber WHERE basket_id=$basket_id");
+				$sql->execute();
 				$attr="basket_order_date";
 				//calculate budget and update it
 				accountPrepare($basket_id);

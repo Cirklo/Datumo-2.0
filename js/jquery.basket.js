@@ -186,11 +186,16 @@ $(document).ready(function(){
 					  					}
 					  					$("input","#t_list").click(function(){ 
 					  						var resp = confirm("You are about to change this basket state. Proceed?");
+					  						if($(this).val()=="Ordered"){
+					  							var reqNumber=prompt("Enter the requisition number to proceed (SAP number)");
+					  							if(!reqNumber) return;
+					  						}
 					  						if(resp){
 						  						$.get(url,{
 									  				  type:6,
 									  				  newstate:$(this).val(),
-									  				  basket:options.id},		
+									  				  basket:options.id,
+									  				  req:reqNumber},		
 									  				  function(data){
 									  					  if(data.length==0){ //everything went ok
 									  						  //just need to reload the grids in order to display up-to-date info

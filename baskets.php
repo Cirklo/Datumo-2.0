@@ -69,12 +69,12 @@ $display->options($options);
 echo "<tr>";
 echo "<td valign=top>";
 echo "<table border=0 align=left width=200px>";
+echo "<tr><td><a href=admin.php title='Return to the administration area'>Return to main menu</a></td></tr>";
 $display->userOptions(true,$user_id);
 echo "<tr><td><a href=javascript:void(0) class=contact>Report bug</a>";
 $display->contactForm();
 echo "</td></tr>";
 echo "<tr><td><hr></td></tr>";
-echo "<tr><td><a href=admin.php title='Return to the administration area'>Return to main menu</a></td></tr>";
 //echo "<tr><td><a href=excel.php?table=$table title='Export data to xls file'>Export data</a></td></tr>";
 // reports
 $display->reportOptions(true,$user_id);

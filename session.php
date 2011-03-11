@@ -48,7 +48,7 @@ function initSession($user_id){
 
 function startSession(){
 	session_start();
-	$_SESSION['user_id']=28;
+	//$_SESSION['user_id']=28;
 	if(isset($_SESSION['user_id'])){
 		$user = $_SESSION['user_id'];
 		return $user; 
@@ -81,8 +81,10 @@ function recoverPwd(){
 
 	//http variables
 	if(isset($_GET['email'])){ $user_email = $_GET['email'];}
+	if(isset($_GET['user'])){ $user_login = $_GET['user'];}
 	
-	$sql=$db->prepare("SELECT user_login FROM ".$db->getDatabase().".user WHERE user_email='$user_email'");
+	
+	$sql=$db->prepare("SELECT user_login FROM ".$db->getDatabase().".user WHERE user_email='$user_email' AND user_login='$user_login'");
 	$sql->execute();
 	//is there any user with this email?
 	if($sql->rowCount()>0){

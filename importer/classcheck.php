@@ -141,7 +141,8 @@ class checkImport{
 		mysql_data_seek($res,1);
 		$field2 = mysql_fetch_row($res); 
 		//query to check if the written value has an ID
-		$sql = "SELECT ".$field1[0]." FROM $FKtable WHERE ".$field2[0]."='$value'";
+		$sql = "SELECT ".$field1[0]." FROM $FKtable WHERE ".$field2[0]." LIKE '%$value%'";
+		//echo $sql."<br>";
 		$res = mysql_query($sql) or die (mysql_error());
 		$nrows = mysql_num_rows($res);
 		if($nrows == 0){ //no primary key for this value-> need to create new entry (CREATE METHOD FOR THIS)

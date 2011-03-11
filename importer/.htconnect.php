@@ -1,5 +1,5 @@
 	<?php
-        $caldb = "newrequisitions"; //change this if the database has a different name
+        $caldb = "requisitions"; //change this if the database has a different name
 	$link = mysql_connect("localhost", "root", "equip!admin") or 
 die("not connected");
 	mysql_query("SET NAMES utf8") or die ("Unable to change encoding:" . mysql_errmsg());
@@ -12,7 +12,7 @@ die("not connected");
                     $db = "information_schema";
                     break;
                 case 1:
-                    $db = "newrequisitions"; //change this if the database has a different name
+                    $db = "requisitions"; //change this if the database has a different name
                     break;
             }
             return $db;

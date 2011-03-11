@@ -181,6 +181,7 @@ try{
 			$page = $pageNum+1;
 			echo "&nbsp;&nbsp;<a href=javascript:void(0) onclick=dispTree('$id','$table1','$table2','$field','$val','$page',$type,true,$treeview_id)>Next</a>";
 		}
+		if($type==2)	echo " <a href=javascript:void(0) onclick=checkit('details','$table1','$val',true,$treeview_id)>Select all</a>";
 	}
 	/*****************************************************************************************************************/
 	

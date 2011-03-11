@@ -98,7 +98,7 @@ class dispClass{
  * @abstract method to display attributes from table $objName
  */
 	
-	public function fields($objName,$j, $origin, $order, $colOrder){		
+	public function fields($objName,$j, $origin, $order, $colOrder,$page){		
 		$this->tableHeaders($objName);
 		//change database to information schema
 		$this->pdo->dbInfo();
@@ -131,7 +131,7 @@ class dispClass{
 			echo "</td></tr>";
 		}
 		
-		echo "<tr><td></td><td><input type=button name=$objName.$j id=$objName.$j value='Apply filter' onclick=filter('table$j','$objName','$j','$order','$colOrder');></td></tr>";
+		echo "<tr><td></td><td><input type=button name=$objName.$j id=$objName.$j value='Apply filter' onclick=filter('table$j','$objName','$j','$order','$colOrder',1);></td></tr>";
 		echo "</form>";
 		echo "<tr><td></td><td><input type=button onclick=cleanForm('table$j') value='Clean all fields'></td></tr>";
 		echo "<tr><td></td><td>Results per page <input type=text name=nrows$j id=nrows$j value=20 size=1></td></tr>";
@@ -308,7 +308,7 @@ class dispClass{
 						$op = "=";
 				}
 				//building the where clause			
-				$where .= $key.$op."'$value' AND ";
+				$where .= " LOWER($key)".$op."LOWER('$value') AND ";
 			}
 		} else {  //from advanced filter
 			foreach($this->vars as $value){
@@ -582,7 +582,7 @@ class dispClass{
 							$op = "=";
 					}
 					//building the where clause			
-					$where .= $key.$op."'$value' AND ";
+					$where .= " LOWER($key)".$op."LOWER('$value') AND ";
 				}
 			} else {
 				foreach($this->vars as $value){
@@ -603,6 +603,7 @@ class dispClass{
 		try{
 			$sql->execute();
 		} catch (Exception $e){
+			//Display error in the screen
 			$this->error->errorDisplay($this->mainQuery,$objName,$e->getMessage(),"Could not execute query. <b>If the problem persists please contact the administrator! <a href=admin.php>Return to main menu</a></b>");
 		}
 		$row = $sql->fetch();

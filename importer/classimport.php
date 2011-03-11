@@ -26,9 +26,9 @@ class importer{
 	
 	function delete ($table, $match, $field){ //need to add a supplier condition/clause
 		mysql_select_db($this->db);
-		$sql = "DELETE FROM $table WHERE ".$table."_id NOT IN (SELECT request_product FROM request) AND ".$table."_id<>0 AND $field IN (SELECT vendor_id FROM vendor WHERE vendor_name='$match') AND product_type=1";
-		$res = mysql_query($sql) or die (mysql_error().$sql);
+		$sql = "DELETE FROM $table WHERE ".$table."_id NOT IN (SELECT request_number FROM request WHERE request_origin='product') AND ".$table."_id<>0 AND $field IN (SELECT vendor_id FROM vendor WHERE vendor_name='$match') AND product_type=1";
 		//echo $sql."<br>";
+		$res = mysql_query($sql) or die (mysql_error().$sql);
 		echo "<b>Completed</b>!<br><br>";
 	}
 	

@@ -61,7 +61,7 @@ class projectClass{
 			echo "<li>";
 			//is the project overdue?
 			if(date("Y-m-d")>$row[6]){ //project finished
-				echo "<font color=#FFF000>Finished</font>";
+				echo "<font color=#FF0000>Finished</font>";
 			} else { //project on course
 				echo "<font color=#00FF00>Running</font>";
 			}

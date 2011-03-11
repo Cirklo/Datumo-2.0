@@ -44,11 +44,11 @@ function showhide(id){
  * @description handle multiple form submit (update and delete)
  */
 //initialize datatype expressions
-var iChars = "!#$%^&=[]\';{}|\"<>?";
+var iChars = "!#$%^[]\';{}|\"<>";
 var iCharsINT = "0123456789";
 var iCharsREAL = ".0123456789";
 
-function checkfields(action,objName,nrows, order, colOrder,search){
+function checkfields(action,objName,nrows, order, colOrder,search,page){
 	//number of rows to be updated
 	var count = noChanges(nrows);
 	if(count!=0) var resp=confirm("You are about to "+action+" "+count+" record(s). Proceed?");
@@ -65,71 +65,87 @@ function checkfields(action,objName,nrows, order, colOrder,search){
 		}
 		if(cb){
 			var CurForm=eval("document.tableman"+k);
-			for(var i=0;i<CurForm.length;i++){
-				//field validation datatype
-				if(CurForm[i].lang!='__fk'){
-					if(CurForm[i].alt=="YES" && CurForm[i].value==""){
-						CurForm[i].focus();
-                        alert("Field cannot be null!");
-                        return;
-					}
-					//Field characters validation
-					switch(CurForm[i].lang){
-					case "character varying":
-					case "varchar":
-						for (var j = 0; j < CurForm[i].value.length; j++) {
-		                    if (iChars.indexOf(CurForm[i].value.charAt(j)) != -1) {
-		                        CurForm[i].focus();
-		                        alert("Field " + CurForm[i].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
-		                        return;
-		                    }
-		                }
-						break;
-					case "double":
-					case "double precision":
-						for (var j = 0; j < CurForm[i].value.length; j++) {
-		                    if (iCharsREAL.indexOf(CurForm[i].value.charAt(j)) == -1) {
-		                        CurForm[i].focus();
-		                        alert("Field " + CurForm[i].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
-		                        return;
-		                    }
-		                }
-						break;
-					case "int":
-					case "integer":
-						for (var j = 0; j < CurForm[i].value.length; j++) {
-		                    if (iCharsINT.indexOf(CurForm[i].value.charAt(j)) == -1) {
-		                        CurForm[i].focus();
-		                        alert("Field " + CurForm[i].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
-		                        return;
-		                    }
+			if(action=="update"){
+				for(var i=0;i<CurForm.length;i++){
+					//field validation datatype
+					if(CurForm[i].lang!='__fk'){
+						if(CurForm[i].alt=="NO" && CurForm[i].value=="" && i!=0){
+							CurForm[i].focus();
+	                        alert("Field cannot be null!");
+	                        return;
 						}
-						break;
-					}
-				} else { //is it a foreign key?
-					if(CurForm[i].alt==""){
-						url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
-					    var str = ajaxRequest(url);
-					    CurForm[i].value = str;	
-					    //if foreign key is null
-					    if(CurForm[i].value == ""){
-					    	CurForm[i].focus();
-					    	alert("Field cannot be null! Please use the autocomplete tool");
-					    	return;
-					    }
-					} else {
-						CurForm[i].value=CurForm[i].alt;
-					}	
+						//Field characters validation
+						switch(CurForm[i].lang){
+						case "character varying":
+						case "varchar":
+							for (var j = 0; j < CurForm[i].value.length; j++) {
+			                    if (iChars.indexOf(CurForm[i].value.charAt(j)) != -1) {
+			                        CurForm[i].focus();
+			                        alert("Field " + CurForm[i].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
+			                        return;
+			                    }
+			                }
+							break;
+						case "double":
+						case "double precision":
+							for (var j = 0; j < CurForm[i].value.length; j++) {
+			                    if (iCharsREAL.indexOf(CurForm[i].value.charAt(j)) == -1) {
+			                        CurForm[i].focus();
+			                        alert("Field " + CurForm[i].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
+			                        return;
+			                    }
+			                }
+							break;
+						case "int":
+						case "integer":
+							for (var j = 0; j < CurForm[i].value.length; j++) {
+			                    if (iCharsINT.indexOf(CurForm[i].value.charAt(j)) == -1) {
+			                        CurForm[i].focus();
+			                        alert("Field " + CurForm[i].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
+			                        return;
+			                    }
+							}
+							break;
+						}
+					} 
 				}
-			}	
-		
-			url="manager.php?table="+objName+"&nrows=20&action="+action+"&order="+order+"&colOrder="+colOrder+"&search="+search;
+				var arrval=new Array;
+				for (var j=0;j<CurForm.length;j++){
+					if(CurForm[j].lang=='__fk'){
+						if(CurForm[j].alt==""){
+							//ajax request
+							url="ajax.php?val=" + CurForm[j].value + "&var=" + CurForm[j].id;
+						    var str = ajaxRequest(url);
+						    //if foreign key is null
+						    if(str == ""){
+						    	CurForm[j].focus();
+						    	alert("Field cannot be null! Please use the autocomplete tool");
+						    	return;
+						    } else {
+						    	arrval[CurForm[j].id]=str;	
+						    }
+						} else {
+							arrval[CurForm[j].id]=CurForm[j].alt;
+						}
+					}
+				}
+				//write to textbox Foreign key values
+				for (var j=0;j<CurForm.length;j++){
+					if(CurForm[j].lang=='__fk'){
+						CurForm[j].value=arrval[CurForm[j].id];
+					}
+				}
+			}		
+			url="manager.php?table="+objName+"&nrows=20&action="+action+"&order="+order+"&colOrder="+colOrder+"&search="+search+"&page="+page;
 			for (i=0;i<CurForm.length;i++) {   CurForm[i].disabled=false;}
 			CurForm.action = url;
 			objForm = eval("document.table");
 			try{
 				CurForm.submit();
-				if(browser!="Chrome")	filter('table',objName,'',order,colOrder);
+				//alert(browser);
+				if(browser!="Chrome"){
+					filter('table',objName,'',order,colOrder,page);
+				}
 			} catch (err){
 				alert("Form not submitted!"+err);
 			}
@@ -157,6 +173,7 @@ function checkall(id,nrows){
 		}
 	}
 }
+
 
 /**
  * @author João Lagarto / Nuno Moreno
@@ -226,7 +243,7 @@ function multiAdd(objName){
 				case "varchar":
 					for (var k = 0; k < CurForm[j].value.length; k++) {
 	                    if (iChars.indexOf(CurForm[j].value.charAt(k)) != -1) {
-	                        CurForm[i].focus();
+	                        CurForm[j].focus();
 	                        alert("Field " + CurForm[j].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
 	                        return;
 	                    }
@@ -236,7 +253,7 @@ function multiAdd(objName){
 				case "double precision":
 					for (var k = 0; k < CurForm[j].value.length; k++) {
 	                    if (iCharsREAL.indexOf(CurForm[j].value.charAt(k)) == -1) {
-	                        CurForm[i].focus();
+	                        CurForm[j].focus();
 	                        alert("Field " + CurForm[j].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
 	                        return;
 	                    }
@@ -246,7 +263,7 @@ function multiAdd(objName){
 				case "integer":
 					for (var k = 0; k < CurForm[j].value.length; k++) {
 	                    if (iCharsINT.indexOf(CurForm[j].value.charAt(k)) == -1) {
-	                        CurForm[i].focus();
+	                        CurForm[j].focus();
 	                        alert("Field " + CurForm[j].name + " contains special characters. \n These are not allowed.\n Please remove them and try again.");
 	                        return;
 	                    }

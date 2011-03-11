@@ -83,6 +83,7 @@ class reqClass{
 		//set search path to main database
 		$this->pdo->dbConn();
 		$sql=$this->pdo->prepare("SELECT basket_id FROM ".$this->pdo->getDatabase().".basket WHERE basket_state=0 AND basket_type IN (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='$type') AND basket_user IN (SELECT user_dep FROM ".$this->pdo->getDatabase().".user WHERE user_id=$user_id)");
+		//echo $sql->queryString;
 		$sql->execute();
 		$row=$sql->fetch();
 		return $row[0];
