@@ -24,7 +24,7 @@ switch ($type){
 		$refMail = "bugs@cirklo.org"; //where the mails go to (only bug reports)
 		$name = $_POST['name'];
 		$email = $_POST['email'];
-		$message = nl2br($_POST['message']);
+		$message = strip_tags($_POST['message']);
 		//get todays date
 		$todayis = date("l, F j, Y, g:i a") ;
 		//set a title for the message

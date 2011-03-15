@@ -297,7 +297,8 @@ echo "</div>";
 echo "</td>";
 
 //print page navigation
-echo "<td>".$first.$prev." Showing page $pageNum of $maxPage pages ".$next.$last."</td>"; 
+echo "<td>".$first.$prev." Showing page $pageNum of $maxPage pages ".$next.$last."</td>";
+echo "<td>Jump to page <input type=text size=1 name=newPage id=newPage value=$pageNum><input type=button id=jump value='Go' onclick=submit('$stype','$table',$nrows,'$order','$colOrder',$('#newPage').val())></td>";
 echo "</tr>";
 echo "</table>";
 

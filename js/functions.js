@@ -70,6 +70,7 @@ function checkfields(action,objName,nrows, order, colOrder,search,page){
 					//field validation datatype
 					if(CurForm[i].lang!='__fk'){
 						if(CurForm[i].alt=="NO" && CurForm[i].value=="" && i!=0){
+							//alert(CurForm[i].alt);
 							CurForm[i].focus();
 	                        alert("Field cannot be null!");
 	                        return;

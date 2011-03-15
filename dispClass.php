@@ -220,7 +220,6 @@ class dispClass{
 		$this->query->engineHandler($this->pdo->getEngine());
 		//query number 1 -> necessary in order to select specific query from vault
 		$sql = $this->pdo->prepare($this->query->getSQL(2)); 
-		//echo $sql->queryString;
 		$sql->execute();		
 		for($i=0;$row = $sql->fetch();$i++){
 			$fullheader[]=$row[0];
@@ -421,7 +420,7 @@ class dispClass{
 					if($this->datatype[$this->fullheader[$j]]=="text")
 						echo "<td valign=top class=results><textarea rows=10 cols=50 class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j].">".strip_tags($row[$j])."</textarea></td>";
 					else
-						echo "<td valign=top class=results><input type=text class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j]."  value='$row[$j]' onchange=selectRow('$i') $size $readonly lang='".$this->datatype[$this->fullheader[$j]]."' alt='".$this->null[$this->fullheader[$i]]."'";
+						echo "<td valign=top class=results><input type=text class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j]."  value='$row[$j]' onchange=selectRow('$i') $size $readonly lang='".$this->datatype[$this->fullheader[$j]]."' alt='".$this->null[$this->fullheader[$j]]."'";
 					//set field to open link in a new window if it starts with http://
 					if(substr($row[$j],0,7)=="http://")
 						echo " ondblclick=window.open('".$row[$j]."')";
