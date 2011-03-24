@@ -291,7 +291,8 @@ class dispClass{
 			$where .= $arr[1];
 			$colOrder = $arr[2];
 		}
-		$order = " ORDER BY $colOrder $setOrder"; //set order to display the results
+		if($colOrder!="" and $setOrder!="")
+			$order = " ORDER BY $colOrder $setOrder"; //set order to display the results
 		$limit = " LIMIT $nrows OFFSET $offset"; //set limits for pagination
 		//Was it called by advanced filter??
 		if(!$filter){ 
@@ -551,6 +552,10 @@ class dispClass{
 			case "character varying":
 				$size = $this->length[$this->fullheader[$j]];
 				$mlength = $this->length[$this->fullheader[$j]];
+				break;
+			case "datetime":
+				$size=20;
+				$mlength=20;
 				break;
 			default:
 				$size = 10;	

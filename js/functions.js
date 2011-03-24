@@ -44,7 +44,7 @@ function showhide(id){
  * @description handle multiple form submit (update and delete)
  */
 //initialize datatype expressions
-var iChars = "!#$%^[]\';{}|\"<>";
+var iChars = "!#$%^[]\';{}|<>";
 var iCharsINT = "0123456789";
 var iCharsREAL = ".0123456789";
 
@@ -142,9 +142,9 @@ function checkfields(action,objName,nrows, order, colOrder,search,page){
 			CurForm.action = url;
 			objForm = eval("document.table");
 			try{
-				CurForm.submit();
-				//alert(browser);
+				CurForm.submit();		
 				if(browser!="Chrome"){
+					//wait(500);
 					filter('table',objName,'',order,colOrder,page);
 				}
 			} catch (err){
@@ -154,6 +154,17 @@ function checkfields(action,objName,nrows, order, colOrder,search,page){
 		
 	}
 }
+
+
+
+
+function wait(msecs){
+	var start = new Date().getTime();
+	var cur = start
+	while(cur - start < msecs){
+		cur = new Date().getTime();
+	}
+} 
 
 /**
  * @author João Lagarto / Nuno Moreno

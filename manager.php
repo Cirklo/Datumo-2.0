@@ -198,11 +198,11 @@ if(isset($_GET['filter'])){
 	}
 	$filter=true;
 } else {
-	foreach($_POST as $key=>$value){
-		if($action) break; //Chrome/Firefox?
-		//echo $value;
-		if($value!=""){ $display->__set($key, $value); }
-		
+	if(!$action){
+		foreach($_POST as $key=>$value){
+			if($value!=""){ $display->__set($key, $value); }
+			
+		}
 	}
 	$filter=false;
 }

@@ -8,16 +8,17 @@ function filter(name, objName, j, order, colOrder,page){
 	//number of rows to be displayed
 	if(j=="")
 		var nrows=20;
-	else 
+	else {
 		var nrows = document.getElementById("nrows"+j).value;
-	if(!isNumber(nrows)){
-		alert("Please insert a valid number!");
-		return;
+		if(!isNumber(nrows)){
+			alert("Please insert a valid number!");
+			return;
+		}
 	}
 	//get form
 	var CurForm = eval("document."+name);
 	for(var i=0;i<(CurForm.length-1);i++){
-		if(CurForm[i].value!=""){
+		//if(CurForm[i].value!=""){
 			if(CurForm[i].lang=='__fk'){
 				if(CurForm[i].alt==""){
 					//alert(CurForm[i].alt);
@@ -27,9 +28,10 @@ function filter(name, objName, j, order, colOrder,page){
 				} else {
 					CurForm[i].value=CurForm[i].alt;
 				}
-			}
-		}
-		//alert(CurForm[i].value);
+			} 
+			//alert(CurForm[i].value);
+		//} 
+		//
 	}
 	//form actions
 	//(page-1) hack to store page position after update/delete

@@ -39,7 +39,7 @@ class mailClass extends PHPMailer{
             return "Could not send mail!";
         } else {
             //mail OK
-        	return "Mail successfully sent!";   
+        	return "Mail successfully sent!";  
         }
 	}
 }
