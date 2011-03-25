@@ -18,7 +18,7 @@ $user_id = startSession();
 	
 		$('#calendar').fullCalendar({
 			editable: false,
-			events: "calendar_feed.php",
+			events: "calendar_feed.php?regular",
 			header: {
 				left: 'prev,next today',
 				center: 'title',
@@ -65,6 +65,10 @@ $user_id = startSession();
 		position:absolute;
 		top:0px;
 		left:opx;
+		width:250px;
+		border:0px solid;
+		text-align:left;
+		padding-top:15px;
 		}
 
 </style>
@@ -77,8 +81,10 @@ require_once ".htconnect.php";
 //call database class
 $conn=new dbConnection();
 
-echo "<a href=admin.php>Return to main menu</a>";
+
 echo "<div id='options' style='text-align:left'>";
+echo "<a href=admin.php>Return to main menu</a>";
+echo "<br><br>";
 echo "Select resource(s) to display<br>";
 $query="SELECT DISTINCT resource_id, resource_name, color_code
 	FROM entry, resource, color
@@ -88,8 +94,9 @@ $query="SELECT DISTINCT resource_id, resource_name, color_code
 	OR resource_resp=$user_id)";
 try{
 	$sql=$conn->query($query);
+	//loop through all results
 	for($i=0;$row=$sql->fetch();$i++){
-		echo "<li style='list-style:none;text-align:left;'><input type=checkbox name=$row[0] id=$row[0]>";
+		echo "<li style='list-style:none;text-align:left;'><input type=checkbox name=$row[0] id=$row[0] checked>";
 		echo "<font color=#$row[2]>$row[1]</font>";
 		echo "</li>";	
 	}
@@ -98,7 +105,13 @@ try{
 } catch(Exception $e){
 	echo "Unable to perform query";
 }
-//loop through all results
+echo "<br><br>";
+//is this user somekind of lab manager
+$sql=$conn->query("SELECT department_id, department_name FROM department WHERE department_manager=$user_id");
+if($sql->rowCount()>0){
+	echo "View all entries for your department(s)<br>";
+	echo "<input type=button id=managerView name=managerView value='Manager View'>";
+}
 echo "</div>";
 echo "<div id='loading' style='display:none'>loading...</div>";
 echo "<div id='calendar'></div>";

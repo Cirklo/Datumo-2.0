@@ -142,6 +142,7 @@ if(isset($_GET['page'])) { //page to be shown
 
 //handle post array if this is a dynamic report submit
 if(isset($_GET['d'])){
+	//print_r($_POST);
 	$i=0; //initialize counter
 	foreach($_POST as $value){
 		$where = str_replace("&$i", $value, $where);
@@ -183,6 +184,7 @@ if($group!="") $group = " GROUP BY ".$group;
 
 //BUILDING THE QUERY
 $sql = "SELECT $clauses $fields FROM $objName $where $group $order LIMIT $nrows OFFSET $offset";
+
 $_SESSION['sql']=$sql;
 $report->setQuery($sql);
 //test query for errors

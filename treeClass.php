@@ -60,16 +60,25 @@ class treeClass{
     	$sql->execute();
     	echo "<ul id='browser' class='filetree treeview-famfamfam'>";
     	for($i=0;$row=$sql->fetch();$i++) {
-    		if($arr[0]!=""){
+    		if($arr[0]!=""){ 
+   				//treeview w/ 3 tables
     			$conn = $this->tableConn($arr[0], $arr[1]);
     			$onclick="dispTree('firstTree$i','$arr[1]','$arr[2]','$conn','$row[0]',1,1,false,$tree)";
+    			$sql_low=$this->pdo->query("SELECT * FROM ".$this->pdo->getDatabase().".".$arr[1]." WHERE $conn='$row[0]'");
        		} else {
+       			//treeview w/ 2 tables
        			$conn = $this->tableConn($arr[1], $arr[2]);
  		   		$onclick="dispTree('firstTree$i','$arr[2]','$arr[2]','$conn','$row[0]',1,2,false,$tree)";
+ 		   		$sql_low=$this->pdo->query("SELECT * FROM ".$this->pdo->getDatabase().".".$arr[2]." WHERE $conn='$row[0]'");
+//echo $onclick;
       		}
-    		echo "<li class=expandable><a href=javascript:void(0) onclick=$onclick>$row[1]</a>";
-    		echo "<div id=firstTree$i style='display:none'></div>";
-  			echo "</li>";
+      		//echo $sql_low->queryString;
+      		if($sql_low->rowCount()>0){
+      			echo "<li class=expandable><a href=javascript:void(0) onclick=$onclick>$row[1]</a>";
+    			echo "<div id=firstTree$i style='display:none'></div>";
+  				echo "</li>";
+      		}
+    		
     	}
     	echo "</ul>";
     }

@@ -44,7 +44,7 @@ function showhide(id){
  * @description handle multiple form submit (update and delete)
  */
 //initialize datatype expressions
-var iChars = "!#$%^[]\';{}|<>";
+var iChars = "!#$%^[]\';{}|";
 var iCharsINT = "0123456789";
 var iCharsREAL = ".0123456789";
 
@@ -403,6 +403,7 @@ function dynReport(form, id){
 			CurForm[i].focus();
 			return;
 		}
+		//alert(CurForm[i].value);
 	}
 	//set action for the current FORM and tells the script this is a dynamic form
 	CurForm.action = "report.php?report="+id+"&d";

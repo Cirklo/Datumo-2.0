@@ -238,14 +238,16 @@ class reportClass{
 				$this->findParam($row[0]);
 				for($j=0;$j<sizeof($this->params);$j++){
 					echo "<tr><td>".$this->params[$j]."</td>";
-					echo "<td style='text-align:right'><input type=text id='".$this->refs[$this->params[$j]]."_id' name='".$this->refs[$this->params[$j]]."_id' ";
+					echo "<td style='text-align:right'><input type=text ";
 					if($this->datatypes[$this->params[$j]]=="date"){
+						echo " id='".$this->params[$j]."' name='".$this->params[$j]."' ";
 						echo " onfocus=showCalendarControl(this) readonly=readonly ";
 					}
 					if($this->refs[$this->params[$j]]!=""){
+						echo " id='".$this->refs[$this->params[$j]]."_id' name='".$this->refs[$this->params[$j]]."_id' ";
 						echo " class=fk lang=__fk ";
 					}
-					else echo " class=reg ";
+					else echo " class=reg id='".$this->refs[$this->params[$j]]."_id' name='".$this->refs[$this->params[$j]]."_id' ";
 					echo "></td></tr>";
 				}
 				echo "<tr><td colspan=2 style='text-align:right'><input type=button value=Execute onclick=dynReport('report$i','$row[0]')></td></tr>";
