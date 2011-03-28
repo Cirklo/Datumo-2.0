@@ -40,13 +40,13 @@ class dbConnection extends PDO{
 		// $this->engine = "pgsql"; //"mysql" OR "pgsql"
 		$this->engine = "mysql"; //"mysql" OR "pgsql"
 		// $this->database = "postgres";//"dbtest" or "postgres"
-		$this->database = "labcal";//"dbtest" or "postgres"
+		$this->database = "requisitions";//"dbtest" or "postgres"
 		// $this->username = "postgres"; //"root" OR "postgres"
-		$this->username = "caluser"; //"root" OR "postgres"
+		$this->username = "root"; //"root" OR "postgres"
 		// $this->password = "nasaki"; // "" OR "nasaki"
-		$this->password = "agendo"; // "" OR "nasaki"
+		$this->password = ""; // "" OR "nasaki"
 		$this->host = "localhost";
-		$this->schema = "labcal";// Name of the schema (same as database for mysql)
+		$this->schema = "requisitions";// Name of the schema (same as database for mysql)
 		$this->description = "IGC requisitions system";
 		$this->admin = "info@cirklo.org";
 	}

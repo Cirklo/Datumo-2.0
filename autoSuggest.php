@@ -16,6 +16,10 @@ $conn->dbInfo();
 if(isset($_REQUEST['query'])) $q=$_REQUEST['query'];
 if(isset($_GET['field'])) $field=$_GET['field'];
 
+//is it a filter?
+if(substr($field,strlen($field)-3,strlen($field))=="_f_")
+	$field=substr($field,0, strlen($field)-3);
+
 //construct array for input parameters.
 $arr = array($field,$database,'','');
 //set values

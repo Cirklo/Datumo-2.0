@@ -22,7 +22,9 @@ function filter(name, objName, j, order, colOrder,page){
 			if(CurForm[i].lang=='__fk'){
 				if(CurForm[i].alt==""){
 					//alert(CurForm[i].alt);
-					url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
+					//url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
+					var newId=CurForm[i].id;
+					url="ajax.php?val=" + CurForm[i].value + "&var=" + newId.substring(0,newId.length-3);
 				    var str = ajaxRequest(url);
 				    CurForm[i].value = str;	
 				} else {
@@ -123,8 +125,10 @@ function submit(search, objName, nrows, order, colOrder, page){
 		var CurForm = eval("document.table");
 		for(var i=0;i<CurForm.length;i++){
 			if(CurForm[i].lang=='__fk'){
-				url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
-			    var str = ajaxRequest(url);
+				//url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
+				var newId=CurForm[i].id;
+				url="ajax.php?val=" + CurForm[i].value + "&var=" + newId.substring(0,newId.length-3);
+				var str = ajaxRequest(url);
 			    CurForm[i].value = str;	
 			}
 		}

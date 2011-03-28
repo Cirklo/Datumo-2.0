@@ -471,6 +471,18 @@ $(document).ready(function(){
 		
 }); 
 
+function updateBasket(basket_id){
+	//Update basket delivery
+	var url="requisitions.php?type=6";
+	$.get(url,{
+		basket:basket_id,
+		newstate:"Received"},
+	function(data){
+		alert(data);
+	});
+	
+}
+
 function getUserLevel(){
 	url="requisitions.php?type=7";
 	var str=ajaxRequest(url);
