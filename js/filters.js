@@ -19,18 +19,19 @@ function filter(name, objName, j, order, colOrder,page){
 	var CurForm = eval("document."+name);
 	for(var i=0;i<(CurForm.length-1);i++){
 		//if(CurForm[i].value!=""){
-			if(CurForm[i].lang=='__fk'){
-				if(CurForm[i].alt==""){
-					//alert(CurForm[i].alt);
-					//url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
-					var newId=CurForm[i].id;
-					url="ajax.php?val=" + CurForm[i].value + "&var=" + newId.substring(0,newId.length-3);
-				    var str = ajaxRequest(url);
-				    CurForm[i].value = str;	
-				} else {
-					CurForm[i].value=CurForm[i].alt;
+			if(CurForm[i].alt==""){
+				//alert(CurForm[i].alt);
+				//url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
+				var newId=CurForm[i].id;
+				url="ajax.php?val=" + CurForm[i].value + "&var=" + newId.substring(0,newId.length-3);
+				var str = ajaxRequest(url);
+				if(CurForm[i].lang=='__fk'){
+					CurForm[i].value = str;	
 				}
-			} 
+			} else {
+				CurForm[i].value=CurForm[i].alt;
+			}
+		
 			//alert(CurForm[i].value);
 		//} 
 		//
@@ -125,10 +126,10 @@ function submit(search, objName, nrows, order, colOrder, page){
 		var CurForm = eval("document.table");
 		for(var i=0;i<CurForm.length;i++){
 			if(CurForm[i].lang=='__fk'){
-				//url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
 				var newId=CurForm[i].id;
 				url="ajax.php?val=" + CurForm[i].value + "&var=" + newId.substring(0,newId.length-3);
-				var str = ajaxRequest(url);
+				//url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
+			    var str = ajaxRequest(url);
 			    CurForm[i].value = str;	
 			}
 		}

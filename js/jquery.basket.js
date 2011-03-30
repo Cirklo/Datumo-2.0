@@ -471,15 +471,28 @@ $(document).ready(function(){
 		
 }); 
 
+function center(object)
+{
+ object.style.marginLeft = "-" + parseInt(object.offsetWidth / 2) + "px";
+ object.style.marginTop = "-" + parseInt(object.offsetHeight / 2) + "px";
+}
+
 function updateBasket(basket_id){
 	//Update basket delivery
 	var url="requisitions.php?type=6";
-	$.get(url,{
+	//display div to access user credentials
+	$("#igc_user").css("display","block");
+	//get div ID
+	var igc_user=document.getElementById("igc_user");
+	//center div on screen
+	center(igc_user);
+	//set basket state to receive and update date
+	/*$.get(url,{
 		basket:basket_id,
 		newstate:"Received"},
 	function(data){
-		alert(data);
-	});
+		alert("Basket successfully received");
+	});*/
 	
 }
 

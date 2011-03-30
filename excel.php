@@ -99,25 +99,28 @@ function fromReport($report) {
 	set_time_limit(0); 
 	
 	//includes
-	require_once(".htconnect.php");
-	require_once ("dispClass.php");
+	require_once ".htconnect.php";
+	require_once "dispClass.php";
 	require_once "session.php";
 	$user_id=startSession();
 	
 	//call database class
-	$db = new dbConnection();$db->dbConn();
-	//call other classes
+	$db = new dbConnection();
 	
-	//retrieve this report query
-	$sql=$db->prepare("SELECT report_query FROM ".$db->getDatabase().".report WHERE report_id=$report");
-	$sql->execute();
-	$row=$sql->fetch();
-	$query=$row[0];
-
+	//get session variable
+	//echo $_SESSION['sql'];
+	$query=$_SESSION['sql'];
+	//SESSION['sql']=null;
+	//echo $query;
+	
 	//remove page limitation
-	$query = substr($query,0,strpos("LIMIT"));
+	$query=substr($query,0,strpos($query, "LIMIT"));
 	$sql=$db->prepare($query);
-	$sql->execute();
+	try{
+		$sql->execute();
+	} catch (Exception $e){
+		echo $e->getMessage();
+	}
 	
 	//loop through all results and write each one of them to a spreadsheet
 	for($i=0;$row=$sql->fetch();$i++){
