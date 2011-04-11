@@ -5,8 +5,9 @@
  * @param id
  */
 var browser=navigator.appVersion;
-if(browser.indexOf("Chrome")==-1) browser="";
-else browser="Chrome";
+//alert(browser);
+if(browser.indexOf("Chrome")==-1 && browser.indexOf("Safari")==-1 && browser.indexOf("Opera")==-1) browser="";
+else browser="error";
 
 function countchars(id){
 	var txt = $("#"+id).val(); 
@@ -142,8 +143,9 @@ function checkfields(action,objName,nrows, order, colOrder,search,page){
 			CurForm.action = url;
 			objForm = eval("document.table");
 			try{
-				CurForm.submit();		
-				if(browser!="Chrome"){
+				CurForm.submit();	
+				//alert(browser);
+				if(browser!="error"){
 					//wait(500);
 					filter('table',objName,'',order,colOrder,page);
 				}

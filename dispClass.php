@@ -286,7 +286,7 @@ class dispClass{
 		$sql = "SELECT * FROM ".$this->pdo->getDatabase().".$objName";
 		$where = " WHERE ";
 		//is the ordering column a foreign key?
-		if ($this->FKeys[$colOrder] and $j!=0) {
+		if ($this->FKeys[$colOrder]) {
 			$arr = $this->queryFK($objName, $this->FKeys[$colOrder], $colOrder);
 			$sql = $arr[0];
 			$where .= $arr[1];
