@@ -5,9 +5,8 @@
  * @param id
  */
 var browser=navigator.appVersion;
-//alert(browser);
-if(browser.indexOf("Chrome")==-1 && browser.indexOf("Safari")==-1 && browser.indexOf("Opera")==-1) browser="";
-else browser="error";
+if(browser.indexOf("Chrome")==-1) browser="";
+else browser="Chrome";
 
 function countchars(id){
 	var txt = $("#"+id).val(); 
@@ -71,7 +70,6 @@ function checkfields(action,objName,nrows, order, colOrder,search,page){
 					//field validation datatype
 					if(CurForm[i].lang!='__fk'){
 						if(CurForm[i].alt=="NO" && CurForm[i].value=="" && i!=0){
-							//alert(CurForm[i].alt);
 							CurForm[i].focus();
 	                        alert("Field cannot be null!");
 	                        return;
@@ -143,10 +141,9 @@ function checkfields(action,objName,nrows, order, colOrder,search,page){
 			CurForm.action = url;
 			objForm = eval("document.table");
 			try{
-				CurForm.submit();	
+				CurForm.submit();
 				//alert(browser);
-				if(browser!="error"){
-					//wait(500);
+				if(browser!="Chrome"){
 					filter('table',objName,'',order,colOrder,page);
 				}
 			} catch (err){
@@ -156,17 +153,6 @@ function checkfields(action,objName,nrows, order, colOrder,search,page){
 		
 	}
 }
-
-
-
-
-function wait(msecs){
-	var start = new Date().getTime();
-	var cur = start
-	while(cur - start < msecs){
-		cur = new Date().getTime();
-	}
-} 
 
 /**
  * @author João Lagarto / Nuno Moreno
@@ -405,7 +391,6 @@ function dynReport(form, id){
 			CurForm[i].focus();
 			return;
 		}
-		//alert(CurForm[i].value);
 	}
 	//set action for the current FORM and tells the script this is a dynamic form
 	CurForm.action = "report.php?report="+id+"&d";

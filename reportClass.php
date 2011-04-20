@@ -198,7 +198,7 @@ class reportClass{
 		$sql = $this->pdo->prepare("SELECT report_id, report_name, report_description FROM ".$this->pdo->getDatabase().".report WHERE report_id NOT IN (SELECT param_report FROM param) AND report_conf=1 OR (report_user=$user_id AND report_conf=2) ORDER BY report_name");
 		$sql->execute();
 		for($i=0;$row=$sql->fetch();$i++){
-			echo "<tr><td><a href=report.php?report=$row[0] target='$target' title='$row[2]'>".$row[1]."</a></td></tr>";
+			echo "<tr><td><a href=/".$this->pdo->getFolder()."/report.php?report=$row[0] target='$target' title='$row[2]'>".$row[1]."</a></td></tr>";
 		}
 		echo "</table>";
 	}
@@ -225,7 +225,7 @@ class reportClass{
 	public function dynamicReports($user_id){
 		//set search path to main database
 		$this->pdo->dbConn();
-		$sql = $this->pdo->prepare("SELECT report_id, report_name, report_description FROM ".$this->pdo->getDatabase().".report WHERE report_id IN (SELECT param_report FROM param) ORDER BY report_name");
+		$sql = $this->pdo->prepare("SELECT report_id, report_name, report_description FROM ".$this->pdo->getDatabase().".report WHERE report_id IN (SELECT param_report FROM param) AND ( report_conf=1 OR (report_conf=2 AND report_user=$user_id)) ORDER BY report_name");
 		$sql->execute();
 		if($sql->rowCount()>0){
 			for($i=0;$row=$sql->fetch();$i++){
@@ -238,16 +238,14 @@ class reportClass{
 				$this->findParam($row[0]);
 				for($j=0;$j<sizeof($this->params);$j++){
 					echo "<tr><td>".$this->params[$j]."</td>";
-					echo "<td style='text-align:right'><input type=text ";
+					echo "<td style='text-align:right'><input type=text id='".$this->refs[$this->params[$j]]."_id' name='".$this->refs[$this->params[$j]]."_id' ";
 					if($this->datatypes[$this->params[$j]]=="date"){
-						echo " id='".$this->params[$j]."' name='".$this->params[$j]."' ";
 						echo " onfocus=showCalendarControl(this) readonly=readonly ";
 					}
 					if($this->refs[$this->params[$j]]!=""){
-						echo " id='".$this->refs[$this->params[$j]]."_id' name='".$this->refs[$this->params[$j]]."_id' ";
 						echo " class=fk lang=__fk ";
 					}
-					else echo " class=reg id='".$this->refs[$this->params[$j]]."_id' name='".$this->refs[$this->params[$j]]."_id' ";
+					else echo " class=reg ";
 					echo "></td></tr>";
 				}
 				echo "<tr><td colspan=2 style='text-align:right'><input type=button value=Execute onclick=dynReport('report$i','$row[0]')></td></tr>";

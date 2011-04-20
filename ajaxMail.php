@@ -24,13 +24,13 @@ switch ($type){
 		$refMail = "bugs@cirklo.org"; //where the mails go to (only bug reports)
 		$name = $_POST['name'];
 		$email = $_POST['email'];
-		$message = strip_tags($_POST['message']);
+		$message = nl2br($_POST['message']);
 		//get todays date
 		$todayis = date("l, F j, Y, g:i a") ;
 		//set a title for the message
 		$subject = "Datumo 2.0 Bug Report";
 		$body = "From $name, \n\n";
-		$body.=nl2br($message);
+		$body.=strip_tags($message);
 		//put your email address here
 		$str=$mail->sendMail($subject, $refMail, $email, $body);
 		echo $str;

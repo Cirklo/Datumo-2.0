@@ -3,8 +3,8 @@
 //script to be called through an ajax request
 
 //includes
-require_once ".htconnect.php";
-require_once "session.php";
+require_once "../.htconnect.php";
+require_once "../session.php";
 $user_id = startSession();
 
 if(isset($_GET['type'])){	
@@ -34,6 +34,12 @@ if(isset($_GET['type'])){
 		case 7:
 			userLevel($user_id);
 			break;
+		case 8:
+			newVendor($user_id);
+			break;
+		case 9:
+			addFavourite($user_id);
+			break;
 	}
 
 }
@@ -46,6 +52,8 @@ if(isset($_GET['type'])){
  */
 
 function addToBasket($user_id){
+	require_once "requisitionsClass.php";
+	
 	//should send product id and quantity through an array
 	//URL variables
 	if(isset($_GET['table']))	$table=$_GET['table'];
@@ -57,7 +65,12 @@ function addToBasket($user_id){
 	
 	//call database class
 	$conn=new dbConnection();
-	$conn->dbInfo(); //set search path to main database
+	$conn->dbInfo(); 		//set search path to main database
+	$req=new reqClass(); 	//call requisitions class
+	
+	//create a new basket if it doesn't exist
+	$req->createBasket($user_id);
+	
 	//which product type is this??
 	$sql = $conn->prepare("SELECT type_id, type_name FROM ".$conn->getDatabase().".type WHERE type_id IN (SELECT ".$table."_type FROM ".$conn->getDatabase().".$table WHERE ".$table."_id=$item)");
 	//echo $sql->queryString;
@@ -153,7 +166,7 @@ function accountDetails($user_id){
 
 function submitBasket($user_id){
 	require_once "requisitionsClass.php";
-	require_once "mailClass.php";
+	require_once "../mailClass.php";
 	//call database class
 	$conn=new dbConnection();
 	$database=$conn->getDatabase();
@@ -296,7 +309,7 @@ function changeState($user_id){
 				$attr="basket_delivery_date";
 				break;
 			case "Approved":	//update order_date
-				$attr="basket_order_date";
+				//$attr="basket_order_date";
 				updateStock($basket_id);
 				break;
 			case "Ordered": 	//update order_date
@@ -307,7 +320,7 @@ function changeState($user_id){
 				accountPrepare($basket_id);
 				break;
 		}
-		if($newstate!="Rejected"){ //no date attributed to rejection
+		if($newstate!="Rejected" and $newstate!="Approved"){ //no date attributed to rejection
 			$sql=$conn->prepare("UPDATE basket SET $attr=NOW() WHERE basket_id=$basket_id");
 			$sql->execute();
 		}
@@ -320,7 +333,7 @@ function changeState($user_id){
 }
 
 function userLevel($user_id){
-	require_once "resClass.php";
+	require_once "../resClass.php";
 	//call class
 	$admin=new restrictClass();
 	$admin->userInfo($user_id);
@@ -389,6 +402,7 @@ function updateStock($basket){
 	$sql->execute();
 	$res=$sql->fetch();
 	//Which basket type is this?
+	//add something if stock goes below 0
 	if($res[0]==2) { //Internal basket
 		//query for all requests from this basket
 		$sql = $conn->prepare("SELECT request_id, request_number, request_origin, request_quantity FROM request WHERE request_basket=$basket");
@@ -406,5 +420,108 @@ function updateStock($basket){
 	
 	
 }
+
+function newVendor($user_id){
+	//list of includes
+	require_once "../mailClass.php";
+	require_once "../resClass.php";
+	//call classes
+	$mail=new mailClass();
+	$conn=new dbConnection();
+	$res=new restrictClass();
+	
+	//get user information
+	$res->userInfo($user_id);
+	$from=$res->getUserEmail();
+	$subject="Requisition system: New vendor request";
+	$to="vsantos@igc.gulbenkian.pt";
+	$msg="New vendor request from ".$res->getUserLogin()."\n\n";
+	//Go through all variables one by one
+	$msg.="\nSUPPLIER DATA\n";
+	$msg.="Vendor Name: ".$_POST['vendor_name']."\n";
+	$msg.="Address: ".$_POST['address']."\n";
+	$msg.="Street: ".$_POST['street']."\n";
+	$msg.="Postal Code: ".$_POST['postal_code']."\n";
+	$msg.="Vat reg. No.: ".$_POST['vat']."\n";
+	$msg.="Country: ".$_POST['country']."\n";
+	$msg.="\nCOMMUNICATION\n";
+	$msg.="Name: ".$_POST['com_name']."\n";
+	$msg.="Phone: ".$_POST['phone']."\n";
+	$msg.="Fax: ".$_POST['fax']."\n";
+	$msg.="Email: ".$_POST['email']."\n";
+	$msg.="\nPAYMENT DATA\n";
+	$msg.="NIB (PT suppliers): ".$_POST['nib']."\n";
+	$msg.="IBAN (International suppliers): ".$_POST['iban']."\n";
+	$msg.="SWIFT Code (International suppliers): ".$_POST['swift']."\n";
+	$msg.="ABA/Routing (International suppliers): ".$_POST['aba']."\n";
+	$msg.="Bank: ".$_POST['bank']."\n";
+	$msg.="Bank street: ".$_POST['bank_street']."\n";
+	$msg.="\n\nThis is an automatic email. DO NOT REPLY";
+	try{
+		$mail->sendMail($subject, $to, $from, $msg);
+	} catch(Exception $e){
+		echo $e->getMessage();
+	}
+	echo "<meta HTTP-EQUIV='REFRESH' content='0; url=../admin.php'>";
+}
+
+function displayMenu($user_id){
+	require_once ("../dispClass.php");
+	require_once ("../queryClass.php");
+	require_once ("../genObjClass.php");
+	require_once ("../resClass.php");
+	require_once ("../reportClass.php");
+	require_once ("../mailClass.php");
+	require_once ("../treeClass.php");
+	require_once ("../configClass.php");
+	
+	//call database class (handle connections)
+	$db = new dbConnection();
+	$engine = $db->getEngine();
+	//call other classes
+	$display = new dispClass();
+	$genObj = new genObjClass();
+	$perm = new restrictClass();
+	$search = new searchClass();
+	$treeview = new treeClass();
+	$mail = new mailClass();
+	$config = new configClass();
+
+	echo "<table border=0 align=left width=200px>";
+	echo "<tr><td><a href=/".$db->getFolder()."/admin.php title='Return to the administration area'>Return to main menu</a></td></tr>";
+	$display->userOptions(true,$user_id);
+	echo "<tr><td><a href=javascript:void(0) class=contact>Report bug</a>";
+	$display->contactForm();
+	echo "</td></tr>";
+	echo "<tr><td><hr></td></tr>";
+	$display->reportOptions(true,$user_id);
+	//display treeview
+	echo "<tr><td><a href=javascript:void(0) title='Tree reports'>Treeview reports</a>";
+	echo "<div id='treeList' class=sidebar>";
+	$treeview->treeview_access($user_id);
+	echo "</div>";
+	echo "</td></tr>";
+	$config->checkPlugins();
+	echo "</table>";
+}
+
+function addFavourite($user_id){
+	//call database class (handle connections)
+	$db = new dbConnection();
+	$database=$db->getDatabase();
+	//url variables
+	if(isset($_GET['id']))	$item=$_GET['id'];
+	
+	try{
+		$sql=$db->query("INSERT INTO favourite (favourite_product,favourite_dep) SELECT '$item', user_dep FROM $database.user WHERE user_id=$user_id");
+	//	echo $sql->queryString;
+		echo "Item added to your favourite list";
+	} catch (Exception $e){
+		echo "Unable to add item to your favourite list";
+	}
+	
+	
+}
+
 
 ?>

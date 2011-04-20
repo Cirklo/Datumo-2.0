@@ -296,7 +296,7 @@ class dispClass{
 			$order = " ORDER BY $colOrder $setOrder"; //set order to display the results
 		$limit = " LIMIT $nrows OFFSET $offset"; //set limits for pagination
 		//Was it called by advanced filter??
-		if(!$filter){ 
+		if(!$filter){
 			foreach($this->vars as $key=>$value){
 				//it comes from filter
 				if(substr($key,strlen($key)-3,strlen($key))=="_f_")
@@ -315,9 +315,33 @@ class dispClass{
 				$where .= " LOWER($key)".$op."LOWER('$value') AND ";
 			}
 		} else {  //from advanced filter
-			foreach($this->vars as $value){
-				$where .= $value." AND ";
-			}
+			//unserialize advanced filter array
+			$arr=unserialize($_GET['arr']);
+			//how many rows does the filter have
+			$noRows=sizeof($arr);
+			foreach ($arr as $row){
+				switch($row[1][value]){
+					case 0:
+					if($this->pdo->getEngine() == "mysql")	$op .= " regexp ";
+					if($this->pdo->getEngine() == "pgsql")	$op .= " ~* ";
+					break;
+					case 1:
+						$op .= "=";
+						break;
+					case 2:
+						$op .= "<";
+						break;
+					case 3:
+						$op .= ">";
+						break;
+					case 4:
+						$op .= "=";
+						break;	
+				}
+				$where.=$row[0][value].$op."'".$row[2][value]."' AND ";
+				//clear operator
+				unset($op);
+			} 
 		}
 		//check for restraining clauses
 		$having = $this->perm->restrictAttribute($user_id, $objName);
@@ -326,7 +350,6 @@ class dispClass{
 		if(sizeof($this->vars)!=0 or sizeof($arr)!=0 or $having!="") $where = substr($where,0,strlen($where)-4);
 		else $where = "";
 		$this->mainQuery = $sql.$where.$order.$limit;
-		echo $this->mainQuery;
 		$this->setQuerySession($sql.$where.$order);
 		//echo $this->mainQuery;
 	}
@@ -397,8 +420,9 @@ class dispClass{
 				echo "</td>";
 			} else {
 				echo "<td></td>";
-				
 			}
+			//check if there is any specific row module for this table and database
+			$this->rowModules($objName,$row[0]);
 			//check if there is any permission for this table and user
 			//does this user have permissions to update or delete this table? if so apply checkboxes. If not, set fields as readonly
 			if($r)  {	echo "<td style='text-align:center'><input type=checkbox id=cb$i name=cb$i></td>";}
@@ -416,7 +440,7 @@ class dispClass{
 				if($this->FKtable[$j] and $j!=0){
 					//get foreign key values
 					$this->getFKvalue($row[$j],$j);
-					echo "<td nowrap=nowrap valign=top class=results><input type=text class=fk id=".$this->fullheader[$j]." name=".$this->fullheader[$j]." value='".$this->FKvalue."' lang=__fk onchange=selectRow('$i') $readonly>";
+					echo "<td nowrap=nowrap valign=top class=results><input type=text class=fk id=".$this->fullheader[$j]." name=".$this->fullheader[$j]." value='".$this->FKvalue."' lang=__fk onchange=selectRow('$i') $size $readonly>";
 					//div that enclosures this FK details
 					echo "<a href=javascript:void(0) title='Click for details' onclick=getdetails('details_".$this->fullheader[$j].$i."','".$this->FKtable[$j]."','$row[$j]')><img src=pics/details.gif border=0></a>";
 					echo "<div id='details_".$this->fullheader[$j].$i."' class=details>";
@@ -519,7 +543,7 @@ class dispClass{
 					$this->getFKvalue($this->default[$this->fullheader[$i]], $i);
 					$val = $this->FKvalue;
 				} else $val="";
-				echo "<td nowrap=nowrap valign=top class=results><input type=text class=fk id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' lang=__fk >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+				echo "<td nowrap=nowrap valign=top class=results><input type=text class=fk id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' lang=__fk $size>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
 			} else { // no foreign key
 				if($i!=0){
 					$val = $this->default[$this->fullheader[$i]];
@@ -563,8 +587,20 @@ class dispClass{
 				$mlength=20;
 				break;
 			default:
-				$size = 10;	
-				$mlength = 10;
+				if($this->FKtable[$j]){//Is this a foreign key?
+					//change to information schema
+					$this->pdo->dbInfo();
+					$sql=$this->pdo->query("SELECT character_maximum_length FROM columns WHERE table_schema='".$this->pdo->getDatabase()."' AND table_name='".$this->FKtable[$j]."' AND ordinal_position=2");
+					$row=$sql->fetch();
+					$size=$row[0];
+					$mlength=$row[0];
+					//change to main schema 
+					$this->pdo->dbConn();
+					//need to find the second attribute of the referenced table and look for its length
+				} else { //regular field (integers, doubles...)
+					$size = 10;	
+					$mlength = 10;
+				}
 		}	
 		return " size=$size maxlength=$mlength ";
 	}
@@ -576,9 +612,9 @@ class dispClass{
 
 	
 	public function maxRows($objName, $filter, $user_id){
-		$where=" WHERE ";
-		if(sizeof($this->vars) !=0){
-			if(!$filter){
+		$where="";
+		if(!$filter){
+			if($this->vars){
 				foreach($this->vars as $key=>$value){
 					//it comes from filter
 					if(substr($key,strlen($key)-3,strlen($key))=="_f_")
@@ -596,22 +632,48 @@ class dispClass{
 					//building the where clause			
 					$where .= " LOWER($key)".$op."LOWER('$value') AND ";
 				}
-			} else {
-				foreach($this->vars as $value){
-					$where .= $value." AND ";
-				}	
+				$where=" WHERE ".$where;
 			}
-			
+		} else {
+			//unserialize advanced filter array
+			$arr=unserialize($_GET['arr']);
+			//how many rows does the filter have
+			$noRows=sizeof($arr);
+			foreach ($arr as $row){
+				switch($row[1][value]){
+					case 0:
+					if($this->pdo->getEngine() == "mysql")	$op .= " regexp ";
+					if($this->pdo->getEngine() == "pgsql")	$op .= " ~* ";
+					break;
+					case 1:
+						$op .= "=";
+						break;
+					case 2:
+						$op .= "<";
+						break;
+					case 3:
+						$op .= ">";
+						break;
+					case 4:
+						$op .= "=";
+						break;	
+				}
+				$where.=$row[0][value].$op."'".$row[2][value]."' AND ";
+				//clear operator
+				unset($op);
+			} 	
+			$where=" WHERE ".$where;
 		}
+		
 		//check for restraining clauses
 		$having = $this->perm->restrictAttribute($user_id, $objName);
 		if($having!="")	$where.=$having." AND";
 		//remove last 'AND ' from query
-		if(sizeof($this->vars)!=0 or $having!="") $where = substr($where,0,strlen($where)-4);
+		if($where!="") $where = substr($where,0,strlen($where)-4);
 		else $where = "";
 		//set search path to main database
 		$sql = $this->pdo->prepare("SELECT COUNT(".$objName."_id) FROM ".$this->pdo->getDatabase().".$objName $where");
-		//echo $sql->queryString;
+		echo $sql->queryString;
 		try{
 			$sql->execute();
 		} catch (Exception $e){
@@ -699,12 +761,12 @@ class dispClass{
 			echo "</td></tr>";
 			*/
 			//Logout -> exit datumo
-			echo "<tr><td><a href=session.php?logout>Sign out</a></td></tr>";
+			echo "<tr><td><a href=/".$this->pdo->getFolder()."/session.php?logout>Sign out</a></td></tr>";
 		} else {
 			//exit page
 			echo "<tr><td><a href=javascript:void(0) onclick=window.close()>Exit</a></td></tr>";	
 		}
-		echo "<tr><td><a href=javascript:void(0) title='Need help?'>Help</a></td></tr>";
+		echo "<tr><td><a href=http://github.com/Cirklo/Datumo-2.0/wiki/_pages target='_blank' title='Need help?'>Help</a></td></tr>";
 	}
 	
 /**
@@ -723,7 +785,7 @@ class dispClass{
 		echo "</div>"; 
 		echo "</td></tr>";
 		//display window to generate a new report
-		echo "<tr><td><a href=javascript:void(0) onclick=window.open('genReport.php','mywindow','height=500px,width=500px,scrollbars=yes')>Create report</a></td></tr>";
+		echo "<tr><td><a href=javascript:void(0) onclick=window.open('/".$this->pdo->getFolder()."/genReport.php','mywindow','height=500px,width=500px,scrollbars=yes')>Create report</a></td></tr>";
 		
 	}
 	
@@ -762,6 +824,44 @@ class dispClass{
 		echo "<div id=errorNotify></div>";
 		
 	}
+	
+	
+/**
+ * Method to check if this is a foreign key field or not 
+ */
+	
+	function FKfield($objName, $val){
+		//change database to information schema
+		$this->pdo->dbInfo();
+		$sql=$this->pdo->query("SELECT b.referenced_table_name FROM columns a, key_column_usage b WHERE a.column_name=b.column_name and a.table_schema=b.table_schema AND b.table_name='$objName' AND b.table_schema='".$this->pdo->getDatabase()."' AND a.ordinal_position=2");
+		if($sql->rowCount()==0)
+			return $val;
+		else {
+			$row=$sql->fetch();
+			//change to main schema
+			$this->pdo->dbConn();
+			$sql=$this->pdo->query("SELECT * FROM ".$this->pdo->getDatabase().".$row[0] WHERE $row[0]_id='$val'");
+			$row=$sql->fetch();
+			return $row[1];
+		}
+		
+	}
+	
+	function rowModules($objName,$id){
+		if($this->pdo->getDatabase()=="requisitions"){
+			switch($objName){
+				case "product":
+					echo "<td align=center>";
+					//add to favourites
+					echo "<a href=javascript:void(0) onclick=add_to_favourites('$id')><img src=pics/star.png width=16px border=0 title='Add to favourites'></a>";
+					echo "</td>";
+					break;
+			}
+		}
+		
+	}
+	
+	
 }
 
 ?>

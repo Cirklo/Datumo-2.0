@@ -33,18 +33,20 @@ table.admin{
 }
 	
 tr.headers {
-background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0.23, rgb(22,79,85)),
-    color-stop(0.6, rgb(61,120,125))
-);
-background-image: -moz-linear-gradient(
-    center bottom,
-    rgb(22,79,85) 23%,
-    rgb(61,120,125) 60%
-);
+	background-image: 
+		-webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(0.23, rgb(22,79,85)),
+	    color-stop(0.6, rgb(61,120,125))
+	);
+	background-image: 
+		-moz-linear-gradient(
+	    center bottom,
+	    rgb(22,79,85) 23%,
+	    rgb(61,120,125) 60%
+	);
 	color:#FFF;
 	-moz-border-radius: 5px; 
 	-webkit-border-radius: 5px;

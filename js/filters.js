@@ -77,6 +77,78 @@ function checknew(type, id){
 	else document.getElementById("table").disabled = true;
 }
 
+function serialize( mixed_value ) {
+    var _getType = function( inp ) {
+        var type = typeof inp, match;
+        var key;
+        if (type == 'object' && !inp) {
+            return 'null';
+        }
+        if (type == "object") {
+            if (!inp.constructor) {
+                return 'object';
+            }
+            var cons = inp.constructor.toString();
+            match = cons.match(/(\w+)\(/);
+            if (match) {
+                cons = match[1].toLowerCase();
+            }
+            var types = ["boolean", "number", "string", "array"];
+            for (key in types) {
+                if (cons == types[key]) {
+                    type = types[key];
+                    break;
+                }
+            }
+        }
+        return type;
+    };
+    var type = _getType(mixed_value);
+    var val, ktype = '';
+    
+    switch (type) {
+        case "function": 
+            val = ""; 
+            break;
+        case "undefined":
+            val = "N";
+            break;
+        case "boolean":
+            val = "b:" + (mixed_value ? "1" : "0");
+            break;
+        case "number":
+            val = (Math.round(mixed_value) == mixed_value ? "i" : "d") + ":" + mixed_value;
+            break;
+        case "string":
+            val = "s:" + mixed_value.length + ":\"" + mixed_value + "\"";
+            break;
+        case "array":
+        case "object":
+            val = "a";
+            var count = 0;
+            var vals = "";
+            var okey;
+            var key;
+            for (key in mixed_value) {
+                ktype = _getType(mixed_value[key]);
+                if (ktype == "function") { 
+                    continue; 
+                }
+                
+                okey = (key.match(/^[0-9]+$/) ? parseInt(key, 10) : key);
+                vals += serialize(okey) +
+                        serialize(mixed_value[key]);
+                count++;
+            }
+            val += ":" + count + ":{" + vals + "}";
+            break;
+    }
+    if (type != "object" && type != "array") {
+      val += ";";
+  }
+    return val;
+}
+
 /**
  * @author João Lagarto / Nuno Moreno
  * @description function to submit the advanced filter
@@ -84,13 +156,50 @@ function checknew(type, id){
  */
 
 function filterSubmit(form){
+	//using jquery now
 	//target table
-	var objName = document.getElementById("table").value;
+	var objName=$("#table").val();//var objName = document.getElementById("table").value;
 	//form from which the filter was applied
 	var CurForm = eval("document."+form);
 	//each clause from the filter has 3 elements: field, operator and value
+	//sent these elements into an array
+	var arrRows = new Array(CurForm.length/3);
 	//Number of clauses = Form length divided by 3 elements 
-	var clauses = new Array(CurForm.length/3);
+	var ctrl=0; //initialize control variable
+	var jsonArr = []; //initialize array to write the filter fields
+	var jsonMaster = []; //initialize array to write the filter data (from fields)
+	var att=""; //initialize variable to handle each element
+	//loop through all filter elements (fields)
+	for(var i=0; i<CurForm.length;i++){
+		if(CurForm[i].value==''){
+	    	alert("Enter all parameters to submit filter!");
+	    	return;
+	    }
+		//check clause operator
+		if(ctrl==1 && CurForm[i].value==4){
+			att=CurForm[i-1].value;
+		}
+		if (att!="" && ctrl==2){
+			url="ajaxFilter.php?val=" + CurForm[i].value + "&table=" + objName + "&att="+att;
+			var str = ajaxRequest(url);
+			CurForm[i].value = str;
+		}
+		//write field id and value into a json object
+		jsonArr.push({
+			id:CurForm[i].id, //field id
+			value:CurForm[i].value //field value
+		});
+		ctrl++; //increment control variable
+		if(ctrl==3){ //each filter row has 3 fields(field, operator and value). When it reaches 3: write row into an array
+			jsonMaster.push(jsonArr); //write row into a general array
+			jsonArr=[]; //clear array to restart the loop
+			ctrl=0;	//reset control variable to reinitialize all process
+			att="";
+		}
+	}
+	//alert(JSON.stringify(jsonMaster));
+	
+	/*
 	var ctrl = 0;
 	for (var i=0; i<CurForm.length;i++){
 		if(CurForm[i].value==''){
@@ -103,13 +212,16 @@ function filterSubmit(form){
 			url="ajaxFilter.php?val=" + CurForm[i].value + "&table=" + objName + "&att="+att;
 		    var str = ajaxRequest(url);
 		    CurForm[i].value = str;
+		   // alert("flag");
 		}
 	    ctrl++;
 	    if(ctrl==3) ctrl=0;
 	    
 	}
-	CurForm.action = "manager.php?table="+objName+"&nrows=20&no=" + CurForm.length + "&filter=true&search=2";
+	*/
+	CurForm.action = "manager.php?table="+objName+"&nrows=20&no=" + CurForm.length + "&filter=true&search=2&arr="+serialize(jsonMaster);
 	CurForm.submit();
+	
 }
 
 /**

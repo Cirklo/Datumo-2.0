@@ -19,7 +19,7 @@ $user_id = startSession();
 <script type="text/javascript" src="js/jquery.cookie.js.js"></script>
 <script type="text/javascript" src="js/jquery.tipTip.js"></script>
 <script type="text/javascript" src="js/jquery.alert.js"></script>
-<script type="text/javascript" src="js/jquery.basket.js"></script>
+<script type="text/javascript" src="requisitions/js/jquery.basket.js"></script>
 <script type="text/javascript" src="js/CalendarControl.js"></script>
 <script type="text/javascript" src="js/filters.js"></script>
 <script type="text/javascript" src="js/functions.js"></script>
@@ -83,8 +83,6 @@ $treeview = new treeClass();
 $mail = new mailClass();
 $config = new configClass();
 
-//print_r($_POST);
-//break;
 
 //HTTP variables
 if(isset($_GET['report']))	$report = 1;
@@ -158,51 +156,14 @@ if($postCounter==sizeof($header)){
 
 //recover variables from filter to construct query (it relies on 3 elements)
 if(isset($_GET['filter'])){
-	//initialize control variables
-	$var=0;
-	$j=0;
-	$clause = array(); //initialize counter to control advanced filter variables
-	$q = array(); //array to store values to send to manager.php
-	foreach($_POST as $key=>$value){	$clause[] = $value;	}
-	for($i=0;$i<sizeof($clause);$i++){
-		if($var == 0) $q[$j] .= $clause[$i]; //clause for field
-		if($var == 1) { //clause for operator
-			switch ($clause[$i]){
-				case 0:
-					if($engine == "mysql")	$q[$j] .= " regexp ";
-					if($engine == "pgsql")	$q[$j] .= " ~* ";
-					break;
-				case 1:
-					$q[$j] .= "=";
-					break;
-				case 2:
-					$q[$j] .= "<";
-					break;
-				case 3:
-					$q[$j] .= ">";
-					break;
-				case 4:
-					$q[$j] .= "=";
-					break;	
-			}
-		}
-		if($var == 2) $q[$j] .= "'$clause[$i]'"; //clause for value 
-		$var++;
-		if($var==3){ //reinitialize and increment variables -> step for second clause
-			$var=0;
-			$j++;
-		}
-	}
-	for($i=0; $i<sizeof($q);$i++){
-		$display->__set($i,$q[$i]);
-	}
 	$filter=true;
+	//exit();
 } else {
-	if(!$action){
-		foreach($_POST as $key=>$value){
-			if($value!=""){ $display->__set($key, $value); }
-			
-		}
+	foreach($_POST as $key=>$value){
+		if($action) break; //Chrome/Firefox?
+		//echo $value;
+		if($value!=""){ $display->__set($key, $value); }
+		
 	}
 	$filter=false;
 }
@@ -217,6 +178,7 @@ if(!isset($report)){
 		$numRows = $display->maxRows($table, $filter, $user_id);
 	}
 }	
+//exit();
 //get the last page according to the number of rows displayed in the page
 $maxPage = ceil($numRows/$nrows);
 // print the link to access each page
@@ -280,7 +242,7 @@ echo "<table border=0>";
 echo "<tr>";
 if($perm->getUpdate()) {echo "<td><input type=button name=upd id=upd value=Update onclick=checkfields('update','$table',$nrows,'$order','$colOrder','$stype','$pageNum')></td>";}
 if($perm->getDelete()) {echo "<td><input type=button name=del id=del value=Delete onclick=checkfields('delete','$table',$nrows,'$order','$colOrder','$stype','$pageNum')></td>";}
-if($perm->getUpdate() or $perm->getDelete()) $r=true;
+if($perm->getUpdate() or $perm->getDelete() or $perm->getInsert()) $r=true;
 //set order
 //Regular filter
 echo "<td><input type=button name=filter_$table id=filter_$table value=Search>";
@@ -297,8 +259,8 @@ echo "</div>";
 echo "</td>";
 
 //print page navigation
-echo "<td>".$first.$prev." Showing page $pageNum of $maxPage pages ".$next.$last."</td>";
-echo "<td>Jump to page <input type=text size=1 name=newPage id=newPage value=$pageNum><input type=button id=jump value='Go' onclick=submit('$stype','$table',$nrows,'$order','$colOrder',$('#newPage').val())></td>";
+echo "<td>".$first.$prev." Showing page $pageNum of $maxPage pages ".$next.$last."</td>"; 
+echo "<td><b>Jump to page</b> <input type=text size=1 name=newPage id=newPage value=$pageNum><input type=button id=jump value='Go' onclick=submit('$stype','$table',$nrows,'$order','$colOrder',$('#newPage').val())></td>";
 echo "</tr>";
 echo "</table>";
 
@@ -312,14 +274,18 @@ if($numRows>0){
 	$display->headers(FALSE, $stype,$table,$nrows,$order,1); //call method to display table headers
 	echo "</tr>";
 } else {
+	echo "<tr class=headers>";
+	echo "<td colspan=3></td>";
+	$display->headers(TRUE, $stype,$table,$nrows,$order,1); //call method to display table headers
+	echo "</tr>";
 	echo "No results to display";
 }
+//display main results
+$display->results($table,$r); //call method to display query results
 
-$display->results($table,$r,$stype,$nrows); //call method to display query results
 //search for permissions related with new entries in the table
-if($perm->getInsert()) {$display->insert($table);}
+if($perm->getInsert()) {$display->insert($table,$stype,$nrows,$order);}
 echo "</table>";
-
 echo "</td>";
 echo "</tr>";
 echo "</table>";
@@ -334,6 +300,9 @@ echo "<input type='hidden' name='multiple' id='multiple' value=1>";
 
 /**************************JAVASCRIPT*******************************/
 if($stype==2){
+	
+	
+	
 	//Big fu(...) hack to fill the advanced filter after a search
 	echo "<script type='text/javascript'>";
 	echo "function getSearchVars(objName){";
@@ -355,6 +324,7 @@ if($stype==2){
 		}
 		if($i==3) {
 			echo "if(fk==true){";
+			//echo "alert('$value');";
 			echo "url='ajaxGetAtt.php?id=$value&table='+objName+'&att='+att;";
 			echo "var str = ajaxRequest(url);";
 			echo "document.getElementById('$key').value=str;";

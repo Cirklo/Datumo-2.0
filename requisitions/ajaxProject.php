@@ -1,9 +1,9 @@
 <?php
 
 //includes
-require_once ".htconnect.php";
+require_once "../.htconnect.php";
 require_once "projectClass.php";
-require_once "session.php";
+require_once "../session.php";
 $user_id = startSession();
 
 if(isset($_GET['graph'])){	drawGraphs($user_id);}

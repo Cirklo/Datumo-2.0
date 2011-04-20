@@ -1,11 +1,11 @@
 <?php
-require_once("session.php");
+require_once("../session.php");
 $user_id = startSession();
 
-require_once ".htconnect.php";
-require_once "dispClass.php";
-require_once "queryClass.php";
-require_once "resClass.php";
+require_once "../.htconnect.php";
+require_once "../dispClass.php";
+require_once "../queryClass.php";
+require_once "../resClass.php";
 
 //http variables
 if(isset($_GET['table'])){	$table=$_GET['table'];}

@@ -10,7 +10,6 @@
 //includes
 require_once (".htconnect.php");
 require_once ("dispClass.php");
-require_once ("genObjClass.php");
 
 //http variables
 if(isset($_GET['login'])){	login();}
@@ -18,6 +17,8 @@ if(isset($_GET['logout'])){	logout();}
 if(isset($_GET['pwd'])){	recoverPwd();}
 
 function login(){
+	//includes
+	require_once ("genObjClass.php");
 	//call classes
 	$db = new dbConnection();
 	$genObj = new genObjClass();
@@ -45,18 +46,9 @@ function initSession($user_id){
 	$_SESSION['user_id'] = $user_id;	
 }
 
-
 function startSession(){
 	session_start();
-	 $_SESSION['user_id']=28;
-
-	if(isset($_POST['user_idm'])){
-		$genObj = new genObjClass();
-		$_SESSION['user_id'] = $_POST['user_idm'];
-		if(!isset($_SESSION['user_pass']))
-			$_SESSION['user_pass'] = $genObj->cryptPass($_POST['user_passwd']);
-	}
-
+	$_SESSION['user_id']=28;
 	if(isset($_SESSION['user_id'])){
 		$user = $_SESSION['user_id'];
 		return $user; 
@@ -68,7 +60,7 @@ function startSession(){
 function logout(){
 	session_start(); //start session if it has not been started
 	session_destroy();
-	echo "<meta HTTP-EQUIV='REFRESH' content='0; url=../'>";
+	echo "<meta HTTP-EQUIV='REFRESH' content='0; url=./'>";
 }
 
 function notlogged(){
@@ -89,8 +81,10 @@ function recoverPwd(){
 
 	//http variables
 	if(isset($_GET['email'])){ $user_email = $_GET['email'];}
+	if(isset($_GET['user'])){ $user_login = $_GET['user'];}
 	
-	$sql=$db->prepare("SELECT user_login FROM ".$db->getDatabase().".user WHERE user_email='$user_email'");
+	
+	$sql=$db->prepare("SELECT user_login FROM ".$db->getDatabase().".user WHERE user_email='$user_email' AND user_login='$user_login'");
 	$sql->execute();
 	//is there any user with this email?
 	if($sql->rowCount()>0){

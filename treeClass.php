@@ -60,25 +60,16 @@ class treeClass{
     	$sql->execute();
     	echo "<ul id='browser' class='filetree treeview-famfamfam'>";
     	for($i=0;$row=$sql->fetch();$i++) {
-    		if($arr[0]!=""){ 
-   				//treeview w/ 3 tables
+    		if($arr[0]!=""){
     			$conn = $this->tableConn($arr[0], $arr[1]);
     			$onclick="dispTree('firstTree$i','$arr[1]','$arr[2]','$conn','$row[0]',1,1,false,$tree)";
-    			$sql_low=$this->pdo->query("SELECT * FROM ".$this->pdo->getDatabase().".".$arr[1]." WHERE $conn='$row[0]'");
        		} else {
-       			//treeview w/ 2 tables
        			$conn = $this->tableConn($arr[1], $arr[2]);
  		   		$onclick="dispTree('firstTree$i','$arr[2]','$arr[2]','$conn','$row[0]',1,2,false,$tree)";
- 		   		$sql_low=$this->pdo->query("SELECT * FROM ".$this->pdo->getDatabase().".".$arr[2]." WHERE $conn='$row[0]'");
-//echo $onclick;
       		}
-      		//echo $sql_low->queryString;
-      		if($sql_low->rowCount()>0){
-      			echo "<li class=expandable><a href=javascript:void(0) onclick=$onclick>$row[1]</a>";
-    			echo "<div id=firstTree$i style='display:none'></div>";
-  				echo "</li>";
-      		}
-    		
+    		echo "<li class=expandable><a href=javascript:void(0) onclick=$onclick>$row[1]</a>";
+    		echo "<div id=firstTree$i style='display:none'></div>";
+  			echo "</li>";
     	}
     	echo "</ul>";
     }
@@ -137,7 +128,7 @@ class treeClass{
 	    		echo "<tr><td>No treeview reports available!</td></tr>";
 	    	}else{
 	    		for($i=0;$row=$sql->fetch();$i++){
-	    			echo "<tr><td>".($i+1).".</td><td><a href='treeview.php?tree=$row[0]' title='$row[2]'>$row[1]</a> - $row[2]</td></tr>";
+	    			echo "<tr><td>".($i+1).".</td><td><a href='/".$this->pdo->getFolder()."/treeview.php?tree=$row[0]' title='$row[2]'>$row[1]</a> - $row[2]</td></tr>";
 	    		}	
 	    	}
 	    	echo "</table>";

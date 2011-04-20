@@ -38,12 +38,12 @@ class searchClass{
 		echo "<form name=advFilter method=post>";
 		echo "<table>";
 		echo "<tr>";
-    	echo "<td id=clone><a href=# style='text-decoration:none' class=cloneMe onclick=\"javascript:checknew('sum', this);\" title='clone row'>Add</a></td>";
-    	echo "<td id=delete><a href=# style='text-decoration:none' class=deleteMe onclick=\"javascript:checknew('subtract', this);\" title='cancel row'>Remove</a></td>";
+    	echo "<td id=clone><a href=javascript:void(0) style='text-decoration:none' class=cloneMe onclick=\"javascript:checknew('sum', this);\" title='clone row'>Add</a></td>";
+    	echo "<td id=delete><a href=javascript:void(0) style='text-decoration:none' class=deleteMe onclick=\"javascript:checknew('subtract', this);\" title='cancel row'>Remove</a></td>";
    		echo "<td><select id=field name=field onchange=selOperator(this.id,event) ></select></td>";
    		echo "<td><select id=operator name=operator></select></td>";
    		echo "<td><input type=text id=val name=val></td>";
-   		echo "<td><a href=# class=cloneMe onclick=filterSubmit('advFilter')>Submit</a></td>";
+   		echo "<td><a href=javascript:void(0) class=cloneMe onclick=filterSubmit('advFilter')>Submit</a></td>";
    		echo "</tr>";
 	//	echo "<tr><td colspan=6 style='text-align:right'><br><a href=javascript:void(0) onclick=showhide('advsearch')>Close</a></td></tr>";
 		echo "</table>";

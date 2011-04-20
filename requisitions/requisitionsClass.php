@@ -9,8 +9,8 @@
  * 
  */
 
-require_once(".htconnect.php");
-require_once "resClass.php";
+require_once "../.htconnect.php";
+require_once "../resClass.php";
 
 class reqClass{
 	private $pdo;

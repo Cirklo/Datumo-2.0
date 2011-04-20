@@ -27,7 +27,6 @@ $user_id = startSession();
 <script type="text/javascript" src="js/ajax-autosuggest.js"></script>
 <script type="text/javascript" src="js/ajax-dynamic-list.js"></script>
 
-
 <?php
 
 /**
@@ -66,6 +65,7 @@ $mail = new mailClass();
 
 //set variables
 $contact = "Do you want to report a bug? Please submit the form.";
+$bool=false;
 
 //initialize variables to build query
 if(isset($_GET['report'])){
@@ -73,14 +73,16 @@ if(isset($_GET['report'])){
 	$nrows = 20; //default number of displayed results
 	$sql = $report->loadQuery($report_id);
 	//split string
+	
 	$fields = substr($sql,strlen("SELECT"),strpos($sql,"FROM")-strlen("SELECT"));
 	$maxSql = substr($sql,0,strpos($sql,"LIMIT"));
 	$where = strpos($sql,"WHERE");
 	$group = strpos($sql,"GROUP BY");
 	$order = strpos($sql,"ORDER BY");
-	if(strpos($sql,"LIMIT")==""){ //if it is a dynamic report
-		$sql .= " LIMIT 20 OFFSET 0";
-	}	
+	/*if(strpos($sql,"LIMIT")==""){ //if it is a dynamic report
+		$sql .= " LIMIT 10 OFFSET 0";
+	}*/
+	/*	
 	//ALL THE POSSIBILITIES TO CONSTRUCT THE QUERY -> SPLIT QUERY AND REARRANGE IT -> BIG FUC..... HACK
 	if($where===false){
 		$where="";
@@ -120,7 +122,7 @@ if(isset($_GET['report'])){
 			$group = substr($sql,strpos($sql,"GROUP BY")+8, strpos($sql,"ORDER BY")-strpos($sql,"GROUP BY")-8);
 			$order = substr($sql,strpos($sql,"ORDER BY")+8, strpos($sql,"LIMIT")-strpos($sql,"ORDER BY")-8);
 		}
-	}
+	}*/
 	
 	
 } else {
@@ -134,20 +136,25 @@ if(isset($_GET['report'])){
 }
 
 //get current page number
-if(isset($_GET['page'])) { //page to be shown
+if(isset($_GET['page']) and $_GET['page']!=1) { //page to be shown
 	$pageNum = $_GET['page'];	
+	$sql.=" LIMIT ".$nrows*$pageNum." OFFSET $nrows";
 } else {
 	$pageNum = 1; //default page to be shown
+	$sql.=" LIMIT $nrows OFFSET 0";
 }
+
 
 //handle post array if this is a dynamic report submit
 if(isset($_GET['d'])){
-	//print_r($_POST);
 	$i=0; //initialize counter
+	//print_r($_POST);
 	foreach($_POST as $value){
-		$where = str_replace("&$i", $value, $where);
+		$sql = str_replace("&$i", $value, $sql);
+		//$where=str_replace("&$i", $value, $where);
 		$i++; //increment counter
 	}
+	$bool=true;
 }
 
 //validating the query
@@ -168,13 +175,20 @@ $offset = ($pageNum - 1) * $nrows; //counting the offset
 
 //hidden content
 echo "<form method=post name=submitForm>";
-echo "<input type=hidden name=queryFields id=queryFields value='".$fields."'>";
-echo "<input type=hidden name=queryTables id=queryTables value='".$objName."'>";
-echo "<input type=hidden name=queryWhere id=queryWhere value='".$where."'>";
-echo "<input type=hidden name=queryOrder id=queryOrder value='".$order."'>";
-echo "<input type=hidden name=queryLimit id=queryLimit value='".$nrows."'>";
-echo "<input type=hidden name=queryGroup id=queryGroup value='".$group."'>";
-echo "<input type=hidden name=queryClauses id=queryClauses value='".$clauses."'>";
+
+if(isset($_GET['d'])){
+	foreach ($_POST as $key=>$value){
+		echo "<input type=hidden name='$key' id='$key' value='$value'>";
+	}
+} else {
+	echo "<input type=hidden name=queryFields id=queryFields value='".$fields."'>";
+	echo "<input type=hidden name=queryTables id=queryTables value='".$objName."'>";
+	echo "<input type=hidden name=queryWhere id=queryWhere value='".$where."'>";
+	echo "<input type=hidden name=queryOrder id=queryOrder value='".$order."'>";
+	echo "<input type=hidden name=queryLimit id=queryLimit value='".$nrows."'>";
+	echo "<input type=hidden name=queryGroup id=queryGroup value='".$group."'>";
+	echo "<input type=hidden name=queryClauses id=queryClauses value='".$clauses."'>";
+}
 echo "</form>";
 
 //validating the query
@@ -183,14 +197,21 @@ if($order!="") $order = " ORDER BY ".$order;
 if($group!="") $group = " GROUP BY ".$group;
 
 //BUILDING THE QUERY
-$sql = "SELECT $clauses $fields FROM $objName $where $group $order LIMIT $nrows OFFSET $offset";
+if(!isset($_GET['report'])){
+	$sql = "SELECT $clauses $fields FROM $objName $where $group $order LIMIT $nrows OFFSET $offset";
+} 
 
+//echo $sql;
 $_SESSION['sql']=$sql;
 $report->setQuery($sql);
 //test query for errors
 $report->testQuery();
 //call method to calculate the maximum number of rows from the main query
-$numRows = $report->maxRows("SELECT $clauses $fields FROM $objName $where $group $order");
+if(!isset($_GET['report'])){
+	$numRows = $report->maxRows("SELECT $clauses $fields FROM $objName $where $group $order");
+} else {
+	$numRows=$report->maxRows(substr($sql,0,strpos($sql,"LIMIT")));
+}
 
 //page navigator
 //get the last page according to the number of rows displayed in the page
@@ -203,8 +224,8 @@ $self = $_SERVER['PHP_SELF'];
 
 if ($pageNum > 1){
    $page  = $pageNum - 1;
-   $prev  = " <a href=javascript:void(0) class=exp onclick=submitReport($page)>[Prev]</a> ";//\"$self?table=$table&nrows=$nrows&order=$order&colOrder=$colOrder&page=$page\">[Prev]</a> ";
-   $first = " <a href=javascript:void(0) class=exp onclick=submitReport(1)>[First Page]</a> "; //\"$self?table=$table&nrows=$nrows&order=$order&colOrder=$colOrder&page=1\">[First Page]</a> ";
+   $prev  = " <a href=javascript:void(0) class=exp onclick=submitReport($page,'$report_id',$bool)>[Prev]</a> ";//\"$self?table=$table&nrows=$nrows&order=$order&colOrder=$colOrder&page=$page\">[Prev]</a> ";
+   $first = " <a href=javascript:void(0) class=exp onclick=submitReport(1,'$report_id',$bool)>[First Page]</a> "; //\"$self?table=$table&nrows=$nrows&order=$order&colOrder=$colOrder&page=1\">[First Page]</a> ";
 } else {
    $prev  = '&nbsp;'; // we're on page one, don't print previous link
    $first = '&nbsp;'; // nor the first page link
@@ -212,15 +233,15 @@ if ($pageNum > 1){
 	
 if ($pageNum < $maxPage){
    $page = $pageNum + 1;
-   $next = " <a href=javascript:void(0) class=exp onclick=submitReport($page)>[Next]</a> ";
-   $last = " <a href=javascript:void(0) class=exp onclick=submitReport($maxPage)>[Last Page]</a> ";
+   $next = " <a href=javascript:void(0) class=exp onclick=submitReport($page,'$report_id',$bool)>[Next]</a> ";
+   $last = " <a href=javascript:void(0) class=exp onclick=submitReport($maxPage,'$report_id',$bool)>[Last Page]</a> ";
 } else {
    $next = '&nbsp;'; // we're on the last page, don't print next link
    $last = '&nbsp;'; // nor the last page link
 }
 
 //main table
-$options=array("Options","Report");
+$options=array("Options",strtoupper($report->getReportName())." - ".$report->getReportDesc());
 echo "<table border=0>";
 $display->options($options);
 echo "<tr>";
@@ -233,7 +254,7 @@ $display->contactForm();
 echo "</td></tr>";
 echo "<tr><td><hr></td></tr>";
 // reports
-if(isset($report_id))	echo "<tr><td><a href=excel.php?report=$report_id title='Export data to xls file'>Export data</a></td></tr>";
+echo "<tr><td><a href=excel.php?report=$report_id title='Export data to xls file'>Export data</a></td></tr>";
 echo "<tr><td><a href=javascript:void(0) onclick=saveReport($user_id)>Save Report</a></td></tr>";
 $display->reportOptions(false, $user_id);
 echo "</table>";

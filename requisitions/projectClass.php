@@ -1,7 +1,7 @@
 <?php 
 
 /**
- * @author João Lagarto / Nuno Moreno
+ * @author João Lagarto
  * @copyright João Lagarto 2010
  * @license EUPL
  * @version Datumo 2.0

@@ -160,6 +160,4 @@ $(document).ready(function() {
 		$(this).simpleAutoComplete("autoSuggest.php?field="+this.id);
 	});
 	
-	
-	
 });

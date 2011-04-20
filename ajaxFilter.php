@@ -33,19 +33,30 @@ $arr = $display->getFKtable();
 
 //ordinal_position-1 to match the array indexes
 $sql = $conn->prepare("SELECT data_type, ordinal_position-1 FROM columns WHERE table_schema='".$database."' AND table_name='$table' AND column_name='$att'");
-$sql->execute();
+try{
+	$sql->execute();
+} catch (Exception $e){
+	echo $sql;
+}
 $row = $sql->fetch();		
 $fktable = $arr[$row[1]];
 
 if($fktable != ""){
 	//get second attribute from table
 	$sql = $conn->prepare("SELECT column_name FROM columns WHERE table_name='".$fktable."' AND table_schema='$database' LIMIT 1 OFFSET 1" );
-	$sql->execute();
-	$row = $sql->fetch();
+	try{
+		$sql->execute();
+	} catch (Exception $e){
+		echo $sql;
+	}	$row = $sql->fetch();
 	
 	//get id from referenced table
 	$sql = $conn->prepare("SELECT ".$fktable."_id FROM $database.$fktable WHERE ".$row[0]."='$val'");
-	$sql->execute();
+	try{
+		$sql->execute();
+	} catch (Exception $e){
+		echo $sql;
+	}
 	$row = $sql->fetch();
 	//ajax response
 	echo $row[0];

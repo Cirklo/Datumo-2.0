@@ -14,7 +14,7 @@ $(document).ready(function(){
 				display: "External",
 				state: "Active",
 				height:"100%",
-				width:900,
+				width:1000,
 				id:"",
 				caption:""
 			};
@@ -285,7 +285,7 @@ $(document).ready(function(){
 			                viewrecords: true,					
 			                caption: state+" baskets",			//table title
 			                height: "100%",						//default height
-			                width:900,							//default width	
+			                width:1000,							//default width	
 			                toolbar: [true,"top"],				//set toolbar
 			                grouping: colG, 					//group by type
 				            groupingView : { 					//group settings
@@ -467,6 +467,35 @@ $(document).ready(function(){
 			 alert(total);
 		});
 		
+		$("#vendorSubmit").click(function(){
+			//initialize control variable
+			var ctrl=true;
+			$("form[name=newVendor]").find("input[lang=yes]").each(function(){
+				if(this.value=="")	{
+					alert("Fields missing!");
+					ctrl=false;
+					return false;
+				}
+			});
+			//bank validation
+			if($("#nib").val()==""){
+				$("form[name=newVendor]").find("input[lang=int]").each(function(){
+					if(this.value=="")	{
+						alert("You must enter the payment information");
+						ctrl=false;
+						return false;
+					}
+				});
+			}
+			//everything's OK
+			if(ctrl){
+				var CurForm=eval("document.newVendor");
+				url="requisitions.php?type=8";
+				CurForm.action=url;
+				CurForm.submit();
+			}
+		});
+		
 		
 		
 }); 
@@ -479,27 +508,44 @@ function center(object)
 
 function updateBasket(basket_id){
 	//Update basket delivery
-	var url="requisitions.php?type=6";
+	
 	//display div to access user credentials
+	$("#basket_number").val(basket_id);
 	$("#igc_user").css("display","block");
 	//get div ID
 	var igc_user=document.getElementById("igc_user");
 	//center div on screen
 	center(igc_user);
-	//set basket state to receive and update date
-	/*$.get(url,{
-		basket:basket_id,
-		newstate:"Received"},
-	function(data){
-		alert("Basket successfully received");
-	});*/
-	
 }
+
+function validate(){
+	var url="deliver.php?auth";
+	$.get(url,{
+		basket_id:$("#basket_number").val(),
+		username:$("#igc_email").val(),
+		pass:$("#igc_pass").val()},
+	function(data){
+		alert(data);
+		location.reload(true);
+		//setTimeout("location.reload(true)",1000);
+		
+	});
+}
+
 
 function getUserLevel(){
 	url="requisitions.php?type=7";
 	var str=ajaxRequest(url);
 	return str;
+}
+
+function add_to_favourites(id){
+	var resp=confirm("Sure you want to add this item to your favourites?");
+	if(resp){
+		url="requisitions/requisitions.php?type=9&id="+id;
+		var str=ajaxRequest(url);
+		alert(str);
+	}
 }
 
 function exportExcel(grid)
@@ -529,7 +575,7 @@ function exportExcel(grid)
     html=html+"\n";  // end of line at the end
     document.forms[0].csvBuffer.value=html;
     document.forms[0].method='POST';
-    document.forms[0].action='excel.php?oper';  // send it to server which will open this contents in excel file
+    document.forms[0].action='../excel.php?oper';  // send it to server which will open this contents in excel file
     document.forms[0].target='_blank';
     document.forms[0].submit();
 }

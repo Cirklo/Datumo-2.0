@@ -38,8 +38,8 @@ for($j=0;$row=$sql->fetch();$j++){
 	    $msg.="\n\n For any information contact support@cirklo.org";
 	    $to=$row[2];
 	    $from="info@cirklo.org";
-	    $mail->sendMail($subject, $to, $from, $msg);
-	   	$mail->ClearAddresses();
+	   // $mail->sendMail($subject, $to, $from, $msg);
+	   //	$mail->ClearAddresses();
     } catch (Exception $e){
     	echo "Unable to send email!";
     }

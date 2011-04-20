@@ -23,7 +23,7 @@ $file = "/var/www/datumo2.0/importer/upload/".$file;
 echo date("d/m/y : H:i:s", time());
 echo "<br>";
 echo "Deleting non referenced data... "; 
-//$import->delete($table, $match, $table."_".$column);
+$import->delete($table, $match, $table."_".$column);
 //initialize counters
 $row = 0;
 $counter = 0; //number of inserted rows

@@ -100,10 +100,8 @@ function selOperator(id, event){
 	    optionItem.appendChild(document.createTextNode("Foreign Key"));
 	    selOp.appendChild(optionItem);
 	    val.onfocus = function(){
-	    	$(document).autosuggest({
-	    		table: str,
-	    		type: val.id
-	    	});
+	    	//alert(str);
+	    	$(this).simpleAutoComplete("autoSuggest.php?field="+field);
 	    };
     }
 }

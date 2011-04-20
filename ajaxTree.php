@@ -3,7 +3,6 @@ require_once("session.php");
 $user_id = startSession();
 
 ?>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" /> 
 <script type="text/javascript">
 $(document).ready(function(){
 	$("*").tipTip(); //tiptip initialization

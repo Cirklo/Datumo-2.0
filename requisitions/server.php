@@ -1,6 +1,6 @@
 <?php
 
-require_once (".htconnect.php");
+require_once "../.htconnect.php";
 
 //get posted variables so I can understand what is the operation
 if(isset($_POST['oper'])) $oper=$_POST['oper'];

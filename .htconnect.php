@@ -19,6 +19,7 @@ class dbConnection extends PDO{
 	private $schema;
 	private $schemaQuery;
 	private $admin;
+	private $folder;
 	
 	public function __construct(){
 		$this->databaseSettings();
@@ -49,15 +50,16 @@ class dbConnection extends PDO{
 		$this->schema = "requisitions";// Name of the schema (same as database for mysql)
 		$this->description = "IGC requisitions system";
 		$this->admin = "info@cirklo.org";
+		$this->folder = "datumo2.0"; //folder where the main files of datumo are located
 	}
 	
-
-	public function getEngine(){ return $this->engine;}
-	public function getDatabase(){ return $this->database;}
-	public function getSchema(){ return $this->schemaQuery;}
-	public function getDescription(){ return $this->description;}
-	public function getAdmin(){ return $this->admin;}
-	public function getSchemaName(){ return $this->schema;}
+	public function getFolder(){		return $this->folder;} 
+	public function getEngine(){ 		return $this->engine;}
+	public function getDatabase(){	 	return $this->database;}
+	public function getSchema(){ 		return $this->schemaQuery;}
+	public function getDescription(){ 	return $this->description;}
+	public function getAdmin(){ 		return $this->admin;}
+	public function getSchemaName(){ 	return $this->schema;}
 	
 /**
  * @author João Lagarto / Nuno Moreno

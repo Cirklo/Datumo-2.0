@@ -1,10 +1,10 @@
 <?php 
 //include the information needed for the connection to MySQL data base server. 
 // we store here username, database and password 
-require_once ".htconnect.php"; 
-require_once "session.php";
-require_once "functions.php";
-require_once "resClass.php";
+require_once "../.htconnect.php"; 
+require_once "../session.php";
+require_once "../functions.php";
+require_once "../resClass.php";
 $user_id = startSession();
 // to the url parameter are added 4 parameters as described in colModel
 // we should get these parameters to construct the needed query
