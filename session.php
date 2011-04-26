@@ -22,6 +22,7 @@ function login(){
 	//call classes
 	$db = new dbConnection();
 	$genObj = new genObjClass();
+	$database=$db->getDatabase();
 	
 	//posted variables
 	if(isset($_POST['login'])){ $user_login = $_POST['login'];}
@@ -34,22 +35,25 @@ function login(){
 	//is there any match for this key??
 	if($sql->rowCount()>0){
 		$row = $sql->fetch();
-		initSession($row[0]);
+		initSession($row[0],$database);
 	} else {
 		echo "Wrong login";
 	}
 }
 
 
-function initSession($user_id){
+function initSession($user_id,$database){
 	session_start();
-	$_SESSION['user_id'] = $user_id;	
+	$_SESSION['user_id']=$user_id;
+	$_SESSION['database']=$database;	
 }
 
 function startSession(){
 	session_start();
-	$_SESSION['user_id']=28;
-	if(isset($_SESSION['user_id'])){
+	$db = new dbConnection();
+	$database=$db->getDatabase();
+	//$_SESSION['user_id']=28;
+	if(isset($_SESSION['user_id']) and $_SESSION['database']==$database){
 		$user = $_SESSION['user_id'];
 		return $user; 
 	} else {

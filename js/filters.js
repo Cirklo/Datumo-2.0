@@ -197,28 +197,7 @@ function filterSubmit(form){
 			att="";
 		}
 	}
-	//alert(JSON.stringify(jsonMaster));
-	
-	/*
-	var ctrl = 0;
-	for (var i=0; i<CurForm.length;i++){
-		if(CurForm[i].value==''){
-	    	alert("Enter all parameters to submit filter!");
-	    	return;
-	    }
-		if (ctrl == 0) {
-			var att = CurForm[i].value;
-		} else if (ctrl == 2) {
-			url="ajaxFilter.php?val=" + CurForm[i].value + "&table=" + objName + "&att="+att;
-		    var str = ajaxRequest(url);
-		    CurForm[i].value = str;
-		   // alert("flag");
-		}
-	    ctrl++;
-	    if(ctrl==3) ctrl=0;
-	    
-	}
-	*/
+
 	CurForm.action = "manager.php?table="+objName+"&nrows=20&no=" + CurForm.length + "&filter=true&search=2&arr="+serialize(jsonMaster);
 	CurForm.submit();
 	
@@ -249,23 +228,47 @@ function submit(search, objName, nrows, order, colOrder, page){
 		CurForm.submit();
 	} 
 	if(search == 2){ //advanced filter search
+		//using jquery now
+		//form from which the filter was applied
 		var CurForm = eval("document.advFilter");
 		//each clause from the filter has 3 elements: field, operator and value
+		//sent these elements into an array
+		var arrRows = new Array(CurForm.length/3);
 		//Number of clauses = Form length divided by 3 elements 
-		var clauses = new Array(CurForm.length/3);
-		var ctrl = 0;
-		for (var i=0; i<CurForm.length;i++){
-			if (ctrl == 0) {
-				var att = CurForm[i].value;
-			} else if (ctrl == 2) {
-				url="ajaxFilter.php?val=" + CurForm[i].value + "&table=" + objName + "&att="+att;
-			    var str = ajaxRequest(url);
-			    CurForm[i].value = str;
+		var ctrl=0; //initialize control variable
+		var jsonArr = []; //initialize array to write the filter fields
+		var jsonMaster = []; //initialize array to write the filter data (from fields)
+		var att=""; //initialize variable to handle each element
+		//loop through all filter elements (fields)
+		for(var i=0; i<CurForm.length;i++){
+			if(CurForm[i].value==''){
+		    	alert("Enter all parameters to submit filter!");
+		    	return;
+		    }
+			//check clause operator
+			if(ctrl==1 && CurForm[i].value==4){
+				att=CurForm[i-1].value;
 			}
-		    ctrl++;
-		    if(ctrl==3) ctrl=0;
+			if (att!="" && ctrl==2){
+				url="ajaxFilter.php?val=" + CurForm[i].value + "&table=" + objName + "&att="+att;
+				var str = ajaxRequest(url);
+				CurForm[i].value = str;
+			}
+			//write field id and value into a json object
+			jsonArr.push({
+				id:CurForm[i].id, //field id
+				value:CurForm[i].value //field value
+			});
+			ctrl++; //increment control variable
+			if(ctrl==3){ //each filter row has 3 fields(field, operator and value). When it reaches 3: write row into an array
+				jsonMaster.push(jsonArr); //write row into a general array
+				jsonArr=[]; //clear array to restart the loop
+				ctrl=0;	//reset control variable to reinitialize all process
+				att="";
+			}
 		}
-		CurForm.action = "manager.php?table="+objName+"&nrows="+nrows+"&order="+order+"&colOrder="+colOrder+"&page="+page+"&no=" + CurForm.length + "&filter=true&search=2";
+		
+		CurForm.action = "manager.php?table="+objName+"&nrows="+nrows+"&order="+order+"&colOrder="+colOrder+"&page="+page+"&no=" + CurForm.length + "&filter=true&search=2&arr="+serialize(jsonMaster);
 		CurForm.submit();
 	}
 	
