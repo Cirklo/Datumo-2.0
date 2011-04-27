@@ -27,6 +27,7 @@ class dispClass{
 	private $length=array();
 	private $FKtable=array();
 	private $FKeys=array();
+	private $masks=array();
 	private $query;
 	private $vars=array();
 	private $mainQuery;
@@ -75,6 +76,7 @@ class dispClass{
 	function setDefault($arg){	$this->default = $arg;}
 	function setFKeys($arg){	$this->FKeys = $arg;}
 	function setFKtable($arg){	$this->FKtable = $arg;}
+	function setMasks($arg){	$this->masks=$arg;}
 	
 	//gets
 	function getArrayTableTypes(){ return $this->types;}
@@ -91,6 +93,7 @@ class dispClass{
 	function getMainQuery(){ return $this->mainQuery;}
 	function getFKatt(){ return $this->FKvalue;}
 	function getDefault(){ return $this->default;}
+	function getMasks(){	return $this->masks;}
 	
 	
 /**
@@ -859,6 +862,24 @@ class dispClass{
 			}
 		}
 		
+	}
+	
+	public function masks($objName){
+		//set path to main schema
+		$this->pdo->dbConn();
+		//query the database for masks
+		$sql=$this->pdo->query("SELECT DISTINCT mask_name, mask_pic FROM mask WHERE mask_table='$objName'");
+		$row=$sql->fetch();
+		//is there any match?
+		if($sql->rowCount()!=0){
+			if($row[1]!=""){ //it has a picture
+				//do nothing for now
+			} else { //new name for the table
+				echo "<input type=button name=$objName id=$objName value='$row[0]' onclick=window.open('manager.php?table=$objName&nrows=20','_self') style='width:150px' title='".$this->getTableComment()."'>";	
+			}
+		} else { //just write the table name
+			echo "<input type=button name=$objName id=$objName value='$objName' onclick=window.open('manager.php?table=$objName&nrows=20','_self') style='width:150px' title='".$this->getTableComment()."'>";	
+		}	
 	}
 	
 	

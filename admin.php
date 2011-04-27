@@ -126,7 +126,11 @@ for($j=0;$j<sizeof($type);$j++){
 		//verify if there is any VIEW or TABLE to be displayed and proceed accordingly	
 		$display->tableDescription($tables[$i]);
 		if($display->getTableType()==$type[$j]){
-			echo "<tr><td><input type=button name=$tables[$i] id=$tables[$i] value='".strtoupper($tables[$i])."' onclick=window.open('manager.php?table=$tables[$i]&nrows=20','_self') style='width:150px' title='".$display->getTableComment()."'></td>";
+			//display table or view name (or mask if it exists)
+			echo "<tr><td>";
+			//search for an associated mask
+			$display->masks($tables[$i]);
+			echo "</td>";
 			echo "<td><a href=javascript:void(0)>Search</a>";
 			//regular search div
 			echo "<div id='".$tables[$i]."_div' class=regular>";

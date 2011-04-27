@@ -38,17 +38,13 @@ class dbConnection extends PDO{
 	}
 	
 	public function databaseSettings(){
-		// $this->engine = "pgsql"; //"mysql" OR "pgsql"
 		$this->engine = "mysql"; //"mysql" OR "pgsql"
-		// $this->database = "postgres";//"dbtest" or "postgres"
-		$this->database = "requisitions";//"dbtest" or "postgres"
-		// $this->username = "postgres"; //"root" OR "postgres"
+		$this->database = "datumo";//"dbtest" or "postgres"
 		$this->username = "root"; //"root" OR "postgres"
-		// $this->password = "nasaki"; // "" OR "nasaki"
 		$this->password = ""; // "" OR "nasaki"
 		$this->host = "localhost";
-		$this->schema = "requisitions";// Name of the schema (same as database for mysql)
-		$this->description = "IGC requisitions system";
+		$this->schema = "datumo";// Name of the schema (same as database for mysql)
+		$this->description = "datumo";
 		$this->admin = "info@cirklo.org";
 		$this->folder = "datumo2.0"; //folder where the main files of datumo are located
 	}
