@@ -27,7 +27,7 @@ class dispClass{
 	private $length=array();
 	private $FKtable=array();
 	private $FKeys=array();
-	private $masks=array();
+	private $arrMasks=array();
 	private $query;
 	private $vars=array();
 	private $mainQuery;
@@ -76,7 +76,7 @@ class dispClass{
 	function setDefault($arg){	$this->default = $arg;}
 	function setFKeys($arg){	$this->FKeys = $arg;}
 	function setFKtable($arg){	$this->FKtable = $arg;}
-	function setMasks($arg){	$this->masks=$arg;}
+	function setMasks($arg){	$this->arrMasks=$arg;}
 	
 	//gets
 	function getArrayTableTypes(){ return $this->types;}
@@ -93,7 +93,7 @@ class dispClass{
 	function getMainQuery(){ return $this->mainQuery;}
 	function getFKatt(){ return $this->FKvalue;}
 	function getDefault(){ return $this->default;}
-	function getMasks(){	return $this->masks;}
+	function getMasks(){	return $this->arrMasks;}
 	
 	
 /**
@@ -201,7 +201,9 @@ class dispClass{
 				//do nothing
 			}
 			$row = $sql->fetch();
-			$typearr[]=$row[0];			
+			$typearr[]=$row[0];	
+			//build table mask array
+			$this->arrMasks[]=$this->masks($objName);		
 		}
 		$this->types = $typearr;
 		return $typearr;
@@ -605,6 +607,8 @@ class dispClass{
 					$mlength = 10;
 				}
 		}	
+		$scale=0.6;
+		$size=$size*$scale;
 		return " size=$size maxlength=$mlength ";
 	}
 	
@@ -676,7 +680,7 @@ class dispClass{
 		else $where = "";
 		//set search path to main database
 		$sql = $this->pdo->prepare("SELECT COUNT(".$objName."_id) FROM ".$this->pdo->getDatabase().".$objName $where");
-		echo $sql->queryString;
+		//echo $sql->queryString;
 		try{
 			$sql->execute();
 		} catch (Exception $e){
@@ -875,11 +879,12 @@ class dispClass{
 			if($row[1]!=""){ //it has a picture
 				//do nothing for now
 			} else { //new name for the table
-				echo "<input type=button name=$objName id=$objName value='$row[0]' onclick=window.open('manager.php?table=$objName&nrows=20','_self') style='width:150px' title='".$this->getTableComment()."'>";	
+				$mask=$row[0];
 			}
 		} else { //just write the table name
-			echo "<input type=button name=$objName id=$objName value='$objName' onclick=window.open('manager.php?table=$objName&nrows=20','_self') style='width:150px' title='".$this->getTableComment()."'>";	
+			$mask=$objName;
 		}	
+		return $mask;
 	}
 	
 	

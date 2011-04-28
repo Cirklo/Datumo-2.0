@@ -73,7 +73,7 @@ $table_type = array();
 $tables = $admin->tableAccess($user_id);
 $table_type=$display->tableview($tables);
 $table_type=array_count_values($table_type);
-
+$masks=$display->getMasks();
 /*
 echo "<input type=button id=bugReport value='Report Bug'>";
 echo "<div id=Notification></div>";
@@ -123,29 +123,30 @@ for($j=0;$j<sizeof($type);$j++){
 		//break;
 	}
 	for($i=0; $i<sizeof($tables); $i++){
+		$objName=$tables[$i];
 		//verify if there is any VIEW or TABLE to be displayed and proceed accordingly	
-		$display->tableDescription($tables[$i]);
+		$display->tableDescription($objName);
 		if($display->getTableType()==$type[$j]){
 			//display table or view name (or mask if it exists)
 			echo "<tr><td>";
 			//search for an associated mask
-			$display->masks($tables[$i]);
+			echo "<input type=button name=$objName id=$objName value='$masks[$i]' onclick=window.open('manager.php?table=$objName&nrows=20','_self') style='width:150px' title='".$display->getTableComment()."'>";	
 			echo "</td>";
 			echo "<td><a href=javascript:void(0)>Search</a>";
 			//regular search div
-			echo "<div id='".$tables[$i]."_div' class=regular>";
-			$display->fields($tables[$i],$i,'admin');
+			echo "<div id='".$objName."_div' class=regular>";
+			$display->fields($objName,$i,'admin');
 			echo "</div>";
 			echo "</td>";
 			echo "<td>";
 			//Is there any table with quick search queries?	
-			if($search->qsearchFind($tables[$i])){
+			if($search->qsearchFind($objName)){
 				echo "<a href=javascript:void(0)>Quick search</a>";	
 				//quick search div
-				echo "<div id='quicksearch_".$tables[$i]."' class=regular>";
+				echo "<div id='quicksearch_".$objName."' class=regular>";
 				echo "<table border=0>";
 				echo "<form name=qsearch$i method=post>";
-				echo "<tr><td><b>Search</b>&nbsp;&nbsp;<input type=text class=reg name=qsearch$tables[$i] id=qsearch$tables[$i]>&nbsp;&nbsp;<input type=image src=pics/magnifier.png onclick=qSubmit('".$tables[$i]."',$i)></td></tr>";
+				echo "<tr><td><b>Search</b>&nbsp;&nbsp;<input type=text class=reg name=qsearch$objName id=qsearch$objName>&nbsp;&nbsp;<input type=image src=pics/magnifier.png onclick=qSubmit('".$objName."',$i)></td></tr>";
 				echo "</form>";
 				echo "<tr><td><b>Results to be displayed</b>&nbsp;&nbsp;<input type=text class=reg name=qsearchNrows_$i id=qsearchNrows_$i value=100 size=1></td></tr>";
 				echo "</table>";
@@ -164,8 +165,6 @@ $arr = array();
 $arr = $report->dynamicReports($user_id);
 echo "</td>";
 echo "</tr></table>";
-//hidden content -> script to display message list if it comes from the refresh button
-//if(isset($_GET['nmsg'])) echo "<script type='text/javascript'>showhide('readMsg');</script>";
 
 
 
