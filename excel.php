@@ -1,7 +1,8 @@
 <?php
 header("Content-type: application/vnd.ms-excel;");
 header("Content-Disposition: attachment; filename='export-to-excel.xls'; ");
-
+require_once "session.php";
+$user_id=startSession();
 require_once "errorClass.php";
 //call class to handle errors
 $error=new errorClass();
@@ -22,14 +23,14 @@ if(isset($_GET['table'])){
 	//get url variable
 	$table = $_GET['table'];
 	//redirect to specific method
-	fromTable($table);
+	fromTable($table,$user_id);
 }
 
 if(isset($_GET['report'])){	
 	//get url variable
 	$report = $_GET['report'];
 	//redirect to specific method
-	fromReport($report);
+	fromReport($report,$user_id);
 }
 
 
@@ -44,10 +45,8 @@ function fromTable($table){
 	set_time_limit(0); 
 	
 	//includes
-	require_once(".htconnect.php");
+	require_once("__dbConnect.php");
 	require_once ("dispClass.php");
-	require_once "session.php";
-	$user_id=startSession();
 	
 	//call database class
 	$db = new dbConnection();
@@ -99,10 +98,8 @@ function fromReport($report) {
 	set_time_limit(0); 
 	
 	//includes
-	require_once ".htconnect.php";
+	require_once "__dbConnect.php";
 	require_once "dispClass.php";
-	require_once "session.php";
-	$user_id=startSession();
 	
 	//call database class
 	$db = new dbConnection();

@@ -20,6 +20,8 @@ class reportClass{
 	private $params=array();
 	private $datatypes=array();
 	private $refs=array();
+	private $reportName;
+	private $reportDesc;
 	
 	public function __construct(){
     	$this->pdo = new dbConnection();
@@ -32,6 +34,8 @@ class reportClass{
 	
 	public function getNumrows(){ return $this->numrows;}
 	public function getQuery(){	return $this->mainQuery;}
+	public function getReportName(){	return $this->reportName;}
+	public function getReportDesc(){	return $this->reportDesc;}
 	
 	public function testQuery(){
 		//set search path to main database
@@ -60,14 +64,13 @@ class reportClass{
    		$this->pdo->dbConn();
    		$tables = $this->perm->tableAccess($user_id);
 		echo "<table border=0>";
-		echo "<tr><td>Select table to query</td><td>";
-		echo "<select name=table id=table onChange=relations(this.id)>";
-		echo "<option id=0>-----------------</option>";
+		echo "<tr><td colspan=2>Select tables (max. 3)</td></tr>";
 		for($i=0;$i<sizeof($tables);$i++){
-			echo "<option id=$tables[$i]>$tables[$i]</option>";
+			echo "<tr>";
+			echo "<td><input type=checkbox id=$tables[$i] name=$tables[$i] class=tables></td>";
+			echo "<td> $tables[$i]</td>";
+			echo "</tr>";
 		}
-		echo "</select>";
-		echo "</tr>";
 		echo "</table>";
    		
    	}
@@ -198,7 +201,7 @@ class reportClass{
 		$sql = $this->pdo->prepare("SELECT report_id, report_name, report_description FROM ".$this->pdo->getDatabase().".report WHERE report_id NOT IN (SELECT param_report FROM param) AND report_conf=1 OR (report_user=$user_id AND report_conf=2) ORDER BY report_name");
 		$sql->execute();
 		for($i=0;$row=$sql->fetch();$i++){
-			echo "<tr><td><a href=/".$this->pdo->getFolder()."/report.php?report=$row[0] target='$target' title='$row[2]'>".$row[1]."</a></td></tr>";
+			echo "<tr><td><a href=javascript:void(0) onclick=window.open('".$this->pdo->getFolder()."/report.php?report=$row[0]','_blank','height=550px,width=720px,scrollbars=yes'); title='$row[2]'>".$row[1]."</a></td></tr>";
 		}
 		echo "</table>";
 	}
@@ -255,6 +258,8 @@ class reportClass{
 		} else echo "<table><tr><td>No reports available</td></tr></table>";
 	}
 
+	
+	
 /**
  * @author João Lagarto	/ Nuno Moreno
  * @abstract method find parameters for the requested report
@@ -279,8 +284,17 @@ class reportClass{
 		
 	}
 	
-	
+	public function reportInfo($report_id){
+		$query="SELECT report_name, report_description FROM report WHERE report_id=$report_id";
+		$sql=$this->pdo->query($query);
+		$row=$sql->fetch();
+		$this->reportName=$row[0];
+		$this->reportDesc=$row[1];
+		
+		
+	}
 }
 
+	
 
 ?>

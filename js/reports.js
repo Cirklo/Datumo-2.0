@@ -1,4 +1,13 @@
 
+
+
+
+
+
+/****************************************************************************************/
+
+
+
 function relations (id){
 	//clear divs
 	document.getElementById('dispFields').innerHTML="";

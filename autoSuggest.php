@@ -1,8 +1,9 @@
 <?php
 
 header('Content-type: text/html; charset=UTF-8');
-
-require_once ".htconnect.php";
+require_once "session.php";
+$user_id=startSession();
+require_once "__dbConnect.php";
 require_once "queryClass.php";
 
 $conn = new dbConnection(); $conn->dbConn();

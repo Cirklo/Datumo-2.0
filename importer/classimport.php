@@ -8,7 +8,7 @@
     * @abstract Class to automatically import csv files to mysql
     */ 
 
-require_once(".htconnect.php");
+require_once("__dbConnect.php");
 class importer{
 	public $db;
 

@@ -90,25 +90,31 @@ div.article{
 div.article span.title{
 	padding-left:5px;
 	font-family:Verdana, Geneva, sans-serif; 
-	font-size:24px;
+	font-size:20px;
 	text-transform:uppercase; 	
 	color:#FFF;
 }
 
-div.article span.news_desc,
-div.article span.news_title{
+div.article div.news_desc,
+div.article div.news_title{
 	padding-left:5px;
 	font-family:Verdana, Geneva, sans-serif;
 	color:#FFF;
 }
 
-div.article span.news_title{
-	font-size:14px;
-	text-transform:uppercase;
+div.article div.news_title{
+	color:#FFCC33;
+	cursor:pointer;
+	}
+
+
+div.article div.news_title{
+	font-size:11px;
 }
 
-div.article span.news_desc{
-	font-size:11px;
+div.article div.news_desc{
+	font-size:10px;
+	text-align:justify;
 }
 
 

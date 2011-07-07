@@ -128,7 +128,7 @@ class treeClass{
 	    		echo "<tr><td>No treeview reports available!</td></tr>";
 	    	}else{
 	    		for($i=0;$row=$sql->fetch();$i++){
-	    			echo "<tr><td>".($i+1).".</td><td><a href='/".$this->pdo->getFolder()."/treeview.php?tree=$row[0]' title='$row[2]'>$row[1]</a> - $row[2]</td></tr>";
+	    			echo "<tr><td>".($i+1).".</td><td><a href='".$this->pdo->getFolder()."/treeview.php?tree=$row[0]' title='$row[2]'>$row[1]</a> - $row[2]</td></tr>";
 	    		}	
 	    	}
 	    	echo "</table>";

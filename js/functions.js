@@ -1,6 +1,6 @@
 
 /**
- * @author João Lagarto / Nuno Moreno
+ * @author João Lagarto
  * @description function to hide/unhide divs
  * @param id
  */
@@ -144,8 +144,9 @@ function checkfields(action,objName,nrows, order, colOrder,search,page){
 				CurForm.submit();
 				//alert(browser);
 				if(browser!="Chrome"){
-					filter('table',objName,'',order,colOrder,page);
+					filter('table',objName,'',order,colOrder,page,action);
 				}
+				
 			} catch (err){
 				alert("Form not submitted!"+err);
 			}
@@ -231,6 +232,7 @@ function multiAdd(objName){
 		var CurForm = document.forms[i];
 		for (var j=0;j<CurForm.length;j++){
 			//is this a foreign key? if not proceed to datatype check
+//			alert(CurForm[j].id);
 			if(CurForm[j].lang!='__fk'){
 				//check if field is null
 				if(CurForm[j].alt=="NO" && CurForm[j].value=="" && j!=0){
@@ -271,9 +273,8 @@ function multiAdd(objName){
 					break;
 				}
 			}
-			
-			
 		}
+		
 		//how am I going to use to protect the autosuggest tool?
 		//Two cycles don't seem to be a very good way to do this
 		var arrval=new Array;
@@ -298,15 +299,13 @@ function multiAdd(objName){
 		}
 		//write to textbox Foreign key values
 		for (var j=0;j<CurForm.length;j++){
+			CurForm[j].disabled=false;	
 			if(CurForm[j].lang=='__fk'){
 				CurForm[j].value=arrval[CurForm[j].id];
 			}
 		}
-		
-		url="manager.php?table="+objName+"&nrows=20&action=insert";
-		for (j=0;j<CurForm.length;j++) {CurForm[j].disabled=false;	}
+		url="manager.php?table="+objName+"&nrows=20&action=insert&comeFromAction=insert";
 		CurForm.action = url;
-		//CurForm.submit();
 		try{
 			CurForm.submit();
 			//if(browser!="Chrome")	filter('table',objName,'','','');
@@ -315,6 +314,7 @@ function multiAdd(objName){
 		}
 	}	
 }
+
 
 function getdetails(id, table, val, bool){
 	if(bool){ //treeview

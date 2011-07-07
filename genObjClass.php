@@ -116,7 +116,7 @@ class genObjClass{
     	$val=substr($val,0,strlen($val)-1);
  		$sql=$this->pdo->prepare("INSERT INTO ".$this->pdo->getDatabase().".$objName ($att) VALUES ($val)");
 		//echo $sql->queryString;
-   		try{
+		try{
     		$sql->execute();
     	} catch(Exception $e){
     		$this->error->errorDisplay($sql->queryString,$objName,$e->getMessage());

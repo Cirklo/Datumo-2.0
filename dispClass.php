@@ -14,9 +14,11 @@ require_once ("reportClass.php");
 require_once ("errorClass.php");
 
 class dispClass{	
+	private $table_bool=false;
+	private $view_bool=false;
 	private $pdo;
-	private $tableType;
-	private $tableComment;
+	private $tableType=array();
+	private $tableComment=array();
 	private $tableName;
 	private $fullheader=array();
 	private $header=array();
@@ -28,6 +30,7 @@ class dispClass{
 	private $FKtable=array();
 	private $FKeys=array();
 	private $arrMasks=array();
+	private $arrMaskPic=array();
 	private $query;
 	private $vars=array();
 	private $mainQuery;
@@ -94,6 +97,7 @@ class dispClass{
 	function getFKatt(){ return $this->FKvalue;}
 	function getDefault(){ return $this->default;}
 	function getMasks(){	return $this->arrMasks;}
+	function getMaskPic(){	return $this->arrMaskPic;}
 	
 	
 /**
@@ -148,6 +152,7 @@ class dispClass{
  * @abstract method to handle table description
  */
 	
+	
 	public function tableDescription ($objName){
 		//change database to information schema
 		$this->pdo->dbInfo();
@@ -167,8 +172,8 @@ class dispClass{
 		}
 		$row = $sql->fetch();
 		//set variables
-		$this->setTableType($row[0]);
-		$this->setTableComment($row[1]);
+		$this->tableType=$row[0];
+		$this->tableComment=$row[1];
 		//change to original database
 		$this->pdo->dbConn();
 	}
@@ -184,8 +189,11 @@ class dispClass{
 		$this->pdo->dbInfo();
 		//initialize array
 		$typearr=array();
+		$tableDesc=array();
 		//loop through all tables and write the result to an empty array
+	
 		foreach($tables as $objName){
+			//echo $objName."<br>";
 			//construct array for input parameters.
 			$arr = array($objName,$this->pdo->getDatabase(),'',''); //table and database
 			for($i = 0;$i<sizeof($arr);$i++){
@@ -198,15 +206,15 @@ class dispClass{
 			try{
 				$sql->execute();
 			} catch (Exception $e){
-				//do nothing
+				//echo $e->getMessage();
 			}
-			$row = $sql->fetch();
+			$row=$sql->fetch();
 			$typearr[]=$row[0];	
+			$tableDesc[]=$row[1];
 			//build table mask array
-			$this->arrMasks[]=$this->masks($objName);		
 		}
 		$this->types = $typearr;
-		return $typearr;
+		return array($typearr, $tableDesc);
 	}
 	
 /**
@@ -224,22 +232,21 @@ class dispClass{
 		}
 		//select engine (mysql or pgsql)
 		$this->query->engineHandler($this->pdo->getEngine());
-		//query number 1 -> necessary in order to select specific query from vault
 		$sql = $this->pdo->prepare($this->query->getSQL(2)); 
 		$sql->execute();		
 		for($i=0;$row = $sql->fetch();$i++){
 			$fullheader[]=$row[0];
 			$header[]=substr($row[0],strlen($objName)+1,strlen($row[0])-strlen($objName));
-			$null[$row[0]] = $row[1];
-			$datatype[$row[0]] = $row[2];
-			$comment[$row[0]] = $row[3];
-			$length[$row[0]] = $row[4];
-			$default[$row[0]] = $row[5];
+//			$null[$row[0]] = $row[1];
+			$datatype[$row[0]] = $row[1];
+			$comment[$row[0]] = $row[2];
+			$length[$row[0]] = $row[3];
+			$default[$row[0]] = $row[4];
 		}
 		//set variables
 		$this->setFullHeader($fullheader);
 		$this->setHeader($header);
-		$this->setNullable($null);
+//		$this->setNullable($null);
 		$this->setDatatype($datatype);
 		$this->setComment($comment);
 		$this->setLength($length);
@@ -395,6 +402,7 @@ class dispClass{
  * @abstract Display results in manager.php
  */
 	
+	
 	public function results ($objName, $r){
 		//get user id variable stored in the session variable
 		$user_id=$_SESSION['user_id'];
@@ -410,7 +418,10 @@ class dispClass{
 		$nrows = $sql->rowCount();
 		for($i=0;$row=$sql->fetch();$i++){
 			//write line
-			echo "<tr>";
+			$highlight_color="#CCC";
+			if(is_odd($i))	$background="#DDDDEE";
+			else $background="#EEEEFF";
+			echo "<tr style='background-color:$background;' onmouseover=$(this).css('background-color','$highlight_color') onmouseout=$(this).css('background-color','$background')>";
 			echo "<td  style='text-align:center'>";
 			if($r) echo "<a href=javascript:void(0) onclick=copy($i) title='copy row'><img src=pics/copy.png width=16px height=16px border=0></a>";
 			echo "</td>";
@@ -418,19 +429,17 @@ class dispClass{
 			$this->perm->tablePermissions($objName, $user_id);
 			if($this->perm->getRequest()){
 				echo "<td class=cart nowrap=nowrap height=20px>";
-				echo "<a href=javascript:void(0) style='text-decoration:none' class=exp onclick=updQtt('sum',$i)>+</a>&nbsp;&nbsp;";
-				echo "<a href=javascript:void(0) style='text-decoration:none' class=exp onclick=updQtt('sub',$i)>-</a>&nbsp;&nbsp;";
+				echo "<a href=javascript:void(0) style='text-decoration:none;font-size:12px;' class=exp onclick=updQtt('sum',$i)>+</a>&nbsp;&nbsp;";
+				echo "<a href=javascript:void(0) style='text-decoration:none;font-size:12px;' class=exp onclick=updQtt('sub',$i)>-</a>&nbsp;&nbsp;";
 				echo "<input type=text id=quantity_$i name=quantity_$i value=1 size=1>&nbsp;&nbsp;";
 				echo "<a href=javascript:void(0) onclick=\$(document).addToCart({objName:'$objName',row:'$i'})><img src=pics/store.png border=0 width=16px height=16px></a>";
 				echo "</td>";
 			} else {
 				echo "<td></td>";
 			}
-			//check if there is any specific row module for this table and database
-			$this->rowModules($objName,$row[0]);
 			//check if there is any permission for this table and user
 			//does this user have permissions to update or delete this table? if so apply checkboxes. If not, set fields as readonly
-			if($r)  {	echo "<td style='text-align:center'><input type=checkbox id=cb$i name=cb$i></td>";}
+			if($r)  {	echo "<td style='text-align:center'><input type=checkbox id=cb$i name=cb$i)></td>";}
 			echo "<form name=tableman$i method=post>";
 			for($j=0;$j<$sql->columnCount();$j++){
 				$size = $this->writeProperties($j);
@@ -453,9 +462,9 @@ class dispClass{
 					echo "</td>";
 				} else { 
 					if($this->datatype[$this->fullheader[$j]]=="text")
-						echo "<td valign=top class=results><textarea rows=10 cols=50 class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j].">".strip_tags($row[$j])."</textarea></td>";
+						echo "<td valign=top class=results><textarea rows=3 cols=40 class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j].">".strip_tags($row[$j])."</textarea></td>";
 					else
-						echo "<td valign=top class=results><input type=text class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j]."  value='$row[$j]' onchange=selectRow('$i') $size $readonly lang='".$this->datatype[$this->fullheader[$j]]."' alt='".$this->null[$this->fullheader[$j]]."'";
+						echo "<td valign=top class=results><input type=text class=reg id=".$this->fullheader[$j]." name=".$this->fullheader[$j]."  value='$row[$j]' onchange=selectRow('$i') $size $readonly";
 					//set field to open link in a new window if it starts with http://
 					if(substr($row[$j],0,7)=="http://")
 						echo " ondblclick=window.open('".$row[$j]."')";
@@ -498,15 +507,16 @@ class dispClass{
 			echo "<td valign=bottom class=headers nowrap=nowrap>";
 			if($this->FKtable[$i]!="" and $i!=0 and !$bool){ //is this a foreign key?
 				//need to define class in order not to trigger somekind of stupid bug related with jquery
-				echo "<a class=exp href=javascript:void(0) onclick=window.open('list.php?table=".$this->FKtable[$i]."','_blank','width=350,height=400,scrollbars=yes') style='text-decoration:none' title='click to view all the available keys'>".strtoupper($this->header[$i])."</a>";
+				echo "<a class=exp href=javascript:void(0) onclick=window.open('list.php?table=".$this->FKtable[$i]."','_blank','width=350,height=400,scrollbars=yes') style='text-decoration:none' title='click to view all the available keys'><b>".strtoupper($this->header[$i])."</b></a>";
 			} else {
-				echo strtoupper($this->header[$i]);				
+				echo "<a class=exp title='".$this->comment[$this->fullheader[$i]]."'><b>".strtoupper($this->header[$i])."</b></a>";				
+//				echo strtoupper($this->header[$i]);
 			}
 			
-			if($this->comment[$this->fullheader[$i]] and !$bool) { //clause to display header comments
-				echo "<a href=javascript:void(0)><img src=pics/help.png border=0></a>";
-				echo "<div id='".$this->fullheader[$i]."_help' class=comments>".$this->comment[$this->fullheader[$i]]."</div>";
-			}
+//			if($this->comment[$this->fullheader[$i]] and !$bool) { //clause to display header comments
+//				echo "<a href=javascript:void(0)><img src=pics/help.png border=0></a>";
+//				echo "<div id='".$this->fullheader[$i]."_help' class=comments>".$this->comment[$this->fullheader[$i]]."</div>";
+//			}
 			if(!$bool){
 				echo "<br>";
 				echo "<a href=javascript:void(0) class=exp onclick=submit('$stype','$table',$nrows,'ASC','".$this->fullheader[$i]."',$page) title='Sort by ".$this->header[$i]." ascending order'><img src=pics/asc.gif border=0></a>";
@@ -528,15 +538,15 @@ class dispClass{
 		echo "<tr class=headers>";
 		echo "<td colspan=".(sizeof($this->header)+3)."><hr style='border:0px'></td>";
 		echo "</tr>";
-		echo "<tr>";
+		echo "<tr style='background-color:#DDDDEE'>";
 		//path to add or remove multiple insert forms
 		echo "<td width=40px><a href=javascript:void(0) style='text-decoration:none' class=cloneMe onclick=checkMultiple('sum',this) title='clone row'><img src=pics/add.png border=0 width=32px height=32px></a></td>";
     	echo "<td width=40px><a href=javascript:void(0) style='text-decoration:none' class=deleteMe onclick=checkMultiple('subtract',this) title='cancel row'><img src=pics/remove.png border=0 width=32px height=32px></a></td>";
-		echo "<td><a href=javascript:void(0) style='text-decoration:none' class=cloneMe onclick=multiAdd('$objName') title='insert data'><img src=pics/submit.png border=0 width=32px height=32px></a></td>";
+		echo "<td><a href=javascript:void(0) style='text-decoration:none' class=cloneMe id=insert name=insert title='insert data'><img src=pics/submit.png border=0 width=32px height=32px></a></td>";
 		echo "<td colspan=".sizeof($this->header).">";
 		//insert form to be cloned
-		echo "<form style='height:15px;' method=post name=tableman id=tableman>";
-		echo "<table>";
+		echo "<form method=post name=tableman id=tableman>";
+		echo "<table style='margin-left:0px;width:100%;border:0px solid;'>";
 		echo "<tr>";
 		for($i=0;$i<sizeof($this->header);$i++){
 			if($i==0) {$readonly=" disabled ";}
@@ -548,15 +558,15 @@ class dispClass{
 					$this->getFKvalue($this->default[$this->fullheader[$i]], $i);
 					$val = $this->FKvalue;
 				} else $val="";
-				echo "<td nowrap=nowrap valign=top class=results><input type=text class=fk id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' lang=__fk $size>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+				echo "<td nowrap=nowrap class=results><input type=text class=fk id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' lang=__fk $size></td>";
 			} else { // no foreign key
 				if($i!=0){
 					$val = $this->default[$this->fullheader[$i]];
 				}
 				if($this->datatype[$this->fullheader[$i]]=="text")
-					echo "<td valign=top class=results><textarea rows=10 cols=50 class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i].">".strip_tags($val)."</textarea></td>";
+					echo "<td class=results><textarea rows=3 cols=40 class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i].">".strip_tags($val)."</textarea></td>";
 				else
-					echo "<td valign=top class=results><input type=text class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' $size $readonly lang='".$this->datatype[$this->fullheader[$i]]."' alt='".$this->null[$this->fullheader[$i]]."'";
+					echo "<td class=results><input type=text class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' $size $readonly lang='".$this->datatype[$this->fullheader[$i]]."' alt='".$this->null[$this->fullheader[$i]]."'";
 				if($this->datatype[$this->fullheader[$i]]=="date" or $this->datatype[$this->fullheader[$i]]=="datetime")
 					echo " onfocus=showCalendarControl(this) readonly=readonly";
 				if($this->datatype[$this->fullheader[$i]]!="text") echo "></td>";	
@@ -588,8 +598,12 @@ class dispClass{
 				$mlength = $this->length[$this->fullheader[$j]];
 				break;
 			case "datetime":
-				$size=20;
-				$mlength=20;
+				$size=35;
+				$mlength=35;
+				break;
+			case "date":
+				$size=17;
+				$mlength=17;
 				break;
 			default:
 				if($this->FKtable[$j]){//Is this a foreign key?
@@ -607,7 +621,7 @@ class dispClass{
 					$mlength = 10;
 				}
 		}	
-		$scale=0.6;
+		$scale=0.5;
 		$size=$size*$scale;
 		return " size=$size maxlength=$mlength ";
 	}
@@ -619,7 +633,7 @@ class dispClass{
 
 	
 	public function maxRows($objName, $filter, $user_id){
-		$where="";
+		$where=" WHERE ";
 		if(!$filter){
 			if($this->vars){
 				foreach($this->vars as $key=>$value){
@@ -639,7 +653,6 @@ class dispClass{
 					//building the where clause			
 					$where .= " LOWER($key)".$op."LOWER('$value') AND ";
 				}
-				$where=" WHERE ".$where;
 			}
 		} else {
 			//unserialize advanced filter array
@@ -669,14 +682,13 @@ class dispClass{
 				//clear operator
 				unset($op);
 			} 	
-			$where=" WHERE ".$where;
 		}
 		
 		//check for restraining clauses
 		$having = $this->perm->restrictAttribute($user_id, $objName);
 		if($having!="")	$where.=$having." AND";
 		//remove last 'AND ' from query
-		if($where!="") $where = substr($where,0,strlen($where)-4);
+		if($where!="" and $where!=" WHERE ") $where = substr($where,0,strlen($where)-4);
 		else $where = "";
 		//set search path to main database
 		$sql = $this->pdo->prepare("SELECT COUNT(".$objName."_id) FROM ".$this->pdo->getDatabase().".$objName $where");
@@ -724,7 +736,7 @@ class dispClass{
 		$this->tableHeaders($objName);
 		echo "<tr class=headers>";
 		for($i=0;$i<2;$i++){ //only display two attributes
-			echo "<td style='text-align:center'>".$this->header[$i]."</td>";
+			echo "<td class=list>".$this->header[$i]."</td>";
 		}
 		echo "</tr>";
 		//check for restraining clauses
@@ -734,7 +746,7 @@ class dispClass{
 		$sql = $this->pdo->prepare("SELECT * FROM ".$this->pdo->getDatabase().".$objName $where LIMIT 20 OFFSET $offset");
 		$sql->execute();
 		for($i=0;$row=$sql->fetch();$i++){
-			echo "<tr><td style='text-align:center;padding-left:3px;'><b>".$row[0]."</b></td><td style='text-align:left;padding-left:3px;'>".$row[1]."</td></tr>";
+			echo "<tr><td class=list><b>".$row[0]."</b></td><td style='text-align:left;' class=list>".$row[1]."</td></tr>";
 		}
 		if($having!="") return $sql->rowCount();
 	}
@@ -768,7 +780,7 @@ class dispClass{
 			echo "</td></tr>";
 			*/
 			//Logout -> exit datumo
-			echo "<tr><td><a href=/".$this->pdo->getFolder()."/session.php?logout>Sign out</a></td></tr>";
+			echo "<tr><td><a href=".$this->pdo->getFolder()."/session.php?logout>Sign out</a></td></tr>";
 		} else {
 			//exit page
 			echo "<tr><td><a href=javascript:void(0) onclick=window.close()>Exit</a></td></tr>";	
@@ -792,7 +804,7 @@ class dispClass{
 		echo "</div>"; 
 		echo "</td></tr>";
 		//display window to generate a new report
-		echo "<tr><td><a href=javascript:void(0) onclick=window.open('/".$this->pdo->getFolder()."/genReport.php','mywindow','height=500px,width=500px,scrollbars=yes')>Create report</a></td></tr>";
+		echo "<tr><td><a href=javascript:void(0) onclick=window.open('".$this->pdo->getFolder()."/genReport.php','mywindow','height=500px,width=500px,scrollbars=yes')>Create report</a></td></tr>";
 		
 	}
 	
@@ -816,9 +828,16 @@ class dispClass{
 	
 	
 	public function contactForm(){
+		$contact = "Do you want to report a bug? Please submit the form.";
 		echo "<div id=contactMe class='container'>";
         echo "<form class='contactForm' name='cform' method='post'>";
-        echo "<p><b>Do you want to report a bug? Please submit the form.</b></p>";
+        echo "<p><b>$contact</b></p>";
+        echo "<p><select name=contactType id=contactType>";
+        echo "<option value=0 selected>Contact us...</option>";
+        echo "<option value=bugs@cirklo.org>Bugs</option>";
+        echo "<option value=support@cirklo.org>Support</option>";
+        echo "<option value=info@cirklo.org>Informations</option>";
+        echo "</select></p>";
         echo "<p><label for='name'>Name</label>";
         echo "<input id='name' type='text' value='' name='name' class='name'/></p>";
         echo "<p><label for='e-mail'>E-mail</label>";
@@ -853,21 +872,7 @@ class dispClass{
 		}
 		
 	}
-	
-	function rowModules($objName,$id){
-		if($this->pdo->getDatabase()=="requisitions"){
-			switch($objName){
-				case "product":
-					echo "<td align=center>";
-					//add to favourites
-					echo "<a href=javascript:void(0) onclick=add_to_favourites('$id')><img src=pics/star.png width=16px border=0 title='Add to favourites'></a>";
-					echo "</td>";
-					break;
-			}
-		}
-		
-	}
-	
+
 	public function masks($objName){
 		//set path to main schema
 		$this->pdo->dbConn();
@@ -876,15 +881,35 @@ class dispClass{
 		$row=$sql->fetch();
 		//is there any match?
 		if($sql->rowCount()!=0){
-			if($row[1]!=""){ //it has a picture
-				//do nothing for now
-			} else { //new name for the table
-				$mask=$row[0];
-			}
+			$this->arrMaskPic[]=$row[1];
+			$mask=$row[0];
 		} else { //just write the table name
 			$mask=$objName;
 		}	
+		//return to information schema
+		$this->pdo->dbInfo();
 		return $mask;
+	}
+	
+	public function legend($objName,$user_id){
+		$this->perm->tablePermissions($objName, $user_id);
+		//table legend
+		echo "<table>";
+		echo "<tr><td colspan=2 style='text-align:center'><b>Press + for detailed information</b></td></tr>";
+		if($this->perm->getInsert()){	//only display this legend if this user has insert permissions
+			echo "<tr><td style='text-align:center'><img src=pics/add.png width=32px></td><td>Add row to multiple insert</td></tr>";
+			echo "<tr><td style='text-align:center'><img src=pics/remove.png width=32px></td><td>Remove row from multiple insert</td></tr>";
+			echo "<tr><td style='text-align:center'><img src=pics/submit.png width=32px></td><td>Insert rows</td></tr>";
+			echo "<tr><td style='text-align:center'><img src=pics/copy.png width=16px></td><td>Copy row to insert</td></tr>";
+		}
+		if($this->perm->getRequest()){
+			echo "<tr><td style='text-align:center'><img src=pics/store.png width=16px></td><td>Add to products to basket</td></tr>";
+		}
+		//always show this legend
+		echo "<tr><td style='text-align:center'><img src=pics/details.gif></td><td>Value details</td></tr>";
+		echo "<tr><td style='text-align:center'><img src=pics/help.png></td><td>Observations</td></tr>";
+		echo "</table>";
+		
 	}
 	
 	

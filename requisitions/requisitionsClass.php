@@ -9,7 +9,7 @@
  * 
  */
 
-require_once "../.htconnect.php";
+//require_once "../__dbConnect.php";
 require_once "../resClass.php";
 
 class reqClass{
@@ -36,16 +36,23 @@ class reqClass{
 	
 	public function getType(){ return $this->type;}
 	
-	public function createBasket($user_id){
+	public function createBasket($user_id, $department_id){
 		//set search path to main database
 		$this->pdo->dbConn();
 		//How many basket types are there?
 		$this->basketType($user_id);
 		for($i=0;$i<sizeof($this->type);$i++){
-			$sql = $this->pdo->prepare("SELECT 1 FROM ".$this->pdo->getDatabase().".basket WHERE basket_type IN (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='".$this->type[$i]."') AND basket_state IN (SELECT state_id FROM ".$this->pdo->getDatabase().".state WHERE state_name='Active') AND basket_user IN (SELECT user_dep FROM ".$this->pdo->getDatabase().".user WHERE user_id=$user_id)");
+			if($department_id=="") //Am I submitting a basket from my department?
+				$sql = $this->pdo->prepare("SELECT 1 FROM basket WHERE basket_type IN (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='".$this->type[$i]."') AND basket_state IN (SELECT state_id FROM ".$this->pdo->getDatabase().".state WHERE state_name='Active') AND basket_user IN (SELECT user_dep FROM ".$this->pdo->getDatabase().".user WHERE user_id=$user_id)");
+			else //is this basket from another department?
+				$sql = $this->pdo->prepare("SELECT 1 FROM basket WHERE basket_type IN (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='".$this->type[$i]."') AND basket_state IN (SELECT state_id FROM ".$this->pdo->getDatabase().".state WHERE state_name='Active') AND basket_user=$department_id");
 			$sql->execute();
 			if($sql->rowCount()==0){
-				$sql = $this->pdo->prepare("INSERT INTO basket (basket_user, basket_state, basket_type) SELECT user_dep, 0, (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='".$this->type[$i]."') FROM ".$this->pdo->getDatabase().".user WHERE user_id=$user_id");
+				if($department_id=="") //Am I submitting a basket from my department?
+					$sql = $this->pdo->prepare("INSERT INTO basket (basket_user, basket_state, basket_type) SELECT user_dep, 0, (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='".$this->type[$i]."') FROM ".$this->pdo->getDatabase().".user WHERE user_id=$user_id");
+				else { //is this basket from another department?
+					$sql = $this->pdo->prepare("INSERT INTO basket (basket_user, basket_state, basket_type) SELECT $department_id, 0, (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='".$this->type[$i]."') FROM ".$this->pdo->getDatabase().".user WHERE user_id=$user_id");
+				}
 				try{		
 					$sql->execute();
 				}catch(Exception $e){
@@ -79,11 +86,10 @@ class reqClass{
 	 */
 	
 	
-	public function actBasket($type, $user_id){
+	public function actBasket($type, $department_id){
 		//set search path to main database
 		$this->pdo->dbConn();
-		$sql=$this->pdo->prepare("SELECT basket_id FROM ".$this->pdo->getDatabase().".basket WHERE basket_state=0 AND basket_type IN (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='$type') AND basket_user IN (SELECT user_dep FROM ".$this->pdo->getDatabase().".user WHERE user_id=$user_id)");
-		//echo $sql->queryString;
+		$sql=$this->pdo->prepare("SELECT basket_id FROM ".$this->pdo->getDatabase().".basket WHERE basket_state=0 AND basket_type IN (SELECT type_id FROM ".$this->pdo->getDatabase().".type WHERE type_name='$type') AND basket_user=$department_id");
 		$sql->execute();
 		$row=$sql->fetch();
 		return $row[0];

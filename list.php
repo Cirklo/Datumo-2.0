@@ -16,7 +16,7 @@ $user_id = startSession();
 error_reporting(1);
 
 //includes
-require_once (".htconnect.php");
+require_once ("__dbConnect.php");
 require_once ("dispClass.php");
 require_once ("queryClass.php");
 require_once ("resClass.php");
@@ -44,7 +44,7 @@ $nrows = 20;
 $offset = ($pageNum - 1) * $nrows; //counting the offset 
 
 echo "<table class=main align=center>";
-echo "<tr><td colspan=2 style='text-align:center;background-color:#B5EAAA;'>".strtoupper($table)."</td></tr>";
+echo "<tr><td colspan=2 style='background-color:#B5EAAA;' class=list>".strtoupper($table)."</td></tr>";
 $numRows = $display->FKlist($table,$offset,$user_id);
 echo "</table>";
 //if there is no restriction we have to get the number of records in the table
@@ -78,7 +78,7 @@ if ($pageNum < $maxPage){
    $last = '&nbsp;'; // nor the last page link
 }
 
-echo "<table align=center>";
+echo "<table align=center class=list>";
 echo "<tr><td>".$first.$prev." Showing page $pageNum of $maxPage pages ".$next.$last."</td></tr>"; 
 echo "</table>";
 

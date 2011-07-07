@@ -9,14 +9,14 @@ $user_id=startSession();
 <title>Basket display</title>
 <link href="../css/tipTip.css" rel="stylesheet" type="text/css">
 <link href="css/requisitions.css" rel="stylesheet" type="text/css">
-<link href="css/redmond/jquery-ui-1.8.9.custom.css" rel="stylesheet" type="text/css">
-<link href="js/src/css/ui.jqgrid.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="../js/jquery-1.4.4.js"></script>
-<script type="text/javascript" src="js/src/grid.loader.js"></script>
+<link href="../css/redmond/jquery-ui-1.8.9.custom.css" rel="stylesheet" type="text/css">
+<link href="../js/src/css/ui.jqgrid.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../js/jquery-1.5.1.js"></script>
+<script type="text/javascript" src="../js/src/grid.loader.js"></script>
 <script type="text/javascript" src="js/jquery.basket.js"></script>
 <script type="text/javascript" src="../js/jquery.tipTip.js"></script>
 <script type="text/javascript" src="../js/ajax.js"></script>
-<script type="text/javascript" src="js/jquery.print.js"></script>
+<script type="text/javascript" src="../js/jquery.print.js"></script>
 
 <script type="text/javascript">
 //initialize tiptip plugin
@@ -27,8 +27,7 @@ $(document).ready(function(){
 </head>
 <?php 
 
-require_once "../.htconnect.php";
-require_once "../functions.php";
+require_once "../__dbConnect.php";
 require_once "../resClass.php";
 
 if(isset($_GET['type'])){	$type=$_GET['type'];}
@@ -48,7 +47,9 @@ $res->userInfo($user_id);
 if($res->getUserLevel()!=2){
 	echo "<div id=accountContainer class=account>";
 	echo "<table>";
-	echo "<tr><td>Select an account to proceed</td></tr>";
+	echo "<tr><td colspan=2>Internal comments</td></tr>";
+	echo "<tr><td colspan=2><textarea name=iComments id=iComments rows=5 cols=45></textarea></td></tr>";
+	echo "<tr><td colspan=2>Select an account to proceed</td></tr>";
 	if($res->getUserLevel()==0){ //Is this an administrator?
 		$sql=$conn->prepare("SELECT account_id, account_number, account_project, account_budget FROM $database.account WHERE account_start<NOW() AND account_end>NOW() AND account_id<>0 ORDER BY account_number");
 			} else { //is this a manager?

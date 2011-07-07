@@ -13,7 +13,7 @@ $user_id = startSession();
 <link href="../css/styles.css" rel="stylesheet" type="text/css">
 <link href="../css/jquery.alert.css" rel="stylesheet" type="text/css">
 
-<script type="text/javascript" src="../js/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="../js/jquery-1.5.1.js"></script>
 <script type="text/javascript" src="../js/jquery.init.js"></script>
 <script type="text/javascript" src="../js/jquery.cookie.js"></script>
 <script type="text/javascript" src="../js/jquery.tipTip.js"></script>
@@ -36,7 +36,7 @@ $user_id = startSession();
 error_reporting(1);
 
 //includes
-require_once ("../.htconnect.php");
+require_once ("../__dbConnect.php");
 require_once ("../dispClass.php");
 require_once ("../queryClass.php");
 require_once ("../genObjClass.php");
@@ -71,7 +71,7 @@ echo "<tr>";
 echo "<td valign=top>";
 echo "<table border=0 align=left width=200px>";
 $display->userOptions(true,$user_id);
-echo "<tr><td><a href=javascript:void(0) class=contact>Report bug</a>";
+echo "<tr><td><a href=javascript:void(0) class=contact>Helpdesk</a>";
 $display->contactForm();
 echo "</td></tr>";
 echo "<tr><td><hr></td></tr>";

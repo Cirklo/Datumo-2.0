@@ -56,14 +56,16 @@ class restrictClass{
 	
 	public function tableAccess($user_id){
 		//initialize arrays
-		$arr = array();
+		$tables = array();
+		$masks=array();
 		//unrestricted table
-		$sql = $this->pdo->prepare("SELECT admin_table FROM ".$this->pdo->getDatabase().".admin WHERE admin_user=$user_id ORDER BY admin_table");
+		$sql = $this->pdo->prepare("SELECT DISTINCT admin_table, mask_name FROM admin, mask WHERE admin_table=mask_table AND admin_user=$user_id ORDER BY admin_table");
 		$sql->execute();
 		for($i=0; $row = $sql->fetch(); $i++){
-        	$arr [] = $row[0];
+        	$tables[]=$row[0];
+        	$masks[]=$row[1];
      	}
-		return $arr;
+		return array($tables,$masks);
 		
 	}	
 	

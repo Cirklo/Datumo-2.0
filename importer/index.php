@@ -59,7 +59,7 @@ function ajaxEquiDD(objTagOri,objNameDest) {
 
 
 
-require_once(".htconnect.php");
+require_once("__dbConnect.php");
 mysql_select_db("information_schema");
 
 $db = database(1);

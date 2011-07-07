@@ -2,8 +2,8 @@
 body {
 	background:#fff; 
 	font-family:Verdana, Geneva, sans-serif; 
-	font-size:12px; 
-	line-height:20px; 
+	font-size:11px; 
+	line-height:16px; 
 	color:#545353;
 	}
 
@@ -13,6 +13,7 @@ table.informations{
 }
 
 table.main{
+	border-collapse:collapse;
 	background-color:#EEEEFF;
 	table-layout:fixed;
 	border-width:1px;
@@ -30,7 +31,19 @@ table.insert{
 
 table.admin{
 	border-spacing:0px;
+	border:0px solid;
+	padding-left:0px;
+	padding-bottom:10px;
+	float:left;
+	
 }
+
+.list{
+	font-size:10px;
+	padding-left:5px;
+	text-align:center;
+	
+	}
 	
 tr.headers {
 	background-image: 
@@ -53,6 +66,7 @@ tr.headers {
 	border-radius: 5px;
 }
 
+
 td.options{
 	color:#FFF;
 	padding:5px;
@@ -61,18 +75,18 @@ td.options{
 
 td {
     text-align:left;
-    font-family:sans-serif;
-    font-size:11px;
     padding-left:0px;
 }
 
 td.results {
+	vertical-align:bottom;
     text-align:left;
     font-family:sans-serif;
-    font-size:11px;
-    padding-left:0px;
-    border:1px solid;
-    border-color:#CCC;
+    font-size:10px;
+    padding-left:4px;
+    padding-right:4px;
+    border:0px solid;
+    border-color:#EEEEFF;
 }
 
 td.headers{
@@ -80,7 +94,7 @@ td.headers{
     font-family:sans-serif;
     font-size:11px;
     color: #FFFFFF;
-    padding:0px;
+    padding-left:2px;
 }
 
 td.headers a{
@@ -123,7 +137,7 @@ td.cart{
 }
 
 input.reg {
-	font-size:12px;
+	font-size:11px;
 	background:#FFFFFF;
 	border:0px;
 	border-width:1px;
@@ -131,7 +145,7 @@ input.reg {
  }
  
 input.fk {
-	font-size:12px;
+	font-size:11px;
 	background:#FFF8C6;
 	border:0px;
 	border-width:1px;
@@ -233,7 +247,22 @@ div.error{
 	
 	}
 	
+input[type=button]{
+	font-family:Verdana, Geneva, sans-serif; 
+	font-size:11px; 
+	height:22px;
+	color:#444;
+	}
 	
+input[type=button].callTables{
+	margin-right:5px;
+	width:170px;
+	text-align:left;
+	background-position: left;
+	background-repeat: no-repeat;
+	padding-left:25px;	
+	}
+
 iframe.gridDisp{
 	width:1080px;
 	height:800px;
@@ -315,3 +344,4 @@ span.tab a.deleteMe:hover
 	background: #fdd;
 	color: #000;
 }
+

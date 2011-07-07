@@ -24,21 +24,17 @@ $(document).ready(function() {
 	jQuery.fn.login = function(){
 		//check if any of the fields is empty		
 		if($("#user_login").val()=="" || $("#user_passwd").val()==""){
-			$("#alertDiv").alertMsg({
-				  text: "Missing fields"
-			});
+			$.jnotify("Missing fields");
 		} else {
 			//send the ajax request
-			$.post("session.php?login",{login:$("#user_login").val(),
+			$.post("../datumo/session.php?login",{login:$("#user_login").val(),
 							  pass:$('#user_passwd').val()},
 							  function(data){
 								  //return the data
 								  if(data.length!=0){
-									  $("#alertDiv").alertMsg({
-										  text: "Wrong Login"
-									  });
+									  $.jnotify("Wrong login");
 								  } else {
-									  window.location = "admin.php";
+									  window.location = "../datumo/admin.php";
 								  }
 							  });
 		}	
@@ -53,7 +49,7 @@ $(document).ready(function() {
 		var mail = prompt("Your email:");
 		var login= prompt("Your username:");
 		if(mail){
-			$.get("session.php?pwd",{email:mail,
+			$.get("../datumo/session.php?pwd",{email:mail,
 									 user:login},
 								function(data){
 									if(data.length!=0){
@@ -61,9 +57,7 @@ $(document).ready(function() {
 									} else {
 										msg="Password updated. Check your email";
 									}
-									$("#alertDiv").alertMsg({
-										text: msg
-									});
+									 $.jnotify(msg);
 								});
 		}
 	};
@@ -80,26 +74,28 @@ $(document).ready(function() {
 		var options = jQuery.extend({}, defaults, options);
 		//call contact form
 		var CurForm=eval("document."+options.form);
+		var contactType=$("#contactType").val();
+		if(contactType==0){
+			alert("Choose a contact type");
+			return;
+		}
 		for(var i=0;i<CurForm.length;i++){
 			if(CurForm[i].value==""){
 				CurForm[i].focus();
-				$("#alertDiv").alertMsg({
-					  text: "Missing fields"
-				});
+				$.jnotify("Missing fields");
 				return;
 			}
 		}
 		var url = "ajaxMail.php?type=1";
 		//ajax request with post variables (NICE)
 		$.post(url,{name:$('#name').val(),
+			  target:$("#contactType").val(),
 			  email:$('#email').val(),
 			  message:$('#message').val()},
 		
 		//retrieve that from ajax request
 		function(data){
-			$("#alertDiv").alertMsg({
-				text: data
-			});
+			$.jnotify(data);
 		});
 		//call method to clean form
 		cleanForm(options.form);
@@ -116,7 +112,6 @@ $(document).ready(function() {
 	$("table").find("div:not(div[lang=exp])").hide().end().find("a:not(.exp),input:button").click(function() {
 		$(this).next().slideToggle(function(){
 			$("div").not("#"+this.id+",div[lang=tiptip], div[lang=exp], .alertClass").slideUp('slow');
-			
 		});
 	});
 	
@@ -147,7 +142,6 @@ $(document).ready(function() {
 		if(event.which==43){
 			$("div[class=info]").slideToggle();
 		}
-		
 	});
 	
 	/**
@@ -160,4 +154,23 @@ $(document).ready(function() {
 		$(this).simpleAutoComplete("autoSuggest.php?field="+this.id);
 	});
 	
+	$("input").focus(function(){
+		this.select();
+	});
+	
+	
+	/**
+	 * Method to highlight all checked boxes 
+	 * 
+	 */
+	
+	$(document).keypress(function(event){
+		if(event.which==0){
+			$("input[type=checkbox]").not("#cb_all").each(function(){
+				if($(this).attr("checked")){ //store all checked boxes
+					$(this).closest("tr").css("background-color","#00FF00");
+				}
+			});
+		}
+	});
 });

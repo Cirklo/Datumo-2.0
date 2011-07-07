@@ -34,13 +34,13 @@ if(isset($_GET['auth'])){
 ?>
 
 <link href="css/portable.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="../js/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="../js/jquery-1.5.1.js"></script>
 <script type="text/javascript" src="js/jquery.basket.js"></script>
 
 </script>
 <?php
 
-require_once "../.htconnect.php";
+require_once "__dbConnect.php";
 
 //call database connection class
 $conn=new dbConnection();

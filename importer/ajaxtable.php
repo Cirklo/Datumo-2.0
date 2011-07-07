@@ -1,6 +1,6 @@
 <?php
 
-require_once(".htconnect.php");
+require_once("__dbConnect.php");
 //database options
 $db = database(1);
 mysql_select_db("information_schema");

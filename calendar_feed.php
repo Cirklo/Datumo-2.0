@@ -1,9 +1,9 @@
 <?php
-
-require_once ".htconnect.php";
-//get user id so specific query can be built
 require_once "session.php";
 $user_id=startSession();
+
+require_once "__dbConnect.php";
+//get user id so specific query can be built
 	
 //call database class
 $conn=new dbConnection();

@@ -71,9 +71,14 @@ function cloneMe(a, val, origin)
 				var fk = newInput[i].lang;
 				if (fk.indexOf('__fk') != -1){ //Search for external keys
 					newInput[i].id = oldId + suffix + counter; //oldId in the old version
+					newInput[i].onfocus = function(){
+						//alert(str);
+						$(this).simpleAutoComplete("autoSuggest.php?field="+newInput[i].id);
+					};
 				}else{
 					newInput[i].id = oldId + suffix + counter;
 				}
+				 
 			}			
 		}
 	}
@@ -111,3 +116,4 @@ function deleteMe(a)
 	}
 	duplicate.parentNode.removeChild(duplicate);
 }
+

@@ -1,10 +1,10 @@
 <?php
-
-//includes
-require_once "../.htconnect.php";
-require_once "projectClass.php";
 require_once "../session.php";
 $user_id = startSession();
+
+//includes
+require_once "../__dbConnect.php";
+require_once "projectClass.php";
 
 if(isset($_GET['graph'])){	drawGraphs($user_id);}
 if(isset($_GET['info'])){	writeInfo($user_id);}

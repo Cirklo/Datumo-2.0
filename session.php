@@ -8,8 +8,9 @@
  */
 
 //includes
-require_once (".htconnect.php");
-require_once ("dispClass.php");
+session_start();
+require_once "__dbConnect.php";
+require_once "dispClass.php";
 
 //http variables
 if(isset($_GET['login'])){	login();}
@@ -28,10 +29,14 @@ function login(){
 	if(isset($_POST['login'])){ $user_login = $_POST['login'];}
 	if(isset($_POST['pass'])){ $user_passwd = $_POST['pass'];}
 	
-	//crypt password
-	$user_passwd = $genObj->cryptPass($user_passwd);
+	if(!isset($_POST['passCrypted']) || $_POST['passCrypted']!='true'){
+		//crypt password
+		$user_passwd = $genObj->cryptPass($user_passwd);
+	}
+	
 	$sql = $db->prepare("SELECT user_id FROM ".$db->getDatabase().".user WHERE user_login='$user_login' AND user_passwd='$user_passwd'");
 	$sql->execute();
+	//echo $sql->rowCount();
 	//is there any match for this key??
 	if($sql->rowCount()>0){
 		$row = $sql->fetch();
@@ -43,17 +48,16 @@ function login(){
 
 
 function initSession($user_id,$database){
-	session_start();
 	$_SESSION['user_id']=$user_id;
-	$_SESSION['database']=$database;	
+	$_SESSION['database']=$database;
 }
 
 function startSession(){
-	session_start();
+	//session_start();
 	$db = new dbConnection();
 	$database=$db->getDatabase();
-	$_SESSION['user_id']=1;			//comment this line when not debugging
-	$_SESSION['database']="datumo"; //comment this line when not debugging
+	//$_SESSION['user_id']=1;			//comment this line when not debugging
+	//$_SESSION['database']="datumo"; //comment this line when not debugging
 	if(isset($_SESSION['user_id']) and $_SESSION['database']==$database){
 		$user = $_SESSION['user_id'];
 		return $user; 
@@ -63,14 +67,14 @@ function startSession(){
 }
 
 function logout(){
-	session_start(); //start session if it has not been started
+	//session_start(); //start session if it has not been started
 	session_destroy();
-	echo "<meta HTTP-EQUIV='REFRESH' content='0; url=./'>";
+	echo "<meta HTTP-EQUIV='REFRESH' content='0; url=".$_SESSION['path']."'>";
 }
 
 function notlogged(){
 	session_destroy();
-	echo "We are watching you!! Return to <a href=./>homepage</a>";
+	echo "We are watching you!! Return to <a href=".$_SESSION['path'].">homepage</a>";
 	//echo "<meta HTTP-EQUIV='REFRESH' content='0; url=./'>";
 	exit();
 }
@@ -97,9 +101,10 @@ function recoverPwd(){
 		$newpass_crypt=$genObj->cryptPass($newpass);
 		$row = $sql->fetch();
 		$login = $row[0];
-		$sql=$db->prepare("UPDATE ".$db->getDatabase().".user SET user_passwd='$newpass_crypt' WHERE user_login='$login'");
+		$query="UPDATE ".$db->getDatabase().".user SET user_passwd='$newpass_crypt' WHERE user_login='$login'";
+//		echo $query;
 		try{
-			$sql->execute();
+			$sql=$db->query($query);
 			$subject = "Datumo: ".$db->getDescription();
 			$to = $user_email;
 			$from=$db->getAdmin();

@@ -2,7 +2,7 @@
 require_once("session.php");
 $user_id = startSession();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -13,19 +13,22 @@ $user_id = startSession();
 <link href="css/tipTip.css" rel="stylesheet" type="text/css">
 <link href="css/styles.css" rel="stylesheet" type="text/css">
 <link href="css/jquery.alert.css" rel="stylesheet" type="text/css">
+<link href="css/jquery.jnotify.css" rel="stylesheet" type="text/css">
 
-<script type="text/javascript" src="js/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="js/jquery-1.5.1.js"></script>
 <script type="text/javascript" src="js/jquery.init.js"></script>
-<script type="text/javascript" src="js/jquery.cookie.js.js"></script>
 <script type="text/javascript" src="js/jquery.tipTip.js"></script>
 <script type="text/javascript" src="js/jquery.alert.js"></script>
-<script type="text/javascript" src="requisitions/js/jquery.basket.js"></script>
+<script type="text/javascript" src="js/jquery.jnotify.js"></script>
+<script type="text/javascript" src="js/jquery.action.js"></script>
 <script type="text/javascript" src="js/CalendarControl.js"></script>
 <script type="text/javascript" src="js/filters.js"></script>
 <script type="text/javascript" src="js/functions.js"></script>
 <script type="text/javascript" src="js/cloneFieldset.js"></script>
 <script type="text/javascript" src="js/ajax.js"></script>
 <script type="text/javascript" src="js/autoSuggest.js"></script>
+<script type="text/javascript" src="requisitions/js/jquery.basket.js"></script>
+<script type="text/javascript" src="animalhouse/js/jquery.bioterio.js"></script>
 <script type="text/javascript">
 
 function updQtt(oper, row){
@@ -42,6 +45,28 @@ function updQtt(oper, row){
 	$("#quantity_"+row).val(value);
 }
 
+$(document).ready(function(){
+	$("#del").click(function(){
+		$.action({
+			action:"delete"
+			});
+	});
+
+	$("#upd").click(function(){
+		$.action({
+			action:"update"
+			});
+	});
+
+	$("#insert").click(function(){
+		$.action({
+			action:"insert"
+			});
+	});
+	
+});
+
+
 </script>
 <?php
 /**
@@ -53,14 +78,12 @@ function updQtt(oper, row){
  */
 error_reporting(1);
 
-//notification display
-echo "<div id=notification></div>";
 //browser detection
 $browser = $_SERVER['HTTP_USER_AGENT'] . "\n\n";
 $browser = strstr($browser, "Chrome");
 
 //includes
-require_once (".htconnect.php");
+require_once ("__dbConnect.php");
 require_once ("dispClass.php");
 require_once ("queryClass.php");
 require_once ("genObjClass.php");
@@ -70,6 +93,8 @@ require_once ("reportClass.php");
 require_once ("mailClass.php");
 require_once ("treeClass.php");
 require_once ("configClass.php");
+require_once "module.php";
+require_once "functions.php";
 
 //call database class (handle connections)
 $db = new dbConnection();
@@ -82,7 +107,6 @@ $search = new searchClass();
 $treeview = new treeClass();
 $mail = new mailClass();
 $config = new configClass();
-
 
 //HTTP variables
 if(isset($_GET['report']))	$report = 1;
@@ -108,8 +132,14 @@ if(isset($_GET['page'])) { //page to be shown
 	$pageNum = 1; //default page to be shown
 }
 
+//get information schema info
+$display->tableHeaders($table);
+
 //HACK to fill the advanced filter 
 if($stype==2)	echo "<body onload=getSearchVars('$table')>";
+
+//page title
+echo "<title>Datumo: $table management</title>";
 
 //other variables
 $r=false;
@@ -134,25 +164,18 @@ if($action){
 			break;
 	}
 }
-
-//headers' properties
-$display->tableHeaders($table);
-$fullheader=array(); $fullheader=$display->getFullHeader();
-$header=array(); $header=$display->getHeader();
-$null=array(); $null=$display->getNullable();
-$datatype=array(); $datatype=$display->getDatatype();
-$comment=array(); $comment=$display->getComment();
-$length=array(); $length=$display->getLength();
-$FKtable=array(); $FKtable=$display->getFKtable();
-
-/*$postCounter=0;
-//control purposes (FOR FILTER)
-foreach ($_POST as $key){
-	if($key!="")	$postCounter++;
+//check for action variable after applying a filter
+if(isset($_GET['comeFromAction']) and $_GET['comeFromAction']!="false"){ //if exists call javascript with action notification
+	$comeFromAction=$_GET['comeFromAction'];
+	if($comeFromAction[strlen($comeFromAction)-1]=="e"){
+		$comeFromAction.="d";
+	} else {
+		$comeFromAction.="ed";
+	}
+	echo "<script type='text/javascript'>";
+	echo "$.jnotify('Record(s) $comeFromAction');";
+	echo "</script>";
 }
-if($postCounter==sizeof($header)){
-	unset($_POST);
-}*/
 
 //recover variables from filter to construct query (it relies on 3 elements)
 if(isset($_GET['filter'])){
@@ -211,6 +234,7 @@ if ($pageNum < $maxPage){
 
 //display menus
 $options=array("Options",strtoupper($table)." Management");
+echo "<h2>Datumo Administration Area</h2>";
 echo "<table border=0>";
 $display->options($options);
 echo "<tr>";
@@ -218,11 +242,11 @@ echo "<td valign=top>";
 echo "<table border=0 align=left width=200px>";
 echo "<tr><td><a href=admin.php>Return to main menu</a></td></tr>";
 $display->userOptions(true,$user_id);
-echo "<tr><td><a href=javascript:void(0) class=contact>Report bug</a>";
+echo "<tr><td><a href=javascript:void(0) class=contact>Helpdesk</a>";
 $display->contactForm();
 echo "</td></tr>";
 echo "<tr><td><hr></td></tr>";
-echo "<tr><td><a href=excel.php?table=$table title='Export data to xls file'>Export data</a></td></tr>";
+//echo "<tr><td><a href=excel.php?table=$table title='Export data to xls file'>Export data</a></td></tr>";
 // reports
 $display->reportOptions(true,$user_id);
 //display treeview
@@ -232,17 +256,25 @@ $treeview->treeview_access($user_id);
 echo "</div>";
 echo "</td></tr>";
 $config->checkPlugins();
+$config->compat();
 echo "</table>";
 echo "</td>";
 
 echo "<td valign=top>";
 //display user's restrictions for this table
 $perm->tablePermissions($table, $user_id);
+//search for available modules for this table
+echo "<table >";
+echo "<tr>";
+$module=new module($table);
+echo "</tr>";
+echo "</table>";
+
 echo "<table border=0>";
 echo "<tr>";
-if($perm->getUpdate()) {echo "<td><input type=button name=upd id=upd value=Update onclick=checkfields('update','$table',$nrows,'$order','$colOrder','$stype','$pageNum')></td>";}
-if($perm->getDelete()) {echo "<td><input type=button name=del id=del value=Delete onclick=checkfields('delete','$table',$nrows,'$order','$colOrder','$stype','$pageNum')></td>";}
-if($perm->getUpdate() or $perm->getDelete() or $perm->getInsert()) $r=true;
+if($perm->getUpdate()) {echo "<td><input type=button name=upd id=upd value=Update></td>";}
+if($perm->getDelete()) {echo "<td><input type=button name=del id=del value=Delete></td>";}
+if($perm->getUpdate() or $perm->getDelete()) $r=true;
 //set order
 //Regular filter
 echo "<td><input type=button name=filter_$table id=filter_$table value=Search>";
@@ -257,13 +289,16 @@ echo "<div id='advsearch' class=regular>";
 $search->advancedFilter($user_id,$table);
 echo "</div>";
 echo "</td>";
-
+echo "<td><input type=button name=legend id=legend value=Legend>";
+echo "<div id=legendiv class=regular>";
+$display->legend($table,$user_id);
+echo "</div>";
+echo "</td>";
 //print page navigation
 echo "<td>".$first.$prev." Showing page $pageNum of $maxPage pages ".$next.$last."</td>"; 
 echo "<td><b>Jump to page</b> <input type=text size=1 name=newPage id=newPage value=$pageNum><input type=button id=jump value='Go' onclick=submit('$stype','$table',$nrows,'$order','$colOrder',$('#newPage').val())></td>";
 echo "</tr>";
 echo "</table>";
-
 //display results
 echo "<table class=main id=main>";
 //are there results to display?
@@ -300,9 +335,6 @@ echo "<input type='hidden' name='multiple' id='multiple' value=1>";
 
 /**************************JAVASCRIPT*******************************/
 if($stype==2){
-	
-	
-	
 	//Big fu(...) hack to fill the advanced filter after a search
 	echo "<script type='text/javascript'>";
 	echo "function getSearchVars(objName){";
@@ -337,6 +369,6 @@ if($stype==2){
 	echo "}";
 	echo "</script>";
 }
-/**************************JAVASCRIPT*******************************/
 
-?>
+/**************************END OF JAVASCRIPT*******************************/
+?>      

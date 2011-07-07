@@ -12,8 +12,10 @@ class queryClass{
 	private $sql=array();
 	private $vars=array();  
     private $data=array();
+    private $pdo;
 	
 	public function __construct(){
+		$this->pdo=new dbConnection();
     }
 
     /**
@@ -34,6 +36,21 @@ class queryClass{
             throw new Exception("Property ‘$var’ does not exist");
         }
         
+    }
+    
+    public function prepareQuery($arr, $no){
+    	$this->pdo->dbInfo();
+		
+		for($i = 0;$i<sizeof($arr);$i++){
+			$this->__set($i, $arr[$i]);	
+		}
+		//select engine (mysql or pgsql)
+		$this->engineHandler($this->pdo->getEngine());
+		$sql = $this->pdo->query($this->getSQL($no)); 
+		$row=$sql->fetch();
+		//return search path to main database
+		$this->pdo->dbConn();
+		return $row;
     }
 	
 	public function getSQL($i) {return $this->sql[$i];}
@@ -69,7 +86,7 @@ class queryClass{
 	public function mysqlQuery(){
 		$this->sql[0] = "";
 		$this->sql[1] = "SELECT table_type, table_comment FROM tables WHERE table_name='".$this->vars[0]."' AND table_schema='".$this->vars[1]."'";
-		$this->sql[2] = "SELECT column_name, is_nullable, data_type, column_comment, character_maximum_length, column_default FROM columns WHERE table_schema='".$this->vars[1]."' AND table_name='".$this->vars[0]."'";
+		$this->sql[2] = "SELECT column_name, data_type, column_comment, character_maximum_length, column_default FROM columns WHERE table_schema='".$this->vars[1]."' AND table_name='".$this->vars[0]."'";
 		$this->sql[3] = "SELECT referenced_table_name FROM key_column_usage WHERE referenced_table_name<>'NULL' AND table_schema='".$this->vars[1]."' AND column_name='".$this->vars[0]."'";
 		$this->sql[4] = "SELECT ".$this->vars[0]."_id, ".$this->vars[2]." FROM ".$this->vars[3].".".$this->vars[0]." WHERE LOWER(".$this->vars[2].") regexp LOWER('".$this->vars[1]."') LIMIT 25";
 		$this->sql[5] = "SELECT table_name, column_name FROM KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = '".$this->vars[0]."' AND REFERENCED_TABLE_NAME = '".$this->vars[1]."'";
@@ -81,7 +98,7 @@ class queryClass{
 	public function pgsqlQuery(){
 		$this->sql[0] = "";
 		$this->sql[1] = "SELECT table_type, (select description from pg_description where objoid='".$this->vars[1].".".$this->vars[0]."'::regclass AND objsubid=0) FROM tables WHERE table_name='".$this->vars[0]."' AND table_schema='".$this->vars[1]."'";
-		$this->sql[2] = "SELECT column_name, is_nullable, data_type, (SELECT col_description('".$this->vars[1].".".$this->vars[0]."'::regclass,ordinal_position)),character_maximum_length, column_default FROM columns WHERE table_schema='".$this->vars[1]."' AND table_name='".$this->vars[0]."'";
+		$this->sql[2] = "SELECT column_name, data_type, (SELECT col_description('".$this->vars[1].".".$this->vars[0]."'::regclass,ordinal_position)),character_maximum_length, column_default FROM columns WHERE table_schema='".$this->vars[1]."' AND table_name='".$this->vars[0]."'";
 		$this->sql[3] = "SELECT a.table_name FROM constraint_column_usage as a, table_constraints as b WHERE a.constraint_name=b.constraint_name AND a.table_schema='".$this->vars[1]."' AND b.constraint_name IN (SELECT constraint_name FROM key_column_usage WHERE column_name='".$this->vars[0]."') AND b.constraint_type<>'UNIQUE'";
 		$this->sql[4] = "SELECT ".$this->vars[0]."_id, ".$this->vars[2]." FROM ".$this->vars[3].".".$this->vars[0]." WHERE ".$this->vars[2]."~*'".$this->vars[1]."' LIMIT 25";
 		$this->sql[5] = "SELECT a.table_name, a.column_name FROM key_column_usage as a, constraint_column_usage as b WHERE b.constraint_name=a.constraint_name AND a.constraint_schema='".$this->vars[0]."' AND b.table_name='".$this->vars[1]."'";

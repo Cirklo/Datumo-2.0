@@ -2,7 +2,7 @@
 require_once("../session.php");
 $user_id = startSession();
 
-require_once "../.htconnect.php";
+require_once "../__dbConnect.php";
 require_once "../dispClass.php";
 require_once "../queryClass.php";
 require_once "../resClass.php";
@@ -44,7 +44,7 @@ for($i=0;$row=$sql->fetch();$i++){
 	else{$hide=false;}
 	if($i==1 and isset($type)) $width="350px";
 	else $width=null;
-	$json->colModel[] = array("editable"=>$bool, "name"=>$row[0], "index"=>$row[0], "resizable"=>true, "hidden"=>$hide, "edittype"=>$row[3], "width"=>$width);
+	$json->colModel[] = array("editable"=>$bool, "name"=>$row[0], "index"=>$row[0], "resizable"=>true, "hidden"=>$hide, "edittype"=>$row[3], "width"=>$width, "align"=>"right");
 	$json->colNames[] = $row[1];
 	//search options 	
 }

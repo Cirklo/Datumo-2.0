@@ -88,7 +88,7 @@ $(document).ready(function(){
 			                },*/
 			                groupingView : { 
 			                	groupField : [colG], 
-			                	groupColumnShow : [true], 
+			                	groupColumnShow : [false], 
 			                	groupText : ['<b>{0}</b>'], 
 			                	groupCollapse : false, 
 			                	groupOrder: ['asc'], 
@@ -290,10 +290,10 @@ $(document).ready(function(){
 			                grouping: colG, 					//group by type
 				            groupingView : { 					//group settings
 				                groupField : [colG], 
-				                groupColumnShow : [true], 
+				                groupColumnShow : [false], 
 				                groupText : ['<b>{0}</b>'], 
 				                groupCollapse : false, 
-				                groupOrder: ['asc'], 
+				                groupOrder: ['desc'], 
 				                groupSummary : [false], 
 				                groupDataSorted : true 
 				            }, //set toolbar 
@@ -357,7 +357,7 @@ $(document).ready(function(){
 			arr[1]=Number($("#quantity_"+options.row).val());
 		//	alert(arr);
 			//ajax request->send entry id through ajax and add it to basket
-			var url = "requisitions.php";
+			var url = "requisitions/requisitions.php";
 			//ajax request with post variables (NICE)
 			$.get(url,{
 				  type:0,
@@ -366,13 +366,8 @@ $(document).ready(function(){
 			//retrieve that from ajax request 
 			//select another div to display the notification
 				function(data){
-					$(document).alertMsg({
-						idle: 2500,
-						target: "notification",
-						style: "mainClass",
-						text: data
+					$.jnotify(data);
 				});
-			});
 		};
 		
 		/**
@@ -421,19 +416,23 @@ $(document).ready(function(){
 				        }
 				        
 			        }
+			           
+			        
 			        //check if an account has been selected
 			        if($("#accountList").get(0).selectedIndex==0){
 			        	alert("You must select a valid account to proceed");
 			        	return;
 			        } else { //submit basket
+			        	var iComments=$("#iComments").val();
 			        	//must check if the selected account has enough money.
 			        	$.get(url,{
 							  type:3,
 							  stype:$("#submit").attr("name"),
 							  account:$("#accountList").val(),
 							  val:arr,
-							  ammount:total},		
-							//retrieve that from ajax request 
+							  ammount:total,
+							  iComments:iComments},
+							  //retrieve that from ajax request 
 							//select another div to display the notification
 							function(data){
 								  alert(data);
@@ -537,15 +536,6 @@ function getUserLevel(){
 	url="requisitions.php?type=7";
 	var str=ajaxRequest(url);
 	return str;
-}
-
-function add_to_favourites(id){
-	var resp=confirm("Sure you want to add this item to your favourites?");
-	if(resp){
-		url="requisitions/requisitions.php?type=9&id="+id;
-		var str=ajaxRequest(url);
-		alert(str);
-	}
 }
 
 function exportExcel(grid)

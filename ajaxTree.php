@@ -3,6 +3,7 @@ require_once("session.php");
 $user_id = startSession();
 
 ?>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <script type="text/javascript">
 $(document).ready(function(){
 	$("*").tipTip(); //tiptip initialization
@@ -26,7 +27,7 @@ $(document).ready(function(){
 });
 </script>
 <?php 
-require_once (".htconnect.php");
+require_once ("__dbConnect.php");
 require_once "dispClass.php";
 require_once "resClass.php";
 require_once ("treeClass.php");
@@ -165,6 +166,24 @@ try{
 	//do nothing for now
 }
 
+//set search path to information schema
+$conn->dbInfo();
+$query="SELECT b.referenced_table_name 
+	FROM columns as a, key_column_usage as b 
+	WHERE a.table_schema='labcal' 
+	AND a.table_name='$table1' 
+	AND b.table_name=a.table_name 
+	AND a.column_name=b.column_name 
+	AND a.table_schema=b.table_schema 
+	AND a.ordinal_position=2";
+
+$sql=$conn->query($query);
+$row=$sql->fetch();
+if($row[0]){
+	$refTable=$row[0];
+}
+//change back to main database
+$conn->dbConn();
 //display first table options
 $sql = $conn->prepare("SELECT * FROM ".$database.".".$table1." WHERE $field='$val' ORDER BY 2 LIMIT 20 OFFSET $offset");
 try{
@@ -209,7 +228,14 @@ for($j=0;$row = $sql->fetch();$j++){
 	if($type==2) {
 		if($tree->getUpdate() or $tree->getDelete()) echo "<input type=checkbox id=$row[0] onclick=dispInputTree('details','$table1','$val',true,$treeview_id);>";
 		//echo "<span class=file onclick=getdetails('details','$table1','$row[0]',true,$treeview_id);>$row[1]</span>";
-		echo "<span class=file>$row[1]</span>";
+		if(isset($refTable)){
+			$sql2=$conn->query("SELECT * FROM $refTable WHERE ".$refTable."_id=$row[1]");
+			$row2=$sql2->fetch();
+			$v=$row2[1];
+		} else {
+			$v=$row[1];
+		}
+		echo "<span class=file>$v</span>";
 	}
 	echo "<div id='Tree_$row[0]' class=c style='display:none'></div>";
 	echo "</li>";

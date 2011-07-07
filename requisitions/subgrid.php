@@ -8,15 +8,15 @@ $user_id=startSession();
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Basket display</title>
 <link href="../css/tipTip.css" rel="stylesheet" type="text/css">
-<link href="css/requisitions.css" rel="stylesheet" type="text/css">
-<link href="css/redmond/jquery-ui-1.8.9.custom.css" rel="stylesheet" type="text/css">
-<link href="js/src/css/ui.jqgrid.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="../js/jquery-1.4.4.js"></script>
-<script type="text/javascript" src="js/src/grid.loader.js"></script>
+<link href="../css/requisitions.css" rel="stylesheet" type="text/css">
+<link href="../css/redmond/jquery-ui-1.8.9.custom.css" rel="stylesheet" type="text/css">
+<link href="../js/src/css/ui.jqgrid.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../js/jquery-1.5.1.js"></script>
+<script type="text/javascript" src="../js/src/grid.loader.js"></script>
 <script type="text/javascript" src="js/jquery.basket.js"></script>
 <script type="text/javascript" src="../js/jquery.tipTip.js"></script>
 <script type="text/javascript" src="../js/ajax.js"></script>
-<script type="text/javascript" src="js/jquery.print.js"></script>
+<script type="text/javascript" src="../js/jquery.print.js"></script>
 <script type="text/javascript">
 //initialize tiptip plugin
 $(document).ready(function(){
@@ -26,8 +26,7 @@ $(document).ready(function(){
 </head>
 <?php 
 
-require_once "../.htconnect.php";
-require_once "../functions.php";
+require_once "../__dbConnect.php";
 require_once "../resClass.php";
 
 if(isset($_GET['state'])){	$state=$_GET['state'];}

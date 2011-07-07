@@ -1,6 +1,6 @@
 <?php 
 
-require_once ".htconnect.php";
+require_once "__dbConnect.php";
 require_once "mailClass.php";
 require_once "genObjClass.php";
 require_once "dispClass.php";

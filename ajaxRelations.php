@@ -5,8 +5,9 @@
  * @abstract Ajax handler request -> get referenced table
  * 
  *  */
-
-require_once(".htconnect.php");
+require_once "session.php";
+$user_id=startSession();
+require_once("__dbConnect.php");
 require_once("queryClass.php");
 require_once("dispClass.php");
 /*

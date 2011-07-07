@@ -5,13 +5,13 @@ $user_id = startSession();
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <link href="css/main.css" rel="stylesheet" type="text/css">
 <link href="css/autoSuggest.css" rel="stylesheet" type="text/css">
 <link href="css/tipTip.css" rel="stylesheet" type="text/css">
 <link href="css/jquery.treeview.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="js/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="js/jquery-1.5.1.js"></script>
 <script type="text/javascript" src="js/jquery.cookie.js.js"></script>
 <script type="text/javascript" src="js/jquery.tipTip.js"></script>
 <script type="text/javascript" src="js/jquery.treeview.js"></script>
@@ -47,7 +47,7 @@ $(document).ready(function(){
 
 <?php
 
-require_once (".htconnect.php");
+require_once ("__dbConnect.php");
 require_once ("resClass.php");
 require_once ("dispClass.php");
 require_once ("searchClass.php");

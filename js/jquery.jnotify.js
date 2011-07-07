@@ -1,143 +1,237 @@
-/**
-*	jQuery.jNotify
-*	jQuery Notification Engine
-*		
-*   Copyright (c) 2010 Fabio Franzini
-*
-*	Permission is hereby granted, free of charge, to any person obtaining a copy
-*	of this software and associated documentation files (the "Software"), to deal
-*	in the Software without restriction, including without limitation the rights
-*	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-*	copies of the Software, and to permit persons to whom the Software is
-*	furnished to do so, subject to the following conditions:
-*
-*	The above copyright notify and this permission notify shall be included in
-*	all copies or substantial portions of the Software.
-*
-*	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-*	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-*	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-*	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-*	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-*	THE SOFTWARE.
-*	
-*	@author 	Fabio Franzini
-* 	@copyright  2010 www.fabiofranzini.com
-*	@version    1
-**/
+/*!
+ * jNotify jQuery Plug-in
+ *
+ * Copyright 2010 Giva, Inc. (http://www.givainc.com/labs/) 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Date: 2010-09-30
+ * Rev:  1.1.00
+ 
+ * Modified by João Lagarto and Pedro Pires
+ * Date: 30-05-2011
+ * Last revision: 31-05-2011 
+ * Implemented in Agendo and Datumo
+ * 
+ * New addons
+ * - new default variable onlyOne: allows users to decide if only one 
+ * notification is to be displayed (or more)
+ * 
+ * 
+ */
 
-(function(jQuery) {
-    jQuery.fn.jnotifyInizialize = function(options) {
-        var element = this;
+;(function($){
+	$.jnotify = function (m, o, d){
+		return new jNotify(m, o, d);
+	};
 
-        var defaults = {
-            oneAtTime: false,
-            appendType: 'append'
-        };
+	// set the version of the plug-in
+	$.jnotify.version = "1.1.00";
+	
+	var $jnotify, queue = [], count = 0, allowCreate=true, playing = false, paused = false, queuedId, queuedNote, messagesList = [],
+		// define default settings
+		defaults = {
+			// define core settings
+			  type: ""                                  // if a type is specified, then an additional class of classNotification + type is created for each notification
+			, delay: 2500                               // the default time to show each notification (in milliseconds)
+			, sticky: false 	                        // determines if the message should be considered "sticky" (user must manually close notification)
+			, closeLabel: "&times;"                     // the HTML to use for the "Close" link
+			, showClose: true                           // determines if the "Close" link should be shown if notification is also sticky
+			, fadeSpeed: 500                            // the speed to fade messages out (in milliseconds)
+			, slideSpeed: 250                           // the speed used to slide messages out (in milliseconds)
+			, onlyOne: true								// determine if we have only one notification or if we can have more
+			
+			// define the class statements
+			, classContainer: "jnotify-container"       // className to use for the outer most container--this is where all the notifications appear
+			, classNotification: "jnotify-notification" // className of the individual notification containers
+			, classBackground: "jnotify-background"     // className of the background layer for each notification container
+			, classClose: "jnotify-close"               // className to use for the "Close" link
+			, classMessage: "jnotify-message"           // className to use for the actual notification text container--this is where the message is actually written
+	
+			// event handlers
+			, init: null                                // callback that occurs when the main jnotify container is created
+			, create: null                              // callback that occurs when when the note is created (occurs just before appearing in DOM)
+			, beforeRemove: null                        // callback that occurs when before the notification starts to fade away
+			, remove: null                              // callback that occurs when notification is removed
+			, transition: null                          // allows you to overwrite how the transitions between messages are handled
+			                                            // receives the following arguments:
+			                                            //   container - jQuery object containing the notification
+			                                            //   message   - jQuery object of the actual message
+			                                            //   count     - the number of items left in queue
+			                                            //   callback  - a function you must execute once your transition has executed
+			                                            //   options   - the options used for this jnotify instance
+		};
 
-        var options = jQuery.extend({}, defaults, options);
+	// override the defaults
+	$.jnotify.setup = function (o){
+		defaults = $.extend({}, defaults, o) ;
+	};
 
-        this.addClass('notify-wrapper');
+	$.jnotify.play = function (f, d){
+		if( playing && (f !== true ) || (queue.length == 0) ) return;
+		playing = true;
+		
+		// get first note
+		var note = queue.shift();
+		queuedNote = note;
 
-        if (options.oneAtTime)
-            this.addClass('notify-wrapper-oneattime');
+		// determine delay to use
+		var delay = (arguments.length >= 2) ? parseInt(d, 10) : note.options.delay;
+		
+		// run delay before removing message
+		queuedId = setTimeout(function(){
+			// clear timeout id
+			queuedId = 0;
+			note.remove(function (){
+				// makr that the queue is empty
+				if( queue.length == 0 ) playing = false;
+				// force playing the next item in queue
+				else if( !paused ) $.jnotify.play(true);
+			});
+		}, delay);
+	};
 
-        if (options.appendType == 'prepend' && options.oneAtTime == false)
-            this.addClass('notify-wrapper-prepend');
+	$.jnotify.pause = function(){
+		clearTimeout(queuedId);
+		// push the item back into the queue
+		if( queuedId ) queue.unshift(queuedNote);
+		// mark that we're playing (so it doesn't automatically start playing)
+		paused = playing = true;
+  }
 
-        return this;
-    };
-    jQuery.fn.jnotifyAddMessage = function(options) {
+	$.jnotify.resume = function(){
+		// mark that we're no longer pause
+		paused = false;
 
-        var notifyWrapper = this;
+		// resume playing
+		$.jnotify.play(true, 0);
+  }
 
-        if (notifyWrapper.hasClass('notify-wrapper')) {
+	function jNotify(message, options){
+		// a reference to the jNotify object
+		var self = this, TO = typeof options;
 
-            var defaults = {
-                text: '',
-                type: 'message',
-                showIcon: true,
-                permanent: false,
-                disappearTime: 3000
-            };
+		if( TO == "number" ){
+			options = $.extend({}, defaults, {delay: options});
+		} else if( TO == "boolean" ){
+			options = $.extend({}, defaults, {sticky: true}) ;
+		} else if( TO == "string" ){
+			options = $.extend({}, defaults, {type: options, delay: ((arguments.length > 2) && (typeof arguments[2] == "number")) ? arguments[2] : defaults.delay, sticky: ((arguments.length > 2) && (typeof arguments[2] == "boolean")) ? arguments[2] : defaults.sticky}) ;
+		} else {
+			options = $.extend({}, defaults, options);
+		}
+		
+		// store the options
+		this.options = options;
+		
+		// if the container doesn't exist, create it
+		if( !$jnotify ){
+			// we want to use one single container, so always use the default container class
+			$jnotify = $('<div lang=exp class="' + defaults.classContainer + '" />').appendTo("body");
+			if( $.isFunction(options.init) ) options.init.apply(self, [$jnotify]);
+		} 
+		
+		// create the notification
+		function create(message){
+			messagesList[count]=message;
+			var html = '<div lang=exp class="' + options.classNotification + (options.type.length ? (" " + options.classNotification + "-" + options.type) : "") + '">'
+			         + '<div lang=exp class="' + options.classBackground + '"></div>'
+			         + (options.sticky && options.showClose ? ('<a class="' + options.classClose + '">' + options.closeLabel + '</a>') : '')
+			         + '<div lang=exp class="' + options.classMessage + '">'
+			         + '<div lang=exp>' + message + '</div>'
+			         + '</div></div>';
+	
+			msg = message;
+			
+			// increase the counter tracking the notification instances
+			count++;
+				
+			// create the note
+			var $note = $(html);
+			
+			if( options.sticky ){
+				// add click handler to remove the sticky notification
+				$note.find("a." + options.classClose).bind("click.jnotify", function (){
+					self.remove();
+				});
+			}
+	
+			// run callback
+			if( $.isFunction(options.create) ) options.create.apply(self, [$note]);
+			
+			//block any other message if option is set 
+			allowCreate=!options.onlyOne;
+				
+			// return the new note			
+			return $note.appendTo($jnotify);
+		}
 
-            var options = jQuery.extend({}, defaults, options);
-            var styleClass;
-            var iconClass;
+		// remove the notification		
+		this.remove = function (callback){
+			var $msg = $note.find("." + options.classMessage), $parent = $msg.parent();
 
-            switch (options.type) {
-                case 'message':
-                    {
-                        styleClass = 'ui-state-highlight';
-                        iconClass = 'ui-icon-info';
-                    }
-                    break;
-                case 'error':
-                    {
-                        styleClass = 'ui-state-error';
-                        iconClass = 'ui-icon-alert';
-                    }
-                    break;
-                default:
-                    {
-                        styleClass = 'ui-state-highlight';
-                        iconClass = 'ui-icon-info';
-                    }
-                    break;
-            }
+			// remove message from counter
+			var index = count--;
+				
+			//alert(count); 			
+			// run callback
+			if( $.isFunction(options.beforeRemove) ) options.beforeRemove.apply(self, [$msg]);
+			
+			// cleans up notification
+			function finished(){
+				// remove the parent container
+				$parent.remove();
+			
+				if( $.isFunction(callback) ) callback.apply(self, [$msg]);
+				if( $.isFunction(options.remove) ) options.remove.apply(self, [$msg]);
+				
+			}
+			
+			// check if a custom transition has been specified
+			if( $.isFunction(options.transition) ) options.transition.apply(self, [$parent, $msg, index, finished, options]);
+			else {
+				$msg.fadeTo(options.fadeSpeed,0.01, function (){
+					// if last item, just remove
+					if( index <= 1 ) finished();
+					// slide the parent closed
+					else $parent.fadeOut(options.slideSpeed, finished);
+				});
+				
+				// if the last notification, fade out the container
+				$parent.fadeOut(options.fadeSpeed, function(){
+					allowCreate=true; 	//boolean variable to control message display: always set it true here
+				});
+			}
+		}
+		
+		// added to make sure that the same message doesnt show multiple times on the container
+		if(options.onlyOne && count > 0)
+			for(i = 0; i<count; i++)
+				allowCreate = (messagesList[i]==message)? false : true;
+			
+		// create the note
+		if(allowCreate)	var $note = create(message);
+		else return null;
+		
+		// if not a sticky, add to show queue
+		if( !options.sticky ){
+			// add the message to the queue
+			queue.push(this);
+			// play queue
+			$.jnotify.play();
+		}
 
-            if (notifyWrapper.hasClass('notify-wrapper-oneattime')) {
-                this.children().remove();
-            }
+		return this;
+	};
 
-            var notifyItemWrapper = jQuery('<div class="jnotify-item-wrapper"></div>');
-            var notifyItem = jQuery('<div class="ui-corner-all jnotify-item"></div>')
-                                    .addClass(styleClass);
-
-            if (notifyWrapper.hasClass('notify-wrapper-prepend'))
-                notifyItem.prependTo(notifyWrapper);
-            else
-                notifyItem.appendTo(notifyWrapper);
-
-            notifyItem.wrap(notifyItemWrapper);
-
-            if (options.showIcon)
-                jQuery('<span class="ui-icon" style="float:left; margin-right: .3em;" />')
-                                    .addClass(iconClass)
-                                    .appendTo(notifyItem);
-
-            jQuery('<span></span>').html(options.text).appendTo(notifyItem);
-            jQuery('<div class="jnotify-item-close"><span class="ui-icon ui-icon-circle-close"/></div>')
-                                    .prependTo(notifyItem)
-                                    .click(function() { remove(notifyItem) });
-
-            // IEsucks
-            if (navigator.userAgent.match(/MSIE (\d+\.\d+);/)) {
-                notifyWrapper.css({ top: document.documentElement.scrollTop });
-                //http://groups.google.com/group/jquery-dev/browse_thread/thread/ba38e6474e3e9a41
-                notifyWrapper.removeClass('IEsucks');
-            }
-            // ------
-
-            if (!options.permanent) {
-                setTimeout(function() { remove(notifyItem); }, options.disappearTime);
-            }
-        }
-
-        function remove(obj) {
-            obj.animate({ opacity: '0' }, 600, function() {
-                obj.parent().animate({ height: '0px' }, 300,
-                      function() {
-                          obj.parent().remove();
-                          // IEsucks
-                          if (navigator.userAgent.match(/MSIE (\d+\.\d+);/)) {
-                              //http://groups.google.com/group/jquery-dev/browse_thread/thread/ba38e6474e3e9a41
-                              obj.parent().parent().removeClass('IEsucks');
-                          }
-                          // -------
-                      });
-            });
-        }
-    };
 })(jQuery);

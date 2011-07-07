@@ -4,7 +4,7 @@
  * @description function to submit filter forms
  */
 
-function filter(name, objName, j, order, colOrder,page){
+function filter(name, objName, j, order, colOrder,page,comeFromAction){
 	//number of rows to be displayed
 	if(j=="")
 		var nrows=20;
@@ -18,10 +18,7 @@ function filter(name, objName, j, order, colOrder,page){
 	//get form
 	var CurForm = eval("document."+name);
 	for(var i=0;i<(CurForm.length-1);i++){
-		//if(CurForm[i].value!=""){
 			if(CurForm[i].alt==""){
-				//alert(CurForm[i].alt);
-				//url="ajax.php?val=" + CurForm[i].value + "&var=" + CurForm[i].id;
 				var newId=CurForm[i].id;
 				url="ajax.php?val=" + CurForm[i].value + "&var=" + newId.substring(0,newId.length-3);
 				var str = ajaxRequest(url);
@@ -31,14 +28,12 @@ function filter(name, objName, j, order, colOrder,page){
 			} else {
 				CurForm[i].value=CurForm[i].alt;
 			}
-		
-			//alert(CurForm[i].value);
-		//} 
-		//
 	}
 	//form actions
 	//(page-1) hack to store page position after update/delete
-	CurForm.action = "manager.php?table="+objName+"&nrows="+nrows+"&search=1&order="+order+"&colOrder="+colOrder+"&page="+page;
+	if(!comeFromAction)
+		comeFromAction=false;
+	CurForm.action = "manager.php?table="+objName+"&nrows="+nrows+"&search=1&order="+order+"&colOrder="+colOrder+"&page="+page+"&comeFromAction="+comeFromAction;
 	CurForm.submit();
 }
 
@@ -285,9 +280,10 @@ function qSubmit(objName,i){
 		if(qSearchValue.length<3){
 			alert("Search string must have more than 2 characters");
 			return;
-		}
+		}	
 	}
 	CurForm.action = "manager.php?table="+objName+"&nrows="+nrows+"&search=3";
 	CurForm.submit();
+	
 }
 

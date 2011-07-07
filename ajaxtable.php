@@ -4,7 +4,9 @@
  * @author João Lagarto	/ Nuno Moreno
  * @abstract Ajax handler request -> get column names through ajax
  */
-require_once(".htconnect.php");
+require_once "session.php";
+$user_id=startSession();
+require_once("__dbConnect.php");
 
 //call classes to handle database connection and to build queries for different engines
 $conn = new dbConnection();

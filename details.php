@@ -5,8 +5,9 @@ error_reporting(1);
  * @author João Lagarto	/ Nuno Moreno
  * @abstract Ajax handler request -> get second attribute from referenced table
  */
+require_once "session.php";
 
-require_once(".htconnect.php");
+require_once("__dbConnect.php");
 require_once("dispClass.php");
 /*
 require_once("queryClass.php");
@@ -44,7 +45,7 @@ $fk=$display->getFKtable(); //referenced table
 $sql = $conn->prepare("SELECT * FROM $database.$table WHERE ".$table."_id=$val");
 $sql->execute();
 $row = $sql->fetch();
-echo "<table>";
+echo "<table style='line-height:10px'>";
 for($i=0;$i<sizeof($arr);$i++){	
 	if($fk[$i]!="" and $fk[$i]!=$table){ //is it a foreign key?
 		//get second attribute from referenced table
