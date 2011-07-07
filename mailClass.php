@@ -37,9 +37,13 @@ class mailClass extends PHPMailer{
         $this->AddReplyTo($from,$from);
 		$this->Subject = $subject;
         $this->Body = $msg;
-        foreach($to as $target){
-        	$this->AddAddress($target, "");
-        }
+        if(sizeof($to)==1){
+        	$this->AddAddress($to);
+        } else {
+	        foreach($to as $target){
+	        	$this->AddAddress($target, "");
+	        }
+        } 
 		if(!$this->Send()) {
             //mail error
             return "Could not send mail!";
