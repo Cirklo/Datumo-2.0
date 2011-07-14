@@ -9,7 +9,9 @@ if(isset($_SESSION['path']) or $_SESSION['path']!=""){
 	echo "<meta HTTP-EQUIV='REFRESH' content='3; url=../'>";
 	exit();
 }
-	
+
+//require_once ".htconnect.php";
+
 class dbConn{
 	public function __construct(){
 		$conn=new dbConnection();
