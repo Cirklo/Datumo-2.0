@@ -14,7 +14,7 @@ function startImport(file, table, field, column, match,but){
 
 </script>
 <?php
-require_once ("__dbConnect.php");
+require_once(".htconnect.php");
 require_once ("classcheck.php");
 //require_once ("classimport.php");
 
@@ -40,7 +40,7 @@ $file = $_FILES["file"]["name"];
 if ($_FILES["file"]["error"] > 0){ //no file uploaded
 	echo "Error: " . $_FILES["file"]["error"] . "<br />";
 } else { //check data for errors
-	$path = "/var/www/datumo2.0/importer/upload/".basename($_FILES["file"]["name"]);
+	$path = "/xampp/htdocs/datumo/newImporter/files/".basename($_FILES["file"]["name"]);
 	
 	//file validation
 	//if($_FILES["file"]["type"] != "application/vnd.ms-excel"){
