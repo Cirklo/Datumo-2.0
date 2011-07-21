@@ -52,6 +52,38 @@ class mailClass extends PHPMailer{
         	return "Mail successfully sent!";   
         }
 	}
+	
+	public function mailingList($subject, $to, $from, $msg){
+		$delay=1; 				//delay between emails, in seconds
+		$noAddressesPerTurn=15;	//number of addresses per email
+		$j=0;					//control counter
+		$noAddresses=sizeof($to);
+		$noEmails=ceil($noAddresses/$noAddressesPerTurn);
+		for($i=1;$i<=$noEmails;$i++){
+			$this->CharSet="UTF-8";
+			$this->SetFrom($from, $from);
+	        $this->AddReplyTo($from,$from);
+			$this->Subject=$subject;
+	        $this->Body=$msg;
+	        //loop through email addresses
+	       	while($j!=($noAddressesPerTurn*$i)){
+	       		$this->AddBCC($to[$j]);
+	       		$j++;	//increment counter
+	       	}
+	       	
+			if(!$this->Send()) {
+	            //mail error
+	            return "Could not send mail!";
+	        } else {
+	            //mail OK
+	        	return "Mail successfully sent!";   
+	        }
+			$this->ClearAddresses();	//clear addresses for the next loop
+			$this->ClearBCCs();
+			$this->ClearReplyTos();
+			sleep($delay);				//sleep after sending emails
+		}
+	}
 }
 
 
