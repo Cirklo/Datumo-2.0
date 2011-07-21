@@ -912,6 +912,23 @@ class dispClass{
 		
 	}
 	
+	/**
+	 * 
+	 * Method that verifies if a specific table is a view or a base table
+	 */
+	
+	function checkTableType($objName){
+		//search path to information schema
+		$this->pdo->dbInfo();
+		$query="SELECT table_type FROM tables WHERE table_name='$objName' AND table_schema='".$this->pdo->getDatabase()."'";
+		$sql=$this->pdo->query($query);
+		$row=$sql->fetch();
+		if($row[0]=="VIEW"){
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 }
 

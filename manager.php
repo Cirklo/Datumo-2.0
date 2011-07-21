@@ -246,7 +246,9 @@ echo "<tr><td><a href=javascript:void(0) class=contact>Helpdesk</a>";
 $display->contactForm();
 echo "</td></tr>";
 echo "<tr><td><hr></td></tr>";
-//echo "<tr><td><a href=excel.php?table=$table title='Export data to xls file'>Export data</a></td></tr>";
+//display export to Excel option if the current table is a view
+if($display->checkTableType($table))
+	echo "<tr><td><a href=excel.php?table=$table title='Export data to xls file'>Export data</a></td></tr>";
 // reports
 $display->reportOptions(true,$user_id);
 //display treeview

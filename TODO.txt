@@ -1,0 +1,5 @@
+Upgrade Report Generator tool (allow more options)
+Allow users to export Views to excel
+Review multiple insert tool. Try to clone table rows without losing the original HTML layout.
+Review Datumo's Design. Try to abolish tables (I hate tables)
+Try to synchronize mycalendar with google calendar (gmail account)
