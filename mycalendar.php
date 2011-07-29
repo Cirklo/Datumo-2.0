@@ -12,6 +12,7 @@ $user_id = startSession();
 <script type='text/javascript' src='js/jquery.cal.js'></script>
 <script type='text/javascript' src='js/jquery-ui-1.8.9.custom.min.js'></script>
 <script type='text/javascript' src='js/fullcalendar.js'></script>
+<script type='text/javascript' src='js/gcal.js'></script>
 <script type='text/javascript'>
 
 	$(document).ready(function() {
@@ -33,6 +34,27 @@ $user_id = startSession();
 			loading: function(bool) {
 				if (bool) $('#loading').show();
 				else $('#loading').hide();
+			},
+			
+			eventClick: function(event) {
+				resp=confirm("Do you want to export this entry to your personal calendar?");
+				if(resp){
+					//SEND EMAIL WITH THE .ICS ATTACHED
+					$.get("calendar_feed.php?export",{
+						events:event
+					},
+						function(data){
+							alert(data);
+						});
+				}
+			},
+			
+			loading: function(bool) {
+				if (bool) {
+					$('#loading').show();
+				}else{
+					$('#loading').hide();
+				}
 			}
 			
 		});
@@ -99,7 +121,7 @@ try{
 	$sql=$conn->query($query);
 	//loop through all results
 	for($i=0;$row=$sql->fetch();$i++){
-		echo "<li style='list-style:none;text-align:left;'><input type=checkbox name=$row[0] id=$row[0] checked>";
+		echo "<li style='list-style:none;text-align:left;'><input type=checkbox name=$row[0] id=$row[0]>";
 		echo "<font color=#$row[2]>$row[1]</font>";
 		echo "</li>";	
 	}
@@ -119,6 +141,7 @@ try{
 } catch (Exception $e){
 	//do nothing
 }
+echo "<br><br>";
 echo "</div>";
 echo "<div id='loading' style='display:none'>loading...</div>";
 echo "<div id='calendar'></div>";

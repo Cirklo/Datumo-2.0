@@ -5,20 +5,19 @@ $user_id = startSession();
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 <link href="css/main.css" rel="stylesheet" type="text/css">
 <link href="css/autoSuggest.css" rel="stylesheet" type="text/css">
 <link href="css/CalendarControl.css" rel="stylesheet" type="text/css">
 <link href="css/tipTip.css" rel="stylesheet" type="text/css">
 <link href="css/styles.css" rel="stylesheet" type="text/css">
-<link href="css/jquery.alert.css" rel="stylesheet" type="text/css">
 <link href="css/jquery.jnotify.css" rel="stylesheet" type="text/css">
 
 <script type="text/javascript" src="js/jquery-1.5.1.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.14.custom.js"></script>
 <script type="text/javascript" src="js/jquery.init.js"></script>
 <script type="text/javascript" src="js/jquery.tipTip.js"></script>
-<script type="text/javascript" src="js/jquery.alert.js"></script>
 <script type="text/javascript" src="js/jquery.jnotify.js"></script>
 <script type="text/javascript" src="js/jquery.action.js"></script>
 <script type="text/javascript" src="js/CalendarControl.js"></script>
@@ -233,7 +232,7 @@ if ($pageNum < $maxPage){
 }
 
 //display menus
-$options=array("Options",strtoupper($table)." Management");
+$options=array("Options",strtoupper($table)." Management <a href=javascript:void(0) title='click to view column comments' onclick=showColumnComments()>(view table comments)</a>");
 echo "<h2>Datumo Administration Area</h2>";
 echo "<table border=0>";
 $display->options($options);
@@ -319,10 +318,10 @@ if($numRows>0){
 }
 //display main results
 $display->results($table,$r); //call method to display query results
-
+//echo "</table>";
 //search for permissions related with new entries in the table
 if($perm->getInsert()) {$display->insert($table,$stype,$nrows,$order);}
-echo "</table>";
+
 echo "</td>";
 echo "</tr>";
 echo "</table>";

@@ -504,16 +504,25 @@ class dispClass{
 	
 	public function headers($bool,$stype,$table,$nrows,$order,$page){
 		for($i=0;$i<sizeof($this->header);$i++){
-			echo "<td valign=bottom class=headers nowrap=nowrap>";
+			echo "<td valign=top class=headers>";
 			if($this->FKtable[$i]!="" and $i!=0 and !$bool){ //is this a foreign key?
 				//need to define class in order not to trigger somekind of stupid bug related with jquery
 				echo "<a class=exp href=javascript:void(0) onclick=window.open('list.php?table=".$this->FKtable[$i]."','_blank','width=350,height=400,scrollbars=yes') style='text-decoration:none' title='click to view all the available keys'><b>".strtoupper($this->header[$i])."</b></a>";
 			} else {
-				echo "<a class=exp title='".$this->comment[$this->fullheader[$i]]."'><b>".strtoupper($this->header[$i])."</b></a>";				
+				echo "<a class=exp><b>".strtoupper($this->header[$i])."</b></a>";				
 //				echo strtoupper($this->header[$i]);
 			}
-			
-//			if($this->comment[$this->fullheader[$i]] and !$bool) { //clause to display header comments
+			if($this->comment[$this->fullheader[$i]]) { //clause to display header comments
+				echo "<div class=columnComments style='font-size:9px'>";
+				echo $this->comment[$this->fullheader[$i]];
+				echo "</div>";
+			}
+			/**
+			 * Instead of displaying a new div, i'll try to display a new blank page, so that the help 
+			 * comment can be displayed there
+			 * 
+			 */
+//			if($this->comment[$this->fullheader[$i]]) { //clause to display header comments
 //				echo "<a href=javascript:void(0)><img src=pics/help.png border=0></a>";
 //				echo "<div id='".$this->fullheader[$i]."_help' class=comments>".$this->comment[$this->fullheader[$i]]."</div>";
 //			}
@@ -533,21 +542,24 @@ class dispClass{
  * @abstract method to display teh insert form
  */
 	
-	public function insert($objName){
+	public function insert($objName,$stype,$nrows,$order){
 		//write table headers
+//		echo "<table class=main>";
+//		echo "<tr class=headers>";
+//		echo "<td colspan=3></td>";
+//		$this->headers(TRUE, $stype,$objName,$nrows,$order,1); //call method to display table headers
+//		echo "</tr>";
 		echo "<tr class=headers>";
 		echo "<td colspan=".(sizeof($this->header)+3)."><hr style='border:0px'></td>";
 		echo "</tr>";
+		
 		echo "<tr style='background-color:#DDDDEE'>";
+		echo "<form method=post name=tableman id=tableman>";
 		//path to add or remove multiple insert forms
 		echo "<td width=40px><a href=javascript:void(0) style='text-decoration:none' class=cloneMe onclick=checkMultiple('sum',this) title='clone row'><img src=pics/add.png border=0 width=32px height=32px></a></td>";
     	echo "<td width=40px><a href=javascript:void(0) style='text-decoration:none' class=deleteMe onclick=checkMultiple('subtract',this) title='cancel row'><img src=pics/remove.png border=0 width=32px height=32px></a></td>";
 		echo "<td><a href=javascript:void(0) style='text-decoration:none' class=cloneMe id=insert name=insert title='insert data'><img src=pics/submit.png border=0 width=32px height=32px></a></td>";
-		echo "<td colspan=".sizeof($this->header).">";
 		//insert form to be cloned
-		echo "<form method=post name=tableman id=tableman>";
-		echo "<table style='margin-left:0px;width:100%;border:0px solid;'>";
-		echo "<tr>";
 		for($i=0;$i<sizeof($this->header);$i++){
 			if($i==0) {$readonly=" disabled ";}
 			else {$readonly="";}
@@ -558,27 +570,25 @@ class dispClass{
 					$this->getFKvalue($this->default[$this->fullheader[$i]], $i);
 					$val = $this->FKvalue;
 				} else $val="";
-				echo "<td nowrap=nowrap class=results><input type=text class=fk id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' lang=__fk $size></td>";
+				echo "<td id=td_$i nowrap=nowrap class=results><input type=text class=fk id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' lang=__fk $size></td>";
 			} else { // no foreign key
 				if($i!=0){
 					$val = $this->default[$this->fullheader[$i]];
 				}
 				if($this->datatype[$this->fullheader[$i]]=="text")
-					echo "<td class=results><textarea rows=3 cols=40 class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i].">".strip_tags($val)."</textarea></td>";
+					echo "<td id=td_$i class=results><textarea rows=3 cols=40 class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i].">".strip_tags($val)."</textarea></td>";
 				else
-					echo "<td class=results><input type=text class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' $size $readonly lang='".$this->datatype[$this->fullheader[$i]]."' alt='".$this->null[$this->fullheader[$i]]."'";
+					echo "<td id=td_$i class=results><input type=text class=reg id=".$this->fullheader[$i]." name=".$this->fullheader[$i]." value='$val' $size $readonly lang='".$this->datatype[$this->fullheader[$i]]."' alt='".$this->null[$this->fullheader[$i]]."'";
 				if($this->datatype[$this->fullheader[$i]]=="date" or $this->datatype[$this->fullheader[$i]]=="datetime")
 					echo " onfocus=showCalendarControl(this) readonly=readonly";
 				if($this->datatype[$this->fullheader[$i]]!="text") echo "></td>";	
 				
 			}
 		}
+		echo "</form>";
 		echo "</tr>";
 		echo "</table>";
-		echo "</form>";
-		echo "</td>";
-		echo "</tr>";
-
+		
 	}
 		
 	/**
