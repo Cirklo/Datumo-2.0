@@ -1,7 +1,8 @@
 <?php  
 //PHP includes
+
 require_once "../session.php";
-startSession();
+$user_id=startSession();
 require_once "../__dbConnect.php";
 
 ?>
@@ -12,18 +13,6 @@ require_once "../__dbConnect.php";
 <script type="text/javascript" src="js/auxJS.js"></script>
 <script type="text/javascript" src="../js/jquery.jnotify.js"></script>
 <?php
-
-/**
-1. Check if it is a relational database
-
-2. Select target table
-
-3. Select an unique key -> this attribute must not be repeated in the file
-
-4. Check if the user wants to use a matching key -> this is a value that exists in all rows of the table
-
-
- */
 
 //call classes
 $conn=new dbConnection();

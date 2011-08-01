@@ -16,7 +16,7 @@ $user_id = startSession();
 <script type='text/javascript'>
 
 	$(document).ready(function() {
-	
+		
 		$('#calendar').fullCalendar({
 			editable: false,
 			events: "calendar_feed.php?regular",
@@ -26,16 +26,7 @@ $user_id = startSession();
 				right: 'month,agendaWeek,agendaDay'
 
 			},
-			/*eventRender: function(event, element) {
-		        element.qtip({
-		            content: event.description
-		        });
-		    },*/
-			loading: function(bool) {
-				if (bool) $('#loading').show();
-				else $('#loading').hide();
-			},
-			
+			defaultView: 'agendaWeek',
 			eventClick: function(event) {
 				resp=confirm("Do you want to export this entry to your personal calendar?");
 				if(resp){
@@ -43,18 +34,16 @@ $user_id = startSession();
 					$.get("calendar_feed.php?export",{
 						events:event
 					},
-						function(data){
-							alert(data);
-						});
+					function(data){
+						alert(data);
+					});
 				}
 			},
 			
 			loading: function(bool) {
-				if (bool) {
-					$('#loading').show();
-				}else{
-					$('#loading').hide();
-				}
+				if (bool) $('#loading').show();
+				else	$('#loading').hide();
+				
 			}
 			
 		});
@@ -79,7 +68,7 @@ $user_id = startSession();
 		}
 
 	#calendar {
-		width: 900px;
+		width: 800px;
 		margin-left:20px;
 		margin-right: auto;
 		float:left;

@@ -27,7 +27,6 @@ $user_id = startSession();
 <script type="text/javascript" src="js/ajax.js"></script>
 <script type="text/javascript" src="js/autoSuggest.js"></script>
 <script type="text/javascript" src="requisitions/js/jquery.basket.js"></script>
-<script type="text/javascript" src="animalhouse/js/jquery.bioterio.js"></script>
 <script type="text/javascript">
 
 function updQtt(oper, row){
@@ -85,7 +84,6 @@ $browser = strstr($browser, "Chrome");
 require_once ("__dbConnect.php");
 require_once ("dispClass.php");
 require_once ("queryClass.php");
-require_once ("genObjClass.php");
 require_once ("resClass.php");
 require_once ("searchClass.php");
 require_once ("reportClass.php");
@@ -100,7 +98,6 @@ $db = new dbConnection();
 $engine = $db->getEngine();
 //call other classes
 $display = new dispClass();
-$genObj = new genObjClass();
 $perm = new restrictClass();
 $search = new searchClass();
 $treeview = new treeClass();
@@ -145,24 +142,6 @@ $r=false;
 $offset = ($pageNum - 1) * $nrows; //counting the offset 
 $contact = "Do you want to report a bug? Please submit the form.";
 
-//Database queries
-if($action){
-	foreach($_POST as $key=>$value){
-		$genObj->__set($key, $value);
-	}
-
-	switch ($action){
-		case "delete":
-			$genObj->delete($table);
-			break;
-		case "update":
-			$genObj->update($table);
-			break;
-		case "insert":
-			$genObj->insert($table);
-			break;
-	}
-}
 //check for action variable after applying a filter
 if(isset($_GET['comeFromAction']) and $_GET['comeFromAction']!="false"){ //if exists call javascript with action notification
 	$comeFromAction=$_GET['comeFromAction'];

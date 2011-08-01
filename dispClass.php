@@ -2,7 +2,7 @@
 
 
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto
  * @abstract Class to handle table displays (results and insert forms)
  */
 
@@ -101,7 +101,7 @@ class dispClass{
 	
 	
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to display attributes from table $objName
  */
 	
@@ -148,7 +148,7 @@ class dispClass{
 	}
 	
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to handle table description
  */
 	
@@ -179,7 +179,7 @@ class dispClass{
 	}
 
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to calculate the number of tables and views that this user is allowed to view
  * @param $tables Array with the allowed tables and views
  */	
@@ -218,7 +218,7 @@ class dispClass{
 	}
 	
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to get table headers
  */
 	
@@ -257,7 +257,7 @@ class dispClass{
 	}
 	
 	/**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method that searches for FK and referenced tables
  */
 	
@@ -286,7 +286,7 @@ class dispClass{
 	}
 	
 	/**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to build dynamic queries responsible for displaying the results in manager.php
  */
 	
@@ -368,7 +368,7 @@ class dispClass{
 	
 	
 	/**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to order dynamic queries by a foreign key attribute
  *
  **/
@@ -398,7 +398,7 @@ class dispClass{
 	}
 	
 	/**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract Display results in manager.php
  */
 	
@@ -480,7 +480,7 @@ class dispClass{
 	}
 	
 	/**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract gets the second attribute in a table from the referenced id
  */
 	
@@ -497,7 +497,7 @@ class dispClass{
 	}
 	
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to display table headers
  * @param boolean variable is a hack to avoid div 'showhide' bug
  */
@@ -512,20 +512,13 @@ class dispClass{
 				echo "<a class=exp><b>".strtoupper($this->header[$i])."</b></a>";				
 //				echo strtoupper($this->header[$i]);
 			}
+			//display column comments
 			if($this->comment[$this->fullheader[$i]]) { //clause to display header comments
-				echo "<div class=columnComments style='font-size:9px'>";
+				echo "<div lang=exp class=columnComments style='display:none;font-size:9px'>";
 				echo $this->comment[$this->fullheader[$i]];
 				echo "</div>";
 			}
-			/**
-			 * Instead of displaying a new div, i'll try to display a new blank page, so that the help 
-			 * comment can be displayed there
-			 * 
-			 */
-//			if($this->comment[$this->fullheader[$i]]) { //clause to display header comments
-//				echo "<a href=javascript:void(0)><img src=pics/help.png border=0></a>";
-//				echo "<div id='".$this->fullheader[$i]."_help' class=comments>".$this->comment[$this->fullheader[$i]]."</div>";
-//			}
+			//display ascending/descending arrows
 			if(!$bool){
 				echo "<br>";
 				echo "<a href=javascript:void(0) class=exp onclick=submit('$stype','$table',$nrows,'ASC','".$this->fullheader[$i]."',$page) title='Sort by ".$this->header[$i]." ascending order'><img src=pics/asc.gif border=0></a>";
@@ -538,7 +531,7 @@ class dispClass{
 	}
 		
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto
  * @abstract method to display teh insert form
  */
 	
@@ -592,7 +585,7 @@ class dispClass{
 	}
 		
 	/**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to to write field's properties
  */
 	
@@ -637,7 +630,7 @@ class dispClass{
 	}
 	
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to calculate the number of results in the queried table
  */	
 
@@ -714,7 +707,7 @@ class dispClass{
 	}
 	
 	/**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to construct the quick search query
  */	
 	
@@ -738,7 +731,7 @@ class dispClass{
 	}
 	
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to create the foreign key list displayed in a new window
  */	
 
@@ -762,7 +755,7 @@ class dispClass{
 	}
 
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method display user options
  */	
 	
@@ -799,7 +792,7 @@ class dispClass{
 	}
 	
 /**
- * @author João Lagarto	/ Nuno Moreno
+ * @author João Lagarto	
  * @abstract method to display report options
  */	
 	
