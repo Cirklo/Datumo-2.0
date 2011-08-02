@@ -92,6 +92,7 @@ require_once ("treeClass.php");
 require_once ("configClass.php");
 require_once "module.php";
 require_once "functions.php";
+require_once "plotAux.php";
 
 //call database class (handle connections)
 $db = new dbConnection();
@@ -235,6 +236,9 @@ echo "<div id='treeList' class=sidebar>";
 $treeview->treeview_access($user_id);
 echo "</div>";
 echo "</td></tr>";
+//check if there's a plot for this table
+checkPlot($table);
+//check if there's any plot related with this table
 $config->checkPlugins();
 $config->compat();
 echo "</table>";

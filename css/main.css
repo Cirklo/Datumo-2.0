@@ -210,8 +210,8 @@ div.sidebar{
 	background-color:#CCCC99;
 	z-index:99;
 	padding:3px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 	}	
 	
 div.details{

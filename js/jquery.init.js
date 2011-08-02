@@ -110,8 +110,8 @@ $(document).ready(function() {
 	 */
 	
 	$("table").find("div:not(div[lang=exp])").hide().end().find("a:not(.exp),input:button").click(function() {
-		$(this).next().slideToggle(function(){
-			$("div").not("#"+this.id+",div[lang=tiptip], div[lang=exp], .alertClass").slideUp('slow');
+		$(this).next().slideToggle(200,function(){
+			$("div").not("#"+this.id+",div[lang=tiptip], div[lang=exp], .alertClass").slideUp(200);
 		});
 	});
 	
