@@ -1,5 +1,8 @@
-Upgrade Report Generator tool (allow more options)		
-Allow users to export Views to excel					(DONE)
-Review multiple insert tool. Try to clone table rows without losing the original HTML layout.	(DONE)
-Review Datumo's Design. Try to abolish tables (I hate tables)
-Try to synchronize mycalendar with google calendar (gmail account)		(DONE)
+Create Chart reports. Wizard to do this.
+
+Title
+X-axis
+Y-axis
+Spline
+Column
+Allow multiple axis -> different Y data. X-axis data must remain the asame

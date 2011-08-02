@@ -21,19 +21,6 @@ if(isset($_POST['action'])){
 	}
 }
 
-/**
- * 
- * TO DO LIST
- * 1-Null fields
- * 2-Fieldtype
- * 3-Fk validation ---> DONE
- * 4-Wild characters
- * 
- * 
- */
-
-
-
 class genObjClass{
 	private $conn;
 	private $regexp="/[^a-zA-Z0-9_ %\[/]\.\?\&\,\@\.\:\(\)%&-]/";
