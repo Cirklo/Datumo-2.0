@@ -726,7 +726,6 @@ class dispClass{
 		echo "<tr><td><b>Table</b></td><td>$objName</td></tr>";		
 		echo "<tr><td><b>Rows</b></td><td>$nrows</td></tr>";
 		echo "<tr><td><b>Query</b></td><td>".$this->mainQuery."</td></tr>";
-		echo "<tr><td><b>Version</b></td><td>Datumo 2.0</td></tr>";
 		echo "</table>";
 	}
 	
