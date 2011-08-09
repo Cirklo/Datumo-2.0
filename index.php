@@ -1,6 +1,7 @@
 <?php
-require_once("session.php");
+require_once "session.php";
 $user_id = startSession();
+//echo $_SESSION['path'];
 ?>
 
 <!doctype html>  
@@ -55,6 +56,7 @@ require_once "module.php";
 require_once "functions.php";
 require_once "menu.php";
 require_once "plotAux.php";
+require_once "pub.php";
 
 //php classes
 $conn=new dbConnection();

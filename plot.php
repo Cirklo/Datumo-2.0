@@ -7,10 +7,7 @@ startSession();
 //get https vars in order to build the plot
 if(isset($_GET['plot_id'])){
 	$plot_id=$_GET['plot_id'];
-} else {
-	$plot_id=-1;
-}
-$plot_id=1;
+} 
 ?>
 <!DOCTYPE html>
 <html>
@@ -34,7 +31,7 @@ $plot_id=1;
 		                series: [
 		                            {
 		                                type: data.type,	//set data type:column or spline
-		                                title: data.desc,
+		                                //title: data.desc,
 		                                data: data.value	//write data to plot
 		                            }
 		                        ]

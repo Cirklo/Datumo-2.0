@@ -35,8 +35,7 @@ function plot(){
 	//plot settings
 	$json->title=$row["plot_title"];
 	$json->type=$row["plot_type"];
-	$json->desc="flag";
-	
+		
 	//info to build query to get plot data 
 	$x_axis=$row["plot_x_axis"];	
 	$y_axis=$row["plot_y_axis"];

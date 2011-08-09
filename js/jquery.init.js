@@ -154,11 +154,7 @@ $(document).ready(function() {
 		$(this).autocomplete({
 			source:"autoSuggest.php?field="+this.id,
 			minLength:1,
-			dataType:"json",
-			position: { 
-				my : "right top", 
-				at: "right bottom" 
-			}
+			dataType:"json"
 		});
 	});
 	

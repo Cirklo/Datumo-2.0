@@ -699,8 +699,9 @@ class dispClass{
 		try{
 			$sql->execute();
 		} catch (Exception $e){
+			//echo $this->mainQuery;
 			//Display error in the screen
-			$this->error->errorDisplay($this->mainQuery,$objName,$e->getMessage(),"Could not execute query. <b>If the problem persists please contact the administrator! <a href=admin.php>Return to main menu</a></b>");
+			//$this->error->errorDisplay($this->mainQuery,$objName,$e->getMessage(),"Could not execute query. <b>If the problem persists please contact the administrator! <a href=admin.php>Return to main menu</a></b>");
 		}
 		$row = $sql->fetch();
 		return $row[0];

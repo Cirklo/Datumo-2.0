@@ -18,6 +18,7 @@ if(isset($_GET['logout'])){	logout();}
 if(isset($_GET['pwd'])){	recoverPwd();}
 
 function login(){
+	
 	//call classes
 	$db = new dbConnection();
 	$database=$db->getDatabase();
