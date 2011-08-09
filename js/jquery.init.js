@@ -21,7 +21,7 @@ $(document).ready(function() {
 	 * @author João Lagarto
 	 */
 	
-	jQuery.fn.login = function(){
+	$("#login").click(function(){
 		//check if any of the fields is empty		
 		if($("#user_login").val()=="" || $("#user_passwd").val()==""){
 			$.jnotify("Missing fields");
@@ -34,11 +34,11 @@ $(document).ready(function() {
 								  if(data.length!=0){
 									  $.jnotify("Wrong login");
 								  } else {
-									  window.location = "../datumo/admin.php";
+									  window.location = "../datumo/index.php";
 								  }
 							  });
 		}	
-	};
+	});
 	
 	/**
 	 * @abstract Method to handle password recovery issues
