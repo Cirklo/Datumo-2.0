@@ -951,7 +951,7 @@ class dispClass{
 			$sql_=$this->pdo->query($query_);
 			echo "<ul class=list>";
 			for($j=0;$row_=$sql_->fetch();$j++){
-				echo "<li><b>$row_[2]:</b> <a href=javascript:void(0) onclick=window.open('announcement.php?announcement_id=$row_[0]','_blank','height=350px,width=300px,scrollbars=yes');>$row_[1]</a></li>";
+				echo "<li><b>".$row_['announcement_date'].":</b> <a href=javascript:void(0) onclick=window.open('announcement.php?announcement_id=$row_[0]','_blank','height=350px,width=300px,scrollbars=yes');>".$row_['announcement_title']."</a></li>";
 			}
 			echo "</ul>";
 		}
