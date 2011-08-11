@@ -940,18 +940,23 @@ class dispClass{
 	
 	function displayMessage(){
 		$this->pdo->dbConn();
-		$query = "SELECT * FROM category";
+		$query = "SELECT DISTINCT object_id, object_name 
+			FROM object, announcement 
+			WHERE announcement_object=object_id 
+			AND announcement_end_date > NOW() 
+			ORDER BY object_id";
 		$sql = $this->pdo->query($query);
 		for ($i=0;$row=$sql->fetch();$i++){
-			echo "<h3>".$row['category_name']."</h3>";
+			echo "<h3>".$row['object_name']."</h3>";
 			$query_="SELECT announcement_id, announcement_title, announcement_date 
 			FROM announcement 
-			WHERE announcement_category=$row[0] 
-			AND announcement_end_date > NOW()";
+			WHERE announcement_object=$row[0] 
+			AND announcement_end_date > NOW()
+			ORDER BY announcement_date DESC";
 			$sql_=$this->pdo->query($query_);
 			echo "<ul class=list>";
 			for($j=0;$row_=$sql_->fetch();$j++){
-				echo "<li><b>".$row_['announcement_date'].":</b> <a href=javascript:void(0) onclick=window.open('announcement.php?announcement_id=$row_[0]','_blank','height=350px,width=300px,scrollbars=yes');>".$row_['announcement_title']."</a></li>";
+				echo "<li><b>$row_[2]:</b> <a href=javascript:void(0) onclick=window.open('announcement.php?announcement_id=$row_[0]','_blank','height=350px,width=300px,scrollbars=yes');>$row_[1]</a></li>";
 			}
 			echo "</ul>";
 		}
