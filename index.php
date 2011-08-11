@@ -220,7 +220,7 @@ echo "</tr></table>";
 
 //display announcements only to internal users
 if($level!=3){
-	echo "<div class=announcements id=announcements>";
+	echo "<div class=announcements id=announcements lang=exp>";
 	$display->displayMessage();
 	echo "</div>";
 }	
