@@ -940,12 +940,21 @@ class dispClass{
 	
 	function displayMessage(){
 		$this->pdo->dbConn();
-		$query = "SELECT DISTINCT object_id, object_name 
+		try{
+			$query = "SELECT DISTINCT object_id, object_name 
 			FROM object, announcement 
 			WHERE announcement_object=object_id 
 			AND announcement_end_date > NOW() 
 			ORDER BY object_id";
-		$sql = $this->pdo->query($query);
+			$sql = $this->pdo->query($query);
+		} catch (Exception $e){
+			$query = "SELECT DISTINCT resource_id, resource_name 
+			FROM resource, announcement 
+			WHERE announcement_object=resource_id 
+			AND announcement_end_date > NOW() 
+			ORDER BY resource_id";
+			$sql = $this->pdo->query($query);
+		}
 		for ($i=0;$row=$sql->fetch();$i++){
 			echo "<h3>".$row['object_name']."</h3>";
 			$query_="SELECT announcement_id, announcement_title, announcement_date 
