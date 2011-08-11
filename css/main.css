@@ -194,7 +194,15 @@ hr{
 	overflow:auto;	
 }
 
-
+div.announcements{
+	position:relative;
+	border:1px solid;
+	border-color:#f7c439;
+	overflow:auto;
+	width:250px;
+	padding-left:20px;
+	
+}
 	
 div.regular{
 	display:none;
@@ -290,6 +298,7 @@ iframe.gridDisp{
 }
 
 ul.list{
+	text-align:left;
 	list-style:none;		
 }
 

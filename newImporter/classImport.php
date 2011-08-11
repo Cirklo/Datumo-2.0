@@ -248,6 +248,7 @@ class importerClass{
 			}
 			$query=substr($query,0,strlen($query)-1);	//remove the last comma (,)
 			$query.=")";	//finish query
+//			echo $query;
 			$this->conn->query($query);
 			return $this->conn->lastInsertId();
 		}

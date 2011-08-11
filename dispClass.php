@@ -933,6 +933,32 @@ class dispClass{
 		}
 	}
 	
+	/**
+	 * Method to display announcements
+	 * 
+	 */
+	
+	function displayMessage(){
+		$this->pdo->dbConn();
+		$query = "SELECT * FROM category";
+		$sql = $this->pdo->query($query);
+		for ($i=0;$row=$sql->fetch();$i++){
+			echo "<h3>".$row['category_name']."</h3>";
+			$query_="SELECT announcement_id, announcement_title, announcement_date 
+			FROM announcement 
+			WHERE announcement_category=$row[0] 
+			AND announcement_end_date > NOW()";
+			$sql_=$this->pdo->query($query_);
+			echo "<ul class=list>";
+			for($j=0;$row_=$sql_->fetch();$j++){
+				echo "<li><b>$row_[2]:</b> <a href=javascript:void(0) onclick=window.open('announcement.php?announcement_id=$row_[0]','_blank','height=350px,width=300px,scrollbars=yes');>$row_[1]</a></li>";
+			}
+			echo "</ul>";
+		}
+		
+		
+		
+	}
 }
 
 ?>

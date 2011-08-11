@@ -35,7 +35,7 @@ In the end of the validation, the script must show all errors found in the csv f
  ****************************************************************************************************************************/
 echo "<div class=validation>";
 //PHP defaults
-$limitError=1000;	//maximum number of errors allowed
+$limitError=100000;	//maximum number of errors allowed
 $uniqueValidation=array();
 $delimiter=",";	//some spreadsheets might use ; instead of ,
 $lineLenght="1000";
@@ -209,7 +209,7 @@ try{
 		echo "File successfully checked. Ready to start importing the file.";
 		if($matchingKey){
 			echo "<br><br>";
-			echo "Your matching key is <input type=text name=matchingKey id=matchingKey value='$matchingKeyValue' readonly>";
+			echo "Your matching key is <input type=text name=matchingKey id=matchingKey value='$matchingKeyValue' size=50 readonly>";
 		}
 		echo "</div>";
 	}

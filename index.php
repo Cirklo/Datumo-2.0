@@ -70,7 +70,7 @@ $menu= new menu($user_id);
 //get user info
 $perm->userInfo($user_id);
 $login=$perm->getUserLogin();
-
+$level=$perm->getUserLevel();
 
 /******************************************************BEGIN OF HEADER******************************************************/
 echo "<header>";
@@ -166,7 +166,7 @@ $config->compat();
 echo "</div>";
 
 echo "<div class=main lang=exp>";
-echo "<table><tr>";
+echo "<table style='float:left'><tr>";
 for($j=0;$j<sizeof($type);$j++){
 	echo "<td valign=top>";
 	echo "<table border=0 align=left>";
@@ -217,6 +217,13 @@ for($j=0;$j<sizeof($type);$j++){
 }
 
 echo "</tr></table>";
+
+//display announcements only to internal users
+if($level!=3){
+	echo "<div class=announcements id=announcements>";
+	$display->displayMessage();
+	echo "</div>";
+}	
 
 //Do we have publicity in this page??
 $pub=new pubHandler();
