@@ -1,5 +1,5 @@
 <?php
-require_once ("__dbConnect.php");
+require_once(".htconnect.php");
 require_once ("classcheck.php");
 require_once ("classimport.php");
 
@@ -18,12 +18,12 @@ $field = $_GET['field'];
 $column = $_GET['column'];
 $match = $_GET['match'];
 $file = $_GET['file'];	
-$file = "/var/www/datumo2.0/importer/upload/".$file;
+$file = "/xampp/htdocs/datumo/newImporter/files/".$file;
 
 echo date("d/m/y : H:i:s", time());
 echo "<br>";
 echo "Deleting non referenced data... "; 
-$import->delete($table, $match, $table."_".$column);
+//$import->delete($table, $match, $table."_".$column);
 //initialize counters
 $row = 0;
 $counter = 0; //number of inserted rows
