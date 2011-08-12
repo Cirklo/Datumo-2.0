@@ -133,7 +133,7 @@ echo "<header>";
 			echo "</li>";
 			//log in and out information
 			echo "<li class=login>You are logged as $login! ";
-			echo "<a href=session.php?logout style='color:#f7c439;text-decoration:underline;'>Sign out</a></li>";
+			echo "<a href=../session.php?logout style='color:#f7c439;text-decoration:underline;'>Sign out</a></li>";
 			//External links
 			echo "<li class=external>";
 			echo "<a href='http://www.facebook.com/pages/Cirklo/152674671417637' target=_blank><img src=../pics/fb.png width=30px border=0 title='Visit our Facebook page'>";
