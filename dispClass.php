@@ -956,7 +956,7 @@ class dispClass{
 			$sql = $this->pdo->query($query);
 		}
 		for ($i=0;$row=$sql->fetch();$i++){
-			echo "<h3>".$row['object_name']."</h3>";
+			echo "<h3>".$row[1]."</h3>";
 			$query_="SELECT announcement_id, announcement_title, announcement_date 
 			FROM announcement 
 			WHERE announcement_object=$row[0] 
@@ -964,8 +964,12 @@ class dispClass{
 			ORDER BY announcement_date DESC";
 			$sql_=$this->pdo->query($query_);
 			echo "<ul class=list>";
-			for($j=0;$row_=$sql_->fetch();$j++){
-				echo "<li><b>$row_[2]:</b> <a href=javascript:void(0) onclick=window.open('announcement.php?announcement_id=$row_[0]','_blank','height=350px,width=300px,scrollbars=yes');>$row_[1]</a></li>";
+			if($sql->rowCount()){
+				for($j=0;$row_=$sql_->fetch();$j++){
+					echo "<li><b>$row_[2]:</b> <a href=javascript:void(0) onclick=window.open('announcement.php?announcement_id=$row_[0]','_blank','height=350px,width=300px,scrollbars=yes');>$row_[1]</a></li>";
+				}
+			} else {
+				echo "<li>No announcements to display at the time</li>";
 			}
 			echo "</ul>";
 		}
