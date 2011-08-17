@@ -45,6 +45,23 @@ span.desc{
 	color:#fff;
 }
 
+div.rules{
+	margin-top:-10px;
+	width:450px;
+	float:left;	
+	padding-right:70px;	
+}
+
+div.rules ol{
+	padding-left:20px;
+}
+
+div.rules ol li{
+	font-size:10px; 
+	color:#f7c439;
+}
+
+
 div.validation{
 	width:980px;
 	margin:auto;
@@ -122,3 +139,4 @@ a{
 a:hover{
 	color:#f7c439;
 }
+

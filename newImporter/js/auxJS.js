@@ -99,11 +99,10 @@ function goValidation(){
 		ask="You are about to insert new data into the table "+targetTable+". Proceed?";
 		break;
 	case "1":
-
-		ask="You are about to delete all data from the table "+targetTable+" and insert new data from the file. Proceed?";
+		ask="WARNING! You are about to delete all data from the table "+targetTable+" and insert new data from the file. Proceed?";
 		break;
 	case "2":
-		ask="You are about to replace all data from the table "+targetTable+" that matches the value in your file's " +
+		ask="WARNING! You are about to replace all data from the table "+targetTable+" that matches the value in your file's " +
 				"matching key. Proceed?";
 		break;
 	}
