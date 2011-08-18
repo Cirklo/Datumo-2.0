@@ -12,6 +12,34 @@ require_once "../resClass.php";
 <script type="text/javascript" src="../js/jquery-1.5.1.js"></script>
 <script type="text/javascript" src="js/auxJS.js"></script>
 <script type="text/javascript" src="../js/jquery.jnotify.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	/**
+	 * in this script goes the code for each link found in the TIPS and RULES list
+	 * These links have very specific targets
+	 */
+
+	$("a.fields").click(function(){
+		objName=$("#targetTable").val();
+		if(objName==0){
+			$.jnotify("Target table not selected",true);
+			return;
+		}
+		window.open('extra.php?fields&objName='+objName,'_blank','width=250px,height=300px,scrollbars=yes,menubar=no');
+	});
+	
+	$("a.check").click(function(){
+		objName=$("#targetTable").val();
+		if(objName!="product"){
+			$.jnotify("Target table must be PRODUCT in order to check for vendors",true);
+			return;
+		}
+		window.open('extra.php?check&objName='+objName,'_blank','width=250px,height=200px,scrollbars=yes,menubar=no');
+	});
+});
+
+</script>
 <?php
 
 //call classes
@@ -50,12 +78,12 @@ echo "<div class=rules>";
 echo "<h3>Tips and rules</h3>";
 echo "<ol>";
 echo "<li>The first row of the .csv file must contain headers that will identify each column. 
-<b><a href=javascript:void(0)>Click here to view the list of available headers for the chosen table</a></b></li>";
-echo "<li>If importing a product list make sure you have a column with the name of the supplier. This value <b>CANNOT BE NULL</b>
-The name of the supplier must match any value stored in our database. 
-<b><a href=javascript:void(0)>Click here for a name checking</a></b></li>";
+<b><a href=javascript:void(0) class=fields>Click here to view the list of available headers for the chosen table</a></b></li>";
+echo "<li>If importing a product list make sure you have a column with the name of the vendor. This value <b>CANNOT BE NULL</b>. 
+The name of the vendor must match any value stored in our database. <b><a href=javascript:void(0) class=check>Click here 
+for a name checking</a></b>. If you have products in our database use this tool to check the correct name of your company.</li>";
 echo "<li>Avoid using unusual characters in your file. They won't be rejected but data integrity may be lost during the import.</li>";
-echo "<li>If you wish to import an Economato list you must add a new column in your file named <b>Type</b>. Values throughout this
+echo "<li>If you wish to import an Economato list you must add a column in your file named <b>Type</b>. Values throughout this
 column must be <b>Economato</b> for products placed at Economato or <b>External</b> for external products.</li>";
 echo "<li>Think carefully before choosing any delete option. If you have any doubts please choose the first option 
 (<b>Do not delete<b>) or <a href=mailto:info@cirklo.org>contact our administrator for advice</a>.</li>";
